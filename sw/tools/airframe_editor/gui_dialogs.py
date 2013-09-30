@@ -2,20 +2,20 @@
 
 from __future__ import print_function
 
-import pygtk, gtk
+import gtk
 from os import path
 
 
-if gtk.pygtk_version < (2,3,90):
+if gtk.pygtk_version < (2, 3, 90):
     print("Please upgrade your pygtk")
     raise SystemExit
 
 
 def filechooser(pathname):
-    dialog = gtk.FileChooserDialog( "Open ...", None,
-        gtk.FILE_CHOOSER_ACTION_OPEN,
-        (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, 
-        gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+    dialog = gtk.FileChooserDialog("Open ...", None,
+                                   gtk.FILE_CHOOSER_ACTION_OPEN,
+                                   (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                    gtk.STOCK_OPEN, gtk.RESPONSE_OK))
 
     dialog.set_default_response(gtk.RESPONSE_OK)
     dialog.set_current_folder(pathname)
@@ -32,25 +32,25 @@ def filechooser(pathname):
     elif response == gtk.RESPONSE_CANCEL:
         print("No file selected")
 
-    dialog.destroy()
     return filename
 
-def error_loading_xml(str):
+
+def error_loading_xml(s):
     err_msg = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT,
-        gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
-        "Error Loading XML: " + str )
+                                gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE,
+                                "Error Loading XML: " + s)
     err_msg.run()
     err_msg.destroy()
 
 
 def about(home):
-    about = gtk.AboutDialog();
-    about.set_program_name("Paparazzi Airframe Editor")
-    about.set_version("0.1")
-    about.set_copyright("(c) GPL v2")
-    about.set_comments("Airframe Editor")
-    about.set_website("http://paparazzi.github.com/")
-    about.set_logo(gtk.gdk.pixbuf_new_from_file(path.join(home, "data/pictures/penguin_icon.png")))
-    about.run()
-    about.destroy()
+    about_d = gtk.AboutDialog()
+    about_d.set_program_name("Paparazzi Airframe Editor")
+    about_d.set_version("0.1")
+    about_d.set_copyright("(c) GPL v2")
+    about_d.set_comments("Airframe Editor")
+    about_d.set_website("http://paparazzi.github.io")
+    about_d.set_logo(gtk.gdk.pixbuf_new_from_file(path.join(home, "data/pictures/penguin_icon.png")))
+    about_d.run()
+    about_d.destroy()
 

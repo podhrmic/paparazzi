@@ -10,26 +10,30 @@ import paparazzi
 
 
 def find_and_add(source, target, search):
-    temp = source.getroot().findall("./"+search)
+    temp = source.getroot().findall("./" + search)
     for t in temp:
-        xml_common.indent(t,1)
+        xml_common.indent(t, 1)
     target.extend(temp)
+
 
 def find_and_add_sections_with_name(source, target, find_name):
-    temp = source.getroot().findall("./*[@name='" +find_name+ "']")
+    temp = source.getroot().findall("./*[@name='" + find_name + "']")
     for t in temp:
-        xml_common.indent(t,1)
+        xml_common.indent(t, 1)
     target.extend(temp)
 
+
 group_identification_string = " ************************* "
+
 
 def find_or_add_group(source, target, search):
     groupname = group_identification_string + search + group_identification_string
     target.append(ET.Comment(groupname))
     for block in source.getroot():
         if isinstance(block, ET._Comment):
-            if block.__str__() == "<!--"+groupname+"-->":
+            if block.__str__() == "<!--" + groupname + "-->":
                 source.getroot().remove(block)
+
 
 def reorganize_airframe_xml(airframe_xml):
     some_file_like_object = StringIO.StringIO("<airframe/>")
@@ -39,11 +43,11 @@ def reorganize_airframe_xml(airframe_xml):
     if 'name' not in airframe_xml.getroot().attrib:
         print("Airframe has no name!")
     else:
-        airframe.set('name',airframe_xml.getroot().get('name'));
+        airframe.set('name', airframe_xml.getroot().get('name'))
 
     find_or_add_group(airframe_xml, airframe, "FIRMWARE")
     find_and_add(airframe_xml, airframe, "firmware")
-    find_and_add_sections_with_name(airframe_xml,airframe,"AUTOPILOT")
+    find_and_add_sections_with_name(airframe_xml, airframe, "AUTOPILOT")
 
     find_or_add_group(airframe_xml, airframe, "MODULES")
     find_and_add(airframe_xml, airframe, "modules")
@@ -53,36 +57,36 @@ def reorganize_airframe_xml(airframe_xml):
     find_and_add(airframe_xml, airframe, "commands")
     find_and_add(airframe_xml, airframe, "ap_only_commands")
     find_and_add(airframe_xml, airframe, "rc_commands")
-    find_and_add_sections_with_name(airframe_xml,airframe,"AUTO1")
-    find_and_add_sections_with_name(airframe_xml,airframe,"SERVO_MIXER_GAINS")
-    find_and_add_sections_with_name(airframe_xml,airframe,"MIXER")
-    find_and_add_sections_with_name(airframe_xml,airframe,"MIXING")
+    find_and_add_sections_with_name(airframe_xml, airframe, "AUTO1")
+    find_and_add_sections_with_name(airframe_xml, airframe, "SERVO_MIXER_GAINS")
+    find_and_add_sections_with_name(airframe_xml, airframe, "MIXER")
+    find_and_add_sections_with_name(airframe_xml, airframe, "MIXING")
     find_and_add(airframe_xml, airframe, "command_laws")
-    find_and_add_sections_with_name(airframe_xml,airframe,"TRIM")
-    find_and_add_sections_with_name(airframe_xml,airframe,"FAILSAFE")
+    find_and_add_sections_with_name(airframe_xml, airframe, "TRIM")
+    find_and_add_sections_with_name(airframe_xml, airframe, "FAILSAFE")
 
     find_or_add_group(airframe_xml, airframe, "SENSORS")
-    find_and_add_sections_with_name(airframe_xml,airframe,"ADC")
-    find_and_add_sections_with_name(airframe_xml,airframe,"INFRARED")
-    find_and_add_sections_with_name(airframe_xml,airframe,"IMU")
-    find_and_add_sections_with_name(airframe_xml,airframe,"AHRS")
-    find_and_add_sections_with_name(airframe_xml,airframe,"INS")
-    find_and_add_sections_with_name(airframe_xml,airframe,"XSENS")
+    find_and_add_sections_with_name(airframe_xml, airframe, "ADC")
+    find_and_add_sections_with_name(airframe_xml, airframe, "INFRARED")
+    find_and_add_sections_with_name(airframe_xml, airframe, "IMU")
+    find_and_add_sections_with_name(airframe_xml, airframe, "AHRS")
+    find_and_add_sections_with_name(airframe_xml, airframe, "INS")
+    find_and_add_sections_with_name(airframe_xml, airframe, "XSENS")
 
     find_or_add_group(airframe_xml, airframe, "GAINS")
     # Fixedwing
-    find_and_add_sections_with_name(airframe_xml,airframe,"HORIZONTAL CONTROL")
-    find_and_add_sections_with_name(airframe_xml,airframe,"VERTICAL CONTROL")
-    find_and_add_sections_with_name(airframe_xml,airframe,"AGGRESSIVE")
+    find_and_add_sections_with_name(airframe_xml, airframe, "HORIZONTAL CONTROL")
+    find_and_add_sections_with_name(airframe_xml, airframe, "VERTICAL CONTROL")
+    find_and_add_sections_with_name(airframe_xml, airframe, "AGGRESSIVE")
     # Rotorcraft
-    find_and_add_sections_with_name(airframe_xml,airframe,"STABILIZATION_RATE")
-    find_and_add_sections_with_name(airframe_xml,airframe,"STABILIZATION_ATTITUDE")
-    find_and_add_sections_with_name(airframe_xml,airframe,"GUIDANCE_V")
-    find_and_add_sections_with_name(airframe_xml,airframe,"GUIDANCE_H")
+    find_and_add_sections_with_name(airframe_xml, airframe, "STABILIZATION_RATE")
+    find_and_add_sections_with_name(airframe_xml, airframe, "STABILIZATION_ATTITUDE")
+    find_and_add_sections_with_name(airframe_xml, airframe, "GUIDANCE_V")
+    find_and_add_sections_with_name(airframe_xml, airframe, "GUIDANCE_H")
 
     find_or_add_group(airframe_xml, airframe, "MISC")
 
-    find_and_add(airframe_xml,airframe,"*")
+    find_and_add(airframe_xml, airframe, "*")
 
     xml_common.indent(airframe)
 
@@ -107,6 +111,7 @@ def get_airframe_header(airframe_file):
     except IOError:
         return ""
 
+
 def add_text_before_file(text_file, new_string):
     try:
         fullfile = ""
@@ -116,9 +121,10 @@ def add_text_before_file(text_file, new_string):
         with open(text_file, 'w') as outputFileHandle:
             outputFileHandle.write(new_string)
             outputFileHandle.write(fullfile)
-            outputFileHandle.close();
+            outputFileHandle.close()
     except IOError:
         return
+
 
 def load(airframe_file):
     try:
@@ -127,17 +133,18 @@ def load(airframe_file):
     except (IOError, ET.XMLSyntaxError, ET.XMLSyntaxError) as e:
         print(" ERROR: Loading XML failed: ")
         print(e)
-	quit()
+        quit()
+
 
 def fill_tree_children(block, tree, parent):
     for elem in block:
         ename = elem.get("name")
-        if ename == None:
+        if ename is None:
             ename = ""
-        # Only add sub-blocks if there are children
+            # Only add sub-blocks if there are children
         if len(elem) or ((block.tag != "section") & (block.tag != "load")):
             if not isinstance(elem, ET._Comment):
-                piter = tree.append(parent, [ elem.tag.__str__() + " " + ename, elem ])
+                piter = tree.append(parent, [elem.tag.__str__() + " " + ename, elem])
                 fill_tree_children(elem, tree, piter)
 
 
@@ -149,33 +156,34 @@ def fill_tree(my_xml, tree):
     for block in root:
         if not isinstance(block, ET._Comment):
             name = block.get("name")
-            if name == None:
+            if name is None:
                 name = ""
 
             # print(block.tag.__str__() + " " + name)
-            piter = tree.append(add_place, [ block.tag.__str__() + " " + name, block ])
+            piter = tree.append(add_place, [block.tag.__str__() + " " + name, block])
             fill_tree_children(block, tree, piter)
         else:
-            add_place = tree.append(None, [ block.__str__().replace("<!--"+group_identification_string, "[").replace(group_identification_string+"-->","]"), block ])
+            add_place = tree.append(None, [block.__str__().replace("<!--" + group_identification_string, "[").replace(
+                group_identification_string + "-->", "]"), block])
 
-def defines( elem, grid):
+
+def defines(elem, grid):
     grid.clear()
     for e in elem.findall("./define"):
-        grid.append([ "define", e.get("name"), e.get("value"), e.get("unit"), e.get("description") ])
+        grid.append(["define", e.get("name"), e.get("value"), e.get("unit"), e.get("description")])
     for e in elem.findall("./configure"):
-        grid.append([ "configure", e.get("name"), e.get("value"), e.get("unit"), e.get("description") ])
-
-
+        grid.append(["configure", e.get("name"), e.get("value"), e.get("unit"), e.get("description")])
 
 
 if __name__ == '__main__':
     import sys
+
     outputfile = 'test.xml'
-    if (len(sys.argv) > 1):
+    if len(sys.argv) > 1:
         airframe_file = sys.argv[1]
-        if (len(sys.argv) > 2):
+        if len(sys.argv) > 2:
             outputfile = sys.argv[2]
-            if (len(sys.argv) > 3):
+            if len(sys.argv) > 3:
                 outputfile = airframe_file
     else:
         airframe_file = "../../../conf/airframes/CDW/yapa_xsens.xml"

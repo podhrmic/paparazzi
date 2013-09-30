@@ -15,7 +15,8 @@ import paparazzi
 
 
 # Airframe File
-airframe_file = path.join(paparazzi.airframes_dir, "CDW/classix.xml")
+airframe_file = path.join(paparazzi.airframes_dir, "examples/quadrotor_lisa_m_2_pwm_spektrum.xml")
+
 
 class AirframeEditor:
 
@@ -23,17 +24,17 @@ class AirframeEditor:
 
     def load_airframe_xml(self):
         global airframe_file
-        self.tvcolumn.set_title(airframe_file.replace(paparazzi.airframes_dir,""))
+        self.tvcolumn.set_title(airframe_file.replace(paparazzi.airframes_dir, ""))
         [e, self.xml, self.xml_header] = xml_airframe.load(airframe_file)
-        if (e):
+        if e:
             gui_dialogs.error_loading_xml(e.__str__())
             raise e
         xml_airframe.fill_tree(self.xml, self.treestore)
 
-    def update_combo(self,combo,list):
+    def update_combo(self, combo, c_list):
         combo.set_sensitive(False)
         combo.get_model().clear()
-        for i in list:
+        for i in c_list:
             combo.append_text(i)
         combo.set_active(0)
         combo.set_sensitive(True)
@@ -51,26 +52,24 @@ class AirframeEditor:
     def find_subsystems(self, widget):
         self.textbox.set_text(self.firmwares_combo.get_active_text())
         list_of_subsystems = paparazzi.get_list_of_subsystems(self.firmwares_combo.get_active_text())
-        self.update_combo(self.subsystems_combo,list_of_subsystems)
+        self.update_combo(self.subsystems_combo, list_of_subsystems)
 
     def find_boards(self, widget):
         list_of_boards = paparazzi.get_list_of_boards()
-        self.update_combo(self.boards_combo,list_of_boards)
-
-
+        self.update_combo(self.boards_combo, list_of_boards)
 
     def find_module_defines(self, widget):
         mod = paparazzi.get_module_information(self.modules_combo.get_active_text())
         print(mod.description)
         txt = mod.description + "\n"
         for d in mod.defines:
-            txt += "define: " + d[0].__str__() + " = "  + d[1].__str__() + "; ["  + d[2].__str__() + "] // "  + d[3].__str__() + "\n"
+            txt += "define: " + d[0].__str__() + " = " + d[1].__str__() + "; [" + d[2].__str__() + "] // " + d[3].__str__() + "\n"
         for c in mod.configures:
-            txt += "configure: " + c[0].__str__() + " = "  + c[1].__str__() + "; ["  + c[2].__str__() + "] // "  + c[3].__str__() + "\n"
+            txt += "configure: " + c[0].__str__() + " = " + c[1].__str__() + "; [" + c[2].__str__() + "] // " + c[3].__str__() + "\n"
         self.text_box.set_text(txt)
         self.gridstore.clear()
         for d in mod.defines:
-            self.gridstore.append( [ "define", d[0], d[1], d[2], d[3] ] )
+            self.gridstore.append(["define", d[0], d[1], d[2], d[3]])
 
     def reorganize_xml(self, widget):
         self.xml = xml_airframe.reorganize_airframe_xml(self.xml)
@@ -82,7 +81,7 @@ class AirframeEditor:
     def open(self, widget):
         global airframe_file
         filename = gui_dialogs.filechooser(paparazzi.airframes_dir)
-        if (filename == ""):
+        if filename == "":
             print("No file selected")
             return
         airframe_file = filename
@@ -98,20 +97,22 @@ class AirframeEditor:
     def select_section(self, widget):
         #get data from highlighted selection
         treeselection = self.datagrid.get_selection()
-        (model, iter) = treeselection.get_selected()
-        name_of_data = self.gridstore.get_value(iter, 1)
-        #print("Selected ",name_of_data)
-        self.textbox.set_text(name_of_data)
-        # xml_airframe.defines(self.treestore.get_value(iter, 1), self.gridstore)
+        (model, row_iter) = treeselection.get_selected()
+        if row_iter is not None:
+            name_of_data = self.gridstore.get_value(row_iter, 1)
+            #print("Selected ",name_of_data)
+            self.textbox.set_text(name_of_data)
+            # xml_airframe.defines(self.treestore.get_value(row_iter, 1), self.gridstore)
 
     def select(self, widget):
         #get data from highlighted selection
         treeselection = self.treeview.get_selection()
-        (model, iter) = treeselection.get_selected()
-        name_of_data = self.treestore.get_value(iter, 0)
-        #print("Selected ",name_of_data)
-        self.textbox.set_text(name_of_data)
-        xml_airframe.defines(self.treestore.get_value(iter, 1), self.gridstore)
+        (model, row_iter) = treeselection.get_selected()
+        if row_iter is not None:
+            name_of_data = self.treestore.get_value(row_iter, 0)
+            #print("Selected ",name_of_data)
+            self.textbox.set_text(name_of_data)
+            xml_airframe.defines(self.treestore.get_value(row_iter, 1), self.gridstore)
 
     # Constructor Functions
 
@@ -224,7 +225,7 @@ class AirframeEditor:
 
         mb.append(helpm)
 
-        self.my_vbox.pack_start(mb,False)
+        self.my_vbox.pack_start(mb, False)
 
         ##### Buttons
         self.btnExit = gtk.Button("Exit")
@@ -307,20 +308,20 @@ class AirframeEditor:
         self.scrolltree.set_size_request(400,600)
 
         self.editor.pack_start(self.scrolltree)
-	
+
         self.fill_datagrid_from_section()
-        self.datagrid.set_size_request(900,600)
+        self.datagrid.set_size_request(900, 600)
         self.editor.pack_start(self.datagrid)
 
         self.my_vbox.pack_start(self.editor)
 
         self.text_box = gtk.Label("")
-        self.text_box.set_size_request(600,1000)
+        self.text_box.set_size_request(600, 1000)
 
         self.scrolltext = gtk.ScrolledWindow()
         self.scrolltext.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.scrolltext.add(self.text_box)
-        self.scrolltext.set_size_request(400,100)
+        self.scrolltext.add_with_viewport(self.text_box)
+        self.scrolltext.set_size_request(400, 100)
 
         self.my_vbox.pack_start(self.scrolltext)
 
@@ -350,7 +351,7 @@ class AirframeEditor:
 
 if __name__ == "__main__":
     import sys
-    if (len(sys.argv) > 1):
+    if len(sys.argv) > 1:
         airframe_file = sys.argv[1]
     gui = AirframeEditor()
     gui.main()

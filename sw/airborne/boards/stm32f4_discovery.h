@@ -222,7 +222,6 @@
 #define SPI1_GPIO_PORT_MOSI GPIOB
 #define SPI1_GPIO_MOSI GPIO5
 
-
 /* CANNOT BE USED IF PWM CHANNELS 10 & 11 ARE ACTIVE !!! */
 #define SPI2_GPIO_AF GPIO_AF5
 #define SPI2_GPIO_PORT_SCK GPIOB
@@ -268,87 +267,95 @@
 /**************************************    ADC     *************************************************/
 /***************************************************************************************************/
 
-#define USE_AD_TIM4 1
 
-#define BOARD_ADC_CHANNEL_1 9
-#define BOARD_ADC_CHANNEL_2 15
-#define BOARD_ADC_CHANNEL_3 14
-#define BOARD_ADC_CHANNEL_4 4
+// THOSE ARE THE NEW ADC DEFINITION USED WITH THE UPDATED DRIVER (NOT READY YET)
+#define USE_AD_TIM2	1
 
-#ifndef USE_AD1
-#define USE_AD1 1
+#define AD1_OFFSET	0
+#define AD2_OFFSET	4
+#define AD3_OFFSET	8
+
+/* For experimenting only */
+#define USE_ADC_1   1
+#define USE_ADC_2   1
+#define USE_ADC_3   1
+#define USE_ADC_4   1
+#define USE_ADC_5   1
+#define USE_ADC_6   1
+//#define USE_ADC_7   1
+
+/* allow to define ADC_CHANNEL_VSUPPLY in the airframe file */
+#ifndef ADC_CHANNEL_VSUPPLY
+#define ADC_CHANNEL_VSUPPLY ADC_4
 #endif
+#if !defined(USE_ADC_4)
+#define USE_ADC_4   1
+#endif
+
+#define DefaultVoltageOfAdc(adc) (0.00485*adc)
 
 /* provide defines that can be used to access the ADC_x in the code or airframe file
  * these directly map to the index number of the 4 adc channels defined above
  * 4th (index 3) is used for bat monitoring by default
  */
 
-// AUX 1
-#define ADC_1 ADC1_C1
+/* AUX 1 */
+#define ADC_1 (ADC1_C1 + AD1_OFFSET) // THIS CHANNEL USES THE ADC 1 CONVERTER
 #ifdef USE_ADC_1
 #ifndef ADC_1_GPIO_CLOCK_PORT
 #define ADC_1_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPBEN
 #define ADC_1_INIT() gpio_mode_setup(GPIOB, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1)
 #endif
-#define USE_AD1_1 1
-#else
-#define ADC_1_GPIO_CLOCK_PORT 0
-#define ADC_1_INIT() {}
+#define USE_AD1_1 9 // ADC12 IN 9, the adc input number 0 to 15
 #endif
 
-// AUX 2
-#define ADC_2 ADC1_C2
+/* AUX 2 */
+#define ADC_2 (ADC1_C2 + AD1_OFFSET) // THIS CHANNEL USES THE ADC 1 CONVERTER
 #ifdef USE_ADC_2
 #ifndef ADC_2_GPIO_CLOCK_PORT
 #define ADC_2_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPCEN
 #define ADC_2_INIT() gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO5)
 #endif
-#define USE_AD1_2 1
-#else
-#define ADC_2_GPIO_CLOCK_PORT 0
-#define ADC_2_INIT() {}
+#define USE_AD1_2 15 // ADC12 IN 15, the adc input number 0 to 15
 #endif
 
-// AUX 3
-#define ADC_3 ADC1_C3
+/* AUX 3 */
+#define ADC_3 (ADC2_C1 + AD2_OFFSET) // THIS CHANNEL USES THE ADC 2 CONVERTER
 #ifdef USE_ADC_3
 #ifndef ADC_3_GPIO_CLOCK_PORT
 #define ADC_3_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPCEN
 #define ADC_3_INIT() gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO4)
 #endif
-#define USE_AD1_3 1
-#else
-#define ADC_3_GPIO_CLOCK_PORT 0
-#define ADC_3_INIT() {}
+#define USE_AD2_1 14 // ADC12 IN 14, the adc input number 0 to 15
 #endif
 
-// BAT
-#define ADC_4 ADC1_C4
+/* BAT */
+#define ADC_4 (ADC2_C2 + AD2_OFFSET) // THIS CHANNEL USES THE ADC 2 CONVERTER
+#ifdef USE_ADC_4
 #ifndef ADC_4_GPIO_CLOCK_PORT
 #define ADC_4_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPAEN
 #define ADC_4_INIT() gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO4)
 #endif
-#define USE_AD1_4 1
-
-/* allow to define ADC_CHANNEL_VSUPPLY in the airframe file */
-#ifndef ADC_CHANNEL_VSUPPLY
-#define ADC_CHANNEL_VSUPPLY ADC_4
+#define USE_AD2_2 4 // ADC12 IN 4, the adc input number 0 to 15
 #endif
 
-#define ADC_GPIO_CLOCK_PORT (ADC_1_GPIO_CLOCK_PORT | ADC_2_GPIO_CLOCK_PORT | ADC_3_GPIO_CLOCK_PORT | ADC_4_GPIO_CLOCK_PORT)
+#define ADC_5 (ADC3_C1 + AD3_OFFSET) // THIS CHANNEL USES THE ADC 3 CONVERTER
+#ifdef USE_ADC_5
+#ifndef ADC_5_GPIO_CLOCK_PORT
+#define ADC_5_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPCEN
+#define ADC_5_INIT() gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1)
+#endif
+#define USE_AD3_1 11 // ADC123 IN 11, The adc input number 0 to 15
+#endif
 
-/* GPIO mapping for ADC1 pins, overwrites the default in arch/stm32/mcu_periph/adc_arch.c */
-#ifdef USE_AD1
-#define ADC1_GPIO_INIT(gpio) {                  \
-    ADC_1_INIT();                               \
-    ADC_2_INIT();                               \
-    ADC_3_INIT();                               \
-    ADC_4_INIT();                               \
-  }
-#endif // USE_AD1
-
-#define DefaultVoltageOfAdc(adc) (0.00485*adc)
+#define ADC_6 (ADC3_C2 + AD3_OFFSET) // THIS CHANNEL USES THE ADC 3 CONVERTER
+#ifdef USE_ADC_6
+#ifndef ADC_6_GPIO_CLOCK_PORT
+#define ADC_6_GPIO_CLOCK_PORT RCC_AHB1ENR_IOPCEN
+#define ADC_6_INIT() gpio_mode_setup(GPIOC, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO2)
+#endif
+#define USE_AD3_2 12 // ADC123 IN 12, The adc input number 0 to 15
+#endif
 
 
 /***************************************************************************************************/

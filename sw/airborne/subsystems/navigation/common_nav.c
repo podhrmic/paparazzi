@@ -45,8 +45,8 @@ int32_t nav_utm_north0 = NAV_UTM_NORTH0;
 uint8_t nav_utm_zone0 = NAV_UTM_ZONE0;
 float max_dist_from_home = MAX_DIST_FROM_HOME;
 
-/** \brief Computes square distance to the HOME waypoint potentially sets
- * \a too_far_from_home
+/** Computes square distance to the HOME waypoint potentially sets
+ * #too_far_from_home
  */
 void compute_dist2_to_home(void) {
   struct EnuCoor_f* pos = stateGetPositionEnu_f();

@@ -332,22 +332,6 @@
 #define PERIODIC_SEND_GX3_INFO(_trans, _dev) {}
 #endif
 
-#if USE_AHRS && !defined AHRS_FLOAT
-#include "subsystems/ahrs.h"
-#define PERIODIC_SEND_AHRS_QUAT_INT(_trans, _dev) {                 \
-    DOWNLINK_SEND_AHRS_QUAT_INT(_trans, _dev,                       \
-                                &ahrs_impl.weight,                  \
-                                &ahrs_impl.ltp_to_imu_quat.qi,      \
-                                &ahrs_impl.ltp_to_imu_quat.qx,      \
-                                &ahrs_impl.ltp_to_imu_quat.qy,      \
-                                &ahrs_impl.ltp_to_imu_quat.qz,      \
-                                &(stateGetNedToBodyQuat_i()->qi),   \
-                                &(stateGetNedToBodyQuat_i()->qx),   \
-                                &(stateGetNedToBodyQuat_i()->qy),   \
-                                &(stateGetNedToBodyQuat_i()->qz));  \
-  }
-#endif
-
 #ifdef USE_I2C0
 #define PERIODIC_SEND_I2C0_ERRORS(_trans, _dev) {                       \
     uint16_t i2c0_queue_full_cnt        = i2c0.errors->queue_full_cnt;  \
@@ -489,6 +473,35 @@
   }
 #else
 #define PERIODIC_SEND_I2C_ERRORS(_trans, _dev) {}
+#endif
+
+#ifdef USE_CHIBIOS_RTOS
+#include "mcu_periph/sys_time_arch.h"
+#define PERIODIC_SEND_CHIBIOS_INFO(_trans, _dev) { \
+  static uint32_t time_now = 0;  \
+  time_now = chTimeNow()/CH_FREQUENCY; \
+  DOWNLINK_SEND_CHIBIOS_INFO(_trans, _dev, \
+	&core_free_memory,\
+	&time_now, \
+	&thread_counter, \
+	&cpu_frequency, \
+	&electrical.cpu_temp) }
+#else
+#define PERIODIC_SEND_CHIBIOS_INFO(_trans, _dev) {}
+#endif
+
+#ifdef USE_BATTERY_MONITOR
+#define PERIODIC_SEND_BATTERY_MONITOR(_trans, _dev) DOWNLINK_SEND_BATTERY_MONITOR(_trans, _dev,\
+    &bus_current,			\
+    &bus_voltage,	\
+    &measured_current,	\
+    &charge_integrated,	\
+    &charge_remaining,	\
+    &ad7997_trans_status_bus, \
+    &ad7997_trans_status_balancer,  \
+    2*BATTERY_CELL_NB, balancer_ports)
+#else
+#define PERIODIC_SEND_BATTERY_MONITOR(_trans, _dev) {}
 #endif
 
 #endif /* AP_DOWNLINK_H */

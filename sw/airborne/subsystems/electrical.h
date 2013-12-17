@@ -42,7 +42,6 @@
 #define CRITIC_BAT_LEVEL 9.8
 #endif
 
-
 struct Electrical {
 
   uint16_t vsupply;       ///< supply voltage in decivolts

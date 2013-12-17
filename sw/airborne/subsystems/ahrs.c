@@ -29,3 +29,6 @@
 
 struct Ahrs ahrs;
 
+#ifdef USE_CHIBIOS_RTOS
+Mutex ahrs_states_mutex_flag;
+#endif

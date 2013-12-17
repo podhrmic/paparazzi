@@ -1,0 +1,20 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="xgear" dir="loggers">
+  <doc>
+    <description>Data logging and block smashing code for AggieAir</description>
+  </doc>
+
+  <header>
+    <file name="xgear.h"/>
+  </header>
+  <init fun="xgear_init()"/>
+  <periodic fun="xgear_periodic()" freq="500"/>
+
+  <makefile target="ap">
+    <raw> AHRS_CFLAGS += -DUSE_UART5 -DUART5_BAUD=B921600</raw>
+    <file name="xgear_aggienav.c"/>
+    <define name="XGEAR_PORT" value="uart5" />
+  </makefile>
+
+</module>
+

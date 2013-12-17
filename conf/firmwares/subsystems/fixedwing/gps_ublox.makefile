@@ -8,6 +8,11 @@ ap.CFLAGS += -DGPS_LINK=$(GPS_PORT)
 ap.CFLAGS += -DUSE_$(GPS_PORT)
 ap.CFLAGS += -D$(GPS_PORT)_BAUD=$(GPS_BAUD)
 
+ifneq (,$(findstring USE_CHIBIOS_RTOS,$($(TARGET).CFLAGS)))
+GPS_PORT_LOWER=$(shell echo $(GPS_PORT) | tr A-Z a-z)
+ap.CFLAGS += -DGPS_PORT=$(GPS_PORT_LOWER)
+endif
+
 ifneq ($(GPS_LED),none)
   ap.CFLAGS += -DGPS_LED=$(GPS_LED)
 endif

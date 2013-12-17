@@ -23,10 +23,12 @@
 
     <define name="USE_MAGNETOMETER" value="FALSE"/>
 
-    <subsystem name="radio_control" type="ppm"/>
+    <subsystem name="radio_control" type="ppm">
+      <configure name="RADIO_CONTROL_PPM_PIN" value="UART1_RX"/>
+    </subsystem>
     <subsystem name="telemetry" type="transparent"/>
     <subsystem name="control"/>
-    <subsystem name="imu" type="aspirin_v2.1"/>
+    <subsystem name="imu" type="aspirin_v2.2"/>
     <subsystem name="ahrs" type="float_dcm"/>
     <subsystem name="gps" type="ublox"/>
     <subsystem name="navigation"/>

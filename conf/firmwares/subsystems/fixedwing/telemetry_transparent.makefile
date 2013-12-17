@@ -8,3 +8,8 @@ ap.CFLAGS += -DDOWNLINK -DDOWNLINK_FBW_DEVICE=$(MODEM_PORT) -DDOWNLINK_AP_DEVICE
 ap.CFLAGS += -DDOWNLINK_TRANSPORT=PprzTransport -DDATALINK=PPRZ
 ap.srcs += subsystems/datalink/downlink.c subsystems/datalink/pprz_transport.c
 ap.srcs += $(SRC_FIRMWARE)/datalink.c
+
+ifneq (,$(findstring USE_CHIBIOS_RTOS,$($(TARGET).CFLAGS)))
+MODEM_PORT_LOWER=$(shell echo $(MODEM_PORT) | tr A-Z a-z)
+ap.CFLAGS += -DDOWNLINK_PORT=$(MODEM_PORT_LOWER)
+endif

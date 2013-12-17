@@ -33,7 +33,7 @@
 #include "led.h"
 
 // ADC for absolute pressure
-#ifndef BARO_ABS_ADS
+#define BARO_ABS_ADS
 #define BARO_ABS_ADS ads1114_1
 #endif
 

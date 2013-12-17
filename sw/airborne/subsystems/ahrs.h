@@ -35,6 +35,11 @@
 #define AHRS_UNINIT  0
 #define AHRS_RUNNING 1
 
+#ifdef USE_CHIBIOS_RTOS
+#include "ch.h"
+extern Mutex ahrs_states_mutex_flag;
+#endif
+
 /* underlying includes (needed for parameters) */
 #ifdef AHRS_TYPE_H
 #include AHRS_TYPE_H

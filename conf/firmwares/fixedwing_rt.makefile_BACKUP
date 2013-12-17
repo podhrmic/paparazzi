@@ -1,0 +1,183 @@
+# Hey Emacs, this is a -*- makefile -*-
+#
+# fixedwing.makefile
+#
+#
+CFG_SHARED=$(PAPARAZZI_SRC)/conf/firmwares/subsystems/shared
+CFG_FIXEDWING_RT=$(PAPARAZZI_SRC)/conf/firmwares/subsystems/fixedwing
+
+SRC_FIXEDWING=.
+SRC_ARCH=arch/$(ARCH)
+SRC_FIXEDWING_TEST=$(SRC_FIXEDWING)/
+
+SRC_BOARD=boards/$(BOARD)
+SRC_FIRMWARE=firmwares/fixedwing
+SRC_SUBSYSTEMS=subsystems
+SRC_MODULES=modules
+
+FIXEDWING_INC = -I$(SRC_FIRMWARE) -I$(SRC_FIXEDWING) -I$(SRC_BOARD)
+
+
+$(TARGET).CFLAGS += -DUSE_CHIBIOS_RTOS
+# Standard Fixed Wing Code from $(CFG_FIXEDWING)/autopilot.makefile
+
+#
+# Board config + Include paths
+#
+$(TARGET).CFLAGS 	+= -DBOARD_CONFIG=$(BOARD_CFG)
+$(TARGET).CFLAGS 	+= -DPERIPHERALS_AUTO_INIT
+$(TARGET).CFLAGS 	+= $(FIXEDWING_INC)
+
+$(TARGET).srcs 	+= mcu.c
+$(TARGET).srcs 	+= $(SRC_ARCH)/mcu_arch.c
+
+#
+# Common Options
+#
+ifeq ($(OPTIONS), minimal)
+else
+  $(TARGET).CFLAGS 	+= -DWIND_INFO
+endif
+$(TARGET).CFLAGS 	+= -DTRAFFIC_INFO
+
+#
+# Sys-time
+#
+PERIODIC_FREQUENCY ?= 60
+$(TARGET).CFLAGS += -DPERIODIC_FREQUENCY=$(PERIODIC_FREQUENCY)
+
+$(TARGET).srcs   += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c
+$(TARGET).CFLAGS += -DUSE_SYS_TIME
+
+#
+# InterMCU & Commands
+#
+$(TARGET).CFLAGS 	+= -DINTER_MCU -DSINGLE_MCU
+$(TARGET).srcs 		+= $(SRC_FIXEDWING)/inter_mcu.c
+
+#
+# Math functions
+#
+$(TARGET).srcs += math/pprz_geodetic_int.c math/pprz_geodetic_float.c math/pprz_geodetic_double.c math/pprz_trig_int.c math/pprz_orientation_conversion.c
+
+#
+# I2C
+#
+$(TARGET).srcs += mcu_periph/i2c_pprz.c
+$(TARGET).srcs += $(SRC_ARCH)/mcu_periph/i2c_arch.c
+
+#
+# Main
+#
+ns_srcs	+= $(SRC_FIRMWARE)/main_chibios_fw_2.c
+
+#
+# LEDs
+#
+SYS_TIME_LED ?= none
+ns_CFLAGS 		+= -DUSE_LED
+ifneq ($(SYS_TIME_LED),none)
+  ns_CFLAGS 	+= -DSYS_TIME_LED=$(SYS_TIME_LED)
+endif
+
+#
+# UARTS
+#
+ns_srcs 		+= mcu_periph/uart_pprz.c
+ns_srcs 		+= $(SRC_ARCH)/mcu_periph/uart_arch.c
+
+
+#
+# ANALOG
+#
+ns_CFLAGS 		+= -DUSE_ADC
+ns_srcs 			+= $(SRC_ARCH)/mcu_periph/adc_arch.c
+
+######################################################################
+##
+## FLY BY WIRE THREAD SPECIFIC
+##
+
+fbw_CFLAGS		+= -DFBW
+fbw_srcs 		+= subsystems/electrical.c
+fbw_srcs 		+= subsystems/commands.c
+fbw_srcs 		+= subsystems/actuators.c
+fbw_srcs		+= $(SRC_FIRMWARE)/fbw_downlink.c
+
+######################################################################
+##
+## AUTOPILOT THREAD SPECIFIC
+##
+
+ap_CFLAGS 		+= -DAP
+ap_srcs 		+= $(SRC_FIRMWARE)/autopilot.c
+ap_srcs			+= $(SRC_FIRMWARE)/ap_downlink.c
+ap_srcs 		+= state.c
+ap_srcs 		+= subsystems/settings.c
+
+
+# AIR DATA
+ap_srcs += subsystems/air_data.c
+
+# BARO
+include $(CFG_SHARED)/baro_board.makefile
+
+# ahrs frequencies if configured
+ifdef AHRS_PROPAGATE_FREQUENCY
+ap_CFLAGS += -DAHRS_PROPAGATE_FREQUENCY=$(AHRS_PROPAGATE_FREQUENCY)
+endif
+ifdef AHRS_CORRECT_FREQUENCY
+ap_CFLAGS += -DAHRS_CORRECT_FREQUENCY=$(AHRS_CORRECT_FREQUENCY)
+endif
+
+
+
+######################################################################
+##
+## Final Target Allocations
+##
+
+#
+# SINGLE MCU / DUAL MCU
+#
+
+ifeq ($(BOARD),classix)
+  include $(CFG_FIXEDWING)/intermcu_spi.makefile
+else
+  # Single MCU's run both
+  ifeq ($(SEPARATE_FBW),)
+    ap.CFLAGS 		+= $(fbw_CFLAGS)
+    ap.srcs 		+= $(fbw_srcs)
+  else
+   # avoid fbw_telemetry_mode error
+   ap_srcs		+= $(SRC_FIRMWARE)/fbw_downlink.c
+  endif
+endif
+
+#
+# No-Sim parameters
+#
+
+fbw.CFLAGS 		+= $(fbw_CFLAGS) $(ns_CFLAGS)
+fbw.srcs 		+= $(fbw_srcs) $(ns_srcs)
+
+ap.CFLAGS 		+= $(ap_CFLAGS) $(ns_CFLAGS)
+ap.srcs 		+= $(ap_srcs) $(ns_srcs)
+
+######################################################################
+##
+## Actuators
+##
+# automatically include correct actuators for the ap target
+ifeq ($(BOARD),classix)
+  ACTUATOR_TARGET = fbw
+else
+  ACTUATOR_TARGET = ap
+endif
+
+ifeq ($(TARGET),$(ACTUATOR_TARGET))
+  ifneq ($(ACTUATORS),)
+    include $(CFG_SHARED)/$(ACTUATORS).makefile
+  endif
+endif
+

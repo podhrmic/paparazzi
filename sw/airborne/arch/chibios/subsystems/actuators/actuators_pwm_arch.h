@@ -36,6 +36,12 @@
 #include "std.h"
 #include "hal.h"
 
+// Hack for fixedwing
+#ifndef SERVO_HZ
+#include "firmwares/fixedwing/autopilot.h"
+#define SERVO_HZ CONTROL_FREQUENCY
+#endif
+
 #include BOARD_CONFIG
 
 #ifndef ACTUATORS_PWM_NB

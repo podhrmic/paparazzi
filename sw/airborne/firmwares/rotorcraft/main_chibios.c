@@ -133,6 +133,8 @@ void on_gps_event(void)
 {
   ahrs_update_gps();
   ins_update_gps();
+  // broadcast new gps data (for ugear etc)
+  //chEvtBroadcastFlags(&initializedEventSource, SOME_DEFINED_EVENT);
 }
 #endif /* USE_GPS */
 
@@ -365,6 +367,7 @@ static __attribute__((noreturn)) msg_t thd_radio_event(void *arg)
       if (autopilot_rc)
       {
         RadioControlEvent(autopilot_on_rc_frame);
+        //chEvtBroadcastFlags(&initializedEventSource, SOME_DEFINED_EVENT);
       }
     }
   }
@@ -463,10 +466,15 @@ __attribute__((noreturn)) msg_t thd_modules_periodic(void *arg)
   chRegSetThreadName("pprz_modules_periodic");
   (void) arg;
   systime_t time = chTimeNow();
+  
+  static uint8_t test_buffer[10] = {0xAA};
+  
   while (TRUE)
   {
     time += MS2ST(1000/MODULES_FREQUENCY);
-    modules_periodic_task();
+    //modules_periodic_task();
+//      uart_transmit_buffer(&UGEAR_PORT, _buf, size);
+    uart_transmit_buffer(GPS_PORT, test_buffer, sizeof(test_buffer));
     chThdSleepUntil(time);
   }
 }

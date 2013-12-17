@@ -1,0 +1,48 @@
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+
+<flight_plan alt="1550" ground_alt="1350" lat0="41.815509" lon0="-111.982217" max_dist_from_home="1600" name="CacheJunctionDemo" security_height="25">
+  <header>
+#include "nav_line.h"
+#include "datalink.h"
+#include "OSAMNav.h"
+</header>
+  <waypoints>
+    <waypoint name="HOME" x="12.2" y="-10.0"/>
+    <waypoint alt="1347.0" name="Bungee" x="10.4" y="57.7"/>
+    <waypoint name="STDBY" x="211.8" y="126.9"/>
+    <waypoint name="1" x="173.8" y="193.5"/>
+    <waypoint name="2" x="-208.7" y="191.3"/>
+    <waypoint alt="1366.0" name="AF" x="-209.5" y="-62.8"/>
+    <waypoint alt="1346.0" name="TD" x="40.4" y="-58.4"/>
+  </waypoints>
+  <blocks>
+    <block name="Takeoff">
+      <call fun="InitializeBungeeTakeoff(WP_Bungee)"/>
+      <call fun="BungeeTakeoff()"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <circle radius="nav_radius" wp="STDBY"/>
+    </block>
+    <block name="StandbyLeft">
+      <circle radius="-nav_radius" wp="STDBY"/>
+    </block>
+    <block name="Figure 8 around Standby" strip_button="Figure 8 (wp 1-2)" strip_icon="eight.png">
+      <eight center="STDBY" radius="nav_radius" turn_around="1"/>
+    </block>
+    <block name="Oval 1-2" strip_button="Oval (wp 1-2)" strip_icon="oval.png">
+      <oval p1="1" p2="2" radius="nav_radius"/>
+    </block>
+    <block name="Line 1-2" strip_button="Line (wp 1-2)" strip_icon="line.png">
+      <call fun="nav_line_init()"/>
+      <call fun="nav_line(WP_1, WP_2, nav_radius)"/>
+    </block>
+    <block name="Land CW" strip_button="Land CW (wp AF-TD)" strip_icon="land-right.png">
+      <call fun="InitializeSkidLanding(WP_AF, WP_TD, nav_radius)"/>
+      <call fun="SkidLanding()"/>
+    </block>
+    <block name="Land CCW" strip_button="Land CCW (wp AF-TD)" strip_icon="land-left.png">
+      <call fun="InitializeSkidLanding(WP_AF, WP_TD, -nav_radius)"/>
+      <call fun="SkidLanding()"/>
+    </block>
+  </blocks>
+</flight_plan>

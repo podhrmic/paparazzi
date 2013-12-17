@@ -101,6 +101,7 @@ static inline void radio_control_periodic_task ( void ) {
   }
 #endif
 
+
 }
 
 /********** EVENT ************************************************************/

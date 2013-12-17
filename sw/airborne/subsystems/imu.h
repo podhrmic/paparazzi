@@ -64,6 +64,12 @@ struct ImuFloat {
   uint32_t sample_count;
 };
 
+#ifdef USE_CHIBIOS_RTOS
+extern Mutex imu_get_data_flag;
+//extern void on_accel_event(void);
+//extern void on_gyro_event(void);
+//extern void on_mag_event(void);
+#endif
 
 
 /** global IMU state */

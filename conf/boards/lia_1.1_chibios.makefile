@@ -56,7 +56,7 @@ MODEM_PORT ?= UART2
 MODEM_BAUD ?= B57600
 
 GPS_PORT ?= UART5
-GPS_BAUD ?= B38400
+GPS_BAUD ?= B115200
 
 
 # default flash mode is via usb dfu bootloader

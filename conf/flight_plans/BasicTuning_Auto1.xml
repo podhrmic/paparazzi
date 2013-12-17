@@ -1,0 +1,40 @@
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+
+<flight_plan alt="1365" ground_alt="1350" lat0="41.815562" lon0="-111.982437" max_dist_from_home="1600" name="BasicTuning" security_height="25">
+  <header>
+#include "nav_line.h"
+#include "datalink.h"
+#include "OSAMNav.h"
+</header>
+  <waypoints>
+    <waypoint alt="1365.0" name="HOME" x="72.0" y="-3.3"/>
+    <waypoint alt="1347.0" name="Bungee" x="73.2" y="34.5"/>
+    <waypoint alt="1365.0" name="STDBY" x="-3.1" y="-185.1"/>
+    <waypoint name="P1" x="-803.7" y="-714.2"/>
+    <waypoint name="P2" x="-1034.8" y="878.9"/>
+    <waypoint name="P3" x="861.4" y="836.8"/>
+    <waypoint name="P4" x="832.8" y="-736.8"/>
+  </waypoints>
+  <sectors>
+    <sector name="FlightArea">
+      <corner name="P1"/>
+      <corner name="P2"/>
+      <corner name="P3"/>
+      <corner name="P4"/>
+    </sector>
+  </sectors>
+  <exceptions>
+    <exception cond="InsideFlightArea(estimator_x, estimator_y) == FALSE" deroute="Standby"/>
+  </exceptions>
+  <blocks>
+    <block name="Kill Throttle">
+      <set value="1" var="kill_throttle"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <circle radius="nav_radius" wp="STDBY"/>
+    </block>
+    <block name="Go Home">
+      <circle radius="nav_radius" wp="HOME"/>
+    </block>
+  </blocks>
+</flight_plan>

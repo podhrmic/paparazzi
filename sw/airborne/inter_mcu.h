@@ -88,7 +88,7 @@ extern volatile bool_t inter_mcu_received_ap;
 #ifdef FBW
 
 extern uint8_t time_since_last_ap;
-extern bool_t ap_ok;
+extern uint8_t ap_ok;
 
 #define AP_STALLED_TIME        30  // 500ms with a 60Hz timer
 

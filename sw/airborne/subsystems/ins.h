@@ -40,6 +40,11 @@
 #include INS_TYPE_H
 #endif
 
+#ifdef USE_CHIBIOS_RTOS
+#include "ch.h"
+extern Mutex ins_data_flag;
+#endif
+
 /** Inertial Navigation System state */
 struct Ins {
   uint8_t status; ///< status of the INS

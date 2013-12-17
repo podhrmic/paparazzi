@@ -60,6 +60,8 @@ struct GpsUbx {
   uint8_t status_flags;
   uint8_t sol_flags;
   uint8_t have_velned;
+
+  uint8_t new_data_available;
 };
 
 extern struct GpsUbx gps_ubx;

@@ -69,7 +69,7 @@ test_max1168.CFLAGS += -DPERIODIC_FREQUENCY='512.' -DSYS_TIME_LED=1
 test_max1168.srcs   += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_max1168.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_max1168.srcs   += mcu_periph/uart.c
+test_max1168.srcs   += mcu_periph/uart_pprz.c
 test_max1168.srcs   += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_max1168.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -95,7 +95,7 @@ tunnel.srcs += mcu.c $(SRC_ARCH)/mcu_arch.c
 
 tunnel.CFLAGS += -DUSE_UART0 -DUART0_BAUD=B38400
 tunnel.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-tunnel.srcs += mcu_periph/uart.c
+tunnel.srcs += mcu_periph/uart_pprz.c
 tunnel.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 
@@ -118,7 +118,7 @@ usb_tunnel_0.ARCHDIR = $(ARCH)
 usb_tunnel_0.CFLAGS += -DBOARD_CONFIG=$(BOARD_CFG)
 usb_tunnel_0.CFLAGS += -DUSE_UART0 -DUART0_BAUD=B38400 -DPERIPHERALS_AUTO_INIT
 usb_tunnel_0.CFLAGS += -DUSE_USB_LINE_CODING -DUSE_USB_SERIAL -DUSE_LED
-usb_tunnel_0.srcs += $(SRC_ARCH)/usb_tunnel.c $(SRC_ARCH)/usb_ser_hw.c mcu_periph/uart.c $(SRC_ARCH)/mcu_periph/uart_arch.c
+usb_tunnel_0.srcs += $(SRC_ARCH)/usb_tunnel.c $(SRC_ARCH)/usb_ser_hw.c mcu_periph/uart_pprz.c $(SRC_ARCH)/mcu_periph/uart_arch.c
 usb_tunnel_0.srcs += $(SRC_ARCH)/lpcusb/usbhw_lpc.c $(SRC_ARCH)/lpcusb/usbinit.c
 usb_tunnel_0.srcs += $(SRC_ARCH)/lpcusb/usbcontrol.c $(SRC_ARCH)/lpcusb/usbstdreq.c
 usb_tunnel_0.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
@@ -128,7 +128,7 @@ usb_tunnel_1.ARCHDIR = $(ARCH)
 usb_tunnel_1.CFLAGS += -DBOARD_CONFIG=$(BOARD_CFG)
 usb_tunnel_1.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B38400 -DPERIPHERALS_AUTO_INIT
 usb_tunnel_1.CFLAGS += -DUSE_USB_LINE_CODING -DUSE_USB_SERIAL -DUSE_LED
-usb_tunnel_1.srcs += $(SRC_ARCH)/usb_tunnel.c $(SRC_ARCH)/usb_ser_hw.c mcu_periph/uart.c $(SRC_ARCH)/mcu_periph/uart_arch.c
+usb_tunnel_1.srcs += $(SRC_ARCH)/usb_tunnel.c $(SRC_ARCH)/usb_ser_hw.c mcu_periph/uart_pprz.c $(SRC_ARCH)/mcu_periph/uart_arch.c
 usb_tunnel_1.srcs += $(SRC_ARCH)/lpcusb/usbhw_lpc.c $(SRC_ARCH)/lpcusb/usbinit.c
 usb_tunnel_1.srcs += $(SRC_ARCH)/lpcusb/usbcontrol.c $(SRC_ARCH)/lpcusb/usbstdreq.c
 usb_tunnel_1.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
@@ -147,7 +147,7 @@ test_gps.CFLAGS += -DUSE_LED
 test_gps.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_gps.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_gps.srcs += mcu_periph/uart.c
+test_gps.srcs += mcu_periph/uart_pprz.c
 test_gps.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_gps.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -173,7 +173,7 @@ test_modem.CFLAGS += -DUSE_LED
 test_modem.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_modem.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_modem.srcs += mcu_periph/uart.c
+test_modem.srcs += mcu_periph/uart_pprz.c
 test_modem.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_modem.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -197,14 +197,14 @@ test_usb.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(
 test_usb.srcs += mcu.c $(SRC_ARCH)/mcu_arch.c
 
 #test_usb.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-#test_usb.srcs += mcu_periph/uart.c
+#test_usb.srcs += mcu_periph/uart_pprz.c
 #test_usb.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 #test_usb.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
 #test_usb.srcs += subsystems/datalink/downlink.c subsystems/datalink/pprz_transport.c
 
 test_usb.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DUSE_USB_SERIAL
 test_usb.CFLAGS += -DDOWNLINK_DEVICE=UsbS -DPPRZ_UART=UsbS -DDATALINK=PPRZ
-test_usb.srcs += subsystems/datalink/downlink.c mcu_periph/uart.c $(SRC_ARCH)/mcu_periph/uart_arch.c $(SRC_ARCH)/usb_ser_hw.c subsystems/datalink/pprz_transport.c
+test_usb.srcs += subsystems/datalink/downlink.c mcu_periph/uart_pprz.c $(SRC_ARCH)/mcu_periph/uart_arch.c $(SRC_ARCH)/usb_ser_hw.c subsystems/datalink/pprz_transport.c
 # $(SRC_FIRMWARE)/datalink.c
 test_usb.srcs += $(SRC_ARCH)/lpcusb/usbhw_lpc.c $(SRC_ARCH)/lpcusb/usbcontrol.c
 test_usb.srcs += $(SRC_ARCH)/lpcusb/usbstdreq.c $(SRC_ARCH)/lpcusb/usbinit.c
@@ -226,7 +226,7 @@ test_ami.CFLAGS += -DUSE_LED
 test_ami.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_ami.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_ami.srcs += mcu_periph/uart.c
+test_ami.srcs += mcu_periph/uart_pprz.c
 test_ami.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_ami.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -250,7 +250,7 @@ test_crista.CFLAGS += -DUSE_LED
 test_crista.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_crista.CFLAGS += -DUSE_UART0 -DUART0_BAUD=B57600
-test_crista.srcs += mcu_periph/uart.c
+test_crista.srcs += mcu_periph/uart_pprz.c
 test_crista.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_crista.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART0
@@ -275,7 +275,7 @@ test_imu_b2.CFLAGS += -DUSE_LED
 test_imu_b2.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_imu_b2.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_imu_b2.srcs += mcu_periph/uart.c
+test_imu_b2.srcs += mcu_periph/uart_pprz.c
 test_imu_b2.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_imu_b2.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -305,7 +305,7 @@ test_rc_spektrum.CFLAGS += -DUSE_LED
 test_rc_spektrum.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 #test_rc_spektrum.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-#test_rc_spektrum.srcs += mcu_periph/uart.c
+#test_rc_spektrum.srcs += mcu_periph/uart_pprz.c
 #test_rc_spektrum.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 #test_rc_spektrum.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
 #test_rc_spektrum.srcs += subsystems/datalink/downlink.c subsystems/datalink/pprz_transport.c
@@ -322,7 +322,7 @@ test_rc_spektrum.CFLAGS += -DUSE_UART0 -DUART0_BAUD=B115200
 test_rc_spektrum.CFLAGS += -DRADIO_CONTROL_LINK=UART0
 test_rc_spektrum.srcs += $(SRC_SUBSYSTEMS)/radio_control.c \
 						 $(SRC_SUBSYSTEMS)/radio_control_spektrum.c \
-						 mcu_periph/uart.c \
+						 mcu_periph/uart_pprz.c \
 						 $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 #
@@ -368,7 +368,7 @@ test_mc.CFLAGS += -DUSE_LED
 test_mc.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_mc.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_mc.srcs += mcu_periph/uart.c
+test_mc.srcs += mcu_periph/uart_pprz.c
 test_mc.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_mc.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -394,7 +394,7 @@ test_buss_bldc.CFLAGS += -DPERIODIC_FREQUENCY='512.' -DSYS_TIME_LED=1
 test_buss_bldc.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_buss_bldc.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_buss_bldc.srcs += mcu_periph/uart.c
+test_buss_bldc.srcs += mcu_periph/uart_pprz.c
 test_buss_bldc.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_buss_bldc.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -417,7 +417,7 @@ test_amc.CFLAGS += -DUSE_LED
 test_amc.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c $(SRC_ARCH)/armVIC.c
 
 test_amc.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_amc.srcs += mcu_periph/uart.c
+test_amc.srcs += mcu_periph/uart_pprz.c
 test_amc.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_amc.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1
@@ -462,7 +462,7 @@ test_baro_24.srcs += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.
 
 
 test_baro_24.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B57600
-test_baro_24.srcs += mcu_periph/uart.c
+test_baro_24.srcs += mcu_periph/uart_pprz.c
 test_baro_24.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 test_baro_24.CFLAGS += -DDOWNLINK -DDOWNLINK_TRANSPORT=PprzTransport -DDOWNLINK_DEVICE=UART1

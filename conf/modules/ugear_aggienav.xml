@@ -1,0 +1,22 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="ugear_aggienav" dir="loggers">
+  <doc>
+    <description>Sends data between AggieNav and AggiePt</description>
+  </doc>
+
+  <header>
+    <file name="ugear.h"/>
+  </header>
+  <init fun="ugear_init()"/>
+  <periodic fun="ugear_periodic()" freq="500"/>
+
+  <makefile target="ap">
+    <raw> AHRS_CFLAGS += -DUSE_UART5 -DUART5_BAUD=B921600</raw>
+    <file name="ugear_aggienav.c"/>
+    <define name="UGEAR_PORT" value="uart5" />
+    <define name="UGEAR_GPS_LED" value="4" />
+    <define name="UGEAR_ATTITUDE_LED" value="2" />
+  </makefile>
+
+</module>
+

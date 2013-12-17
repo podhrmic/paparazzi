@@ -40,10 +40,10 @@ SRC_ARCH=arch/$(ARCH)
 
 ROTORCRAFT_INC = -I$(SRC_FIRMWARE) -I$(SRC_BOARD)
 
-ap.ARCHDIR = $(ARCH)
-
+#
 #we are using normal rotorcraft firmware, just different arch
-$(TARGET).CFLAGS += -DUSE_CHIBIOS_RTOS
+#
+ap.CFLAGS += -DUSE_CHIBIOS_RTOS
 ap.CFLAGS += $(ROTORCRAFT_INC)
 ap.CFLAGS += -DBOARD_CONFIG=$(BOARD_CFG) -DPERIPHERALS_AUTO_INIT
 
@@ -62,10 +62,8 @@ ap.srcs += math/pprz_geodetic_int.c math/pprz_geodetic_float.c math/pprz_geodeti
 #
 # LEDs
 #
+SYS_TIME_LED ?= none
 ap.CFLAGS += -DUSE_LED
-#ifeq ($(ARCH), chibios)
-#ap.srcs += $(SRC_ARCH)/led_hw.c
-#endif
 
 # frequency of main periodic
 PERIODIC_FREQUENCY ?= 500
@@ -83,21 +81,20 @@ endif
 #
 # Telemetry/Datalink
 #
-# include subsystems/rotorcraft/telemetry_transparent.makefile
-# or
-# include subsystems/rotorcraft/telemetry_xbee_api.makefile
-#
+# from var/airframe_name/Makefile.ac
 ap.srcs += subsystems/settings.c
 
-#ap.srcs += mcu_periph/uart.c -> two file problem, see: http://www.cplusplus.com/forum/general/35718/
+#
+# Uart
+#
 ap.srcs += mcu_periph/uart_pprz.c
 ap.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
+#
 # I2C
-ifeq ($(TARGET), ap)
-  $(TARGET).srcs += mcu_periph/i2c_pprz.c
-  $(TARGET).srcs += $(SRC_ARCH)/mcu_periph/i2c_arch.c
-endif
+#
+$(TARGET).srcs += mcu_periph/i2c_pprz.c
+$(TARGET).srcs += $(SRC_ARCH)/mcu_periph/i2c_arch.c
 
 ap.srcs += subsystems/commands.c
 ap.srcs += subsystems/actuators.c
@@ -105,66 +102,45 @@ ap.srcs += subsystems/actuators.c
 #
 # Radio control choice
 #
-# include subsystems/rotorcraft/radio_control_ppm.makefile
-# or
-# include subsystems/rotorcraft/radio_control_spektrum.makefile
-#
+# from var/airframe_name/Makefile.ac
 
 #
 # Actuator choice
 #
-# include subsystems/rotorcraft/actuators_mkk.makefile
-# or
-# include subsystems/rotorcraft/actuators_asctec.makefile
-# or
-# include subsystems/rotorcraft/actuators_asctec_v2.makefile
-#
+# from var/airframe_name/Makefile.ac
 
 #
 # IMU choice
 #
-# include subsystems/rotorcraft/imu_b2v1.makefile
-# or
-# include subsystems/rotorcraft/imu_b2v1_1.makefile
-# or
-# include subsystems/rotorcraft/imu_crista.makefile
-#
+# from var/airframe_name/Makefile.ac
 
 #
 # AIR DATA and BARO (if needed)
 #
 ap.srcs += subsystems/air_data.c
 
+#
+# Baro
+#
 include $(CFG_SHARED)/baro_board.makefile
 
 #
 # Analog Backend
 #
-#
-ifeq ($(ARCH), chibios)
 ap.CFLAGS += -DUSE_ADC
 ap.srcs   += $(SRC_ARCH)/mcu_periph/adc_arch.c
 ap.srcs   += subsystems/electrical.c
-endif
 
 #
 # GPS choice
 #
-# include subsystems/rotorcraft/gps_ubx.makefile
-# or
-# include subsystems/rotorcraft/gps_skytraq.makefile
-# or
-# nothing
-#
+# from var/airframe_name/Makefile.ac
 
 
 #
 # AHRS choice
 #
-# include subsystems/rotorcraft/ahrs_cmpl.makefile
-# or
-# include subsystems/rotorcraft/ahrs_lkf.makefile
-#
+# from var/airframe_name/Makefile.ac
 
 ap.srcs += $(SRC_FIRMWARE)/autopilot.c
 
@@ -184,13 +160,7 @@ ap.srcs += $(SRC_FIRMWARE)/guidance/guidance_v_adapt.c
 #
 # INS choice
 #
-# include subsystems/rotorcraft/ins.makefile
-# or
-# include subsystems/rotorcraft/ins_extended.makefile
-#
-# extra:
-# include subsystems/rotorcraft/ins_hff.makefile
-#
+# from var/airframe_name/Makefile.ac
 
 ap.srcs += $(SRC_FIRMWARE)/navigation.c
 ap.srcs += subsystems/navigation/common_flight_plan.c

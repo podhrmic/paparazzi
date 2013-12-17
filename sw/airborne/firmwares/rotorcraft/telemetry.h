@@ -58,7 +58,7 @@
 #define PERIODIC_SEND_ROTORCRAFT_STATUS(_trans, _dev) {			\
     uint32_t imu_nb_err = 0;						\
     uint8_t _twi_blmc_nb_err = 0;					\
-    uint16_t time_sec = sys_time.nb_sec; \
+    uint32_t time_sec = sys_time.nb_sec; \
     DOWNLINK_SEND_ROTORCRAFT_STATUS(_trans, _dev,				\
                     &imu_nb_err,			\
                     &_twi_blmc_nb_err,			\
@@ -597,7 +597,7 @@
 
 #define PERIODIC_SEND_INS_Z(_trans, _dev) {				\
   DOWNLINK_SEND_INS_Z(_trans, _dev,                     \
-                      &ins_impl.baro_z,                 \
+                      &ins_baro_alt,                    \
                       &(stateGetPositionNed_i()->z),    \
                       &(stateGetSpeedNed_i()->z),       \
                       &(stateGetAccelNed_i()->z));      \
@@ -1097,18 +1097,29 @@
 #define PERIODIC_SEND_UART_ERRORS(_trans, _dev) {}
 #endif
 
+// NOTE - FIX LATER (plain GX3 info vs. ChibiOS info)
 #ifdef USE_GX3
+/*
+#ifdef USE_GX3_AS_IMU
+#define PERIODIC_SEND_GX3_INFO(_trans, _dev) {} //TEMP HACK
+*/
 #ifdef USE_CHIBIOS_RTOS
 #define PERIODIC_SEND_GX3_INFO(_trans, _dev) DOWNLINK_SEND_GX3_INFO(_trans, _dev,\
   &imu_gx3.gx3_freq,			\
+  &imu_gx3.ch_freq,			\
   &imu_gx3.gx3_packet.chksm_error,	\
   &imu_gx3.gx3_packet.hdr_error,	\
+  &imu_gx3.queue.status,	\
+  &imu_gx3.freq_err,	\
   &imu_gx3.gx3_chksm)
 #else
 #define PERIODIC_SEND_GX3_INFO(_trans, _dev) DOWNLINK_SEND_GX3_INFO(_trans, _dev,\
   &ahrs_impl.gx3_freq,			\
+  &ahrs_impl.ch_freq,			\
   &ahrs_impl.gx3_packet.chksm_error,	\
   &ahrs_impl.gx3_packet.hdr_error,	\
+  &ahrs_impl.queue.status,	\
+  &ahrs_impl.freq_err,	\
   &ahrs_impl.gx3_chksm)
 #endif
 #else
@@ -1118,7 +1129,7 @@
 #ifdef USE_CHIBIOS_RTOS
 #include "mcu_periph/sys_time_arch.h"
 #define PERIODIC_SEND_CHIBIOS_INFO(_trans, _dev) { \
-  static uint16_t time_now = 0;  \
+  static uint32_t time_now = 0;  \
   time_now = chTimeNow()/CH_FREQUENCY; \
   DOWNLINK_SEND_CHIBIOS_INFO(_trans, _dev, \
 	&core_free_memory,\
@@ -1128,6 +1139,20 @@
 	&electrical.cpu_temp) }
 #else
 #define PERIODIC_SEND_CHIBIOS_INFO(_trans, _dev) {}
+#endif
+
+#ifdef USE_BATTERY_MONITOR
+#define PERIODIC_SEND_BATTERY_MONITOR(_trans, _dev) DOWNLINK_SEND_BATTERY_MONITOR(_trans, _dev,\
+    &bus_current,			\
+    &bus_voltage,	\
+    &measured_current,	\
+    &charge_integrated,	\
+    &charge_remaining,	\
+    &ad7997_trans_status_bus, \
+    &ad7997_trans_status_balancer,  \
+    2*BATTERY_CELL_NB, balancer_ports)
+#else
+#define PERIODIC_SEND_BATTERY_MONITOR(_trans, _dev) {}
 #endif
 
 #endif /* TELEMETRY_H */

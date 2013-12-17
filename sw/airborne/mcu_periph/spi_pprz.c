@@ -133,3 +133,4 @@ extern void spi_slave_init(struct spi_periph* p) {
 }
 
 #endif /* SPI_SLAVE */
+

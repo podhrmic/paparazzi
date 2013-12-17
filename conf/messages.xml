@@ -622,8 +622,11 @@
 
   <message name="GX3_INFO" id="73">
     <field name="GX3_freq" 	type="float" 	unit="hz"/>
+    <field name="packet_freq" 	type="float" 	unit="hz"/>
     <field name="chksm_error" 	type="uint32"/>
     <field name="hdr_error" 	type="uint32"/>
+    <field name="queue_length" 	type="uint8"/>
+    <field name="freq_err" 	type="uint16"/>
     <field name="GX3_chksm"	type="uint16"/>
   </message>
 
@@ -655,13 +658,22 @@
 
   <message name="CHIBIOS_INFO" id="78">
     <field name="core_free_memory" type="uint32" unit="bytes"/>
-    <field name="sys_time" type="uint16" unit="s"/>
+    <field name="sys_time" type="uint32" unit="s"/>
     <field name="threads" type="uint8"/>
     <field name="cpu_load" type="uint8" unit="%"/>
     <field name="cpu_temp" type="uint8" unit="C"/>
   </message>
 
- <!-- 79 is free -->
+   <message name="BATTERY_MONITOR" id="79">
+    <field name="bus_current"	type="uint16" unit="mV"/>
+    <field name="bus_voltage"	type="uint16" unit="mV"/>
+    <field name="current"	type="float" unit="A"/>
+    <field name="integrated_charge"	type="float" unit="C"/>
+    <field name="SOC"	type="float" unit="%"/>
+    <field name="ADC2_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="ADC1_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="balancer_ports" type="uint8[]" unit="mV"/>
+  </message>
 
   <message name="CROSS_TRACK_ERROR" id="80">
     <field name="cross_track_error" type="float" unit="m"/>
@@ -1325,7 +1337,7 @@
   </message>
 
   <message name="INS_Z" id="151">
-    <field name="baro_z"    type="float" unit="m"/>
+    <field name="baro_alt"  type="int32" alt_unit="m"    alt_unit_coef="0.0039063"/>
     <field name="ins_z"     type="int32" alt_unit="m"    alt_unit_coef="0.0039063"/>
     <field name="ins_zd"    type="int32" alt_unit="m/s"  alt_unit_coef="0.0000019"/>
     <field name="ins_zdd"   type="int32" alt_unit="m/s2" alt_unit_coef="0.0009766"/>
@@ -1943,7 +1955,7 @@
     <field name="ap_h_mode"    type="uint8" values="KILL|RATE|ATTITUDE|HOVER|NAV|CF"/>
     <field name="ap_v_mode"    type="uint8" values="KILL|RC_DIRECT|RC_CLIMB|CLIMB|HOVER|NAV"/>
     <field name="vsupply"      type="uint16" unit="decivolt"/>
-    <field name="cpu_time"     type="uint16" unit="s"/>
+    <field name="cpu_time"     type="uint32" unit="s"/>
   </message>
 
    <message name="STATE_FILTER_STATUS" id="232">

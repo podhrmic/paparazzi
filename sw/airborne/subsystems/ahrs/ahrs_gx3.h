@@ -63,10 +63,18 @@
 #define GX3_HEADER 0xC8
 #define GX3_MIN_FREQ 300
 
-#define IMU_GX3_LONG_DELAY 4000000
+#ifdef USE_CHIBIOS_RTOS
+#define GX3_QUEUE_SIZE 5
+#define CH_THREAD_AREA_AHRS 1024
+extern Mutex ahrs_mutex_flag;
+extern Mutex states_mutex_flag;
+extern __attribute__((noreturn)) msg_t thd_ahrs(void *arg);
+#endif
+
+#define IMU_GX3_LONG_DELAY 8000000
 
 extern void gx3_packet_read_message(void);
-extern void gx3_packet_parse(uint8_t c);
+extern uint8_t gx3_packet_parse(uint8_t c);
 
 struct GX3Packet {
   bool_t  msg_available;
@@ -77,9 +85,19 @@ struct GX3Packet {
   uint8_t  msg_idx;
 };
 
+#ifdef USE_CHIBIOS_RTOS
+struct GX3Queue {
+  uint8_t front;
+  uint8_t rear;
+  uint8_t queue_buf[GX3_QUEUE_SIZE][GX3_MSG_LEN+1];
+  uint8_t status;
+};
+#endif
+
 enum GX3PacketStatus {
   GX3PacketWaiting,
-  GX3PacketReading
+  GX3PacketReading,
+  GX3PacketFull,
 };
 
 enum GX3Status {
@@ -98,6 +116,17 @@ struct AhrsFloatQuat {
   uint16_t gx3_chksm;                 ///< aux variable for checksum
   uint32_t gx3_time;                  ///< GX3 time stamp
   uint32_t gx3_ltime;                 ///< aux time stamp
+
+#ifdef USE_CHIBIOS_RTOS
+  uint32_t ch_ltime;
+  uint32_t ch_time;
+  float ch_freq;
+
+  uint8_t gx3_data_buffer[GX3_MSG_LEN+1];
+  struct GX3Queue queue;
+  uint16_t freq_err;
+#endif
+
   struct FloatVect3 gx3_accel;        ///< measured acceleration in IMU frame
   struct FloatRates gx3_rate;         ///< measured angular rates in IMU frame
   struct FloatRMat  gx3_rmat;         ///< measured attitude in IMU frame (rotational matrix)
@@ -105,6 +134,8 @@ struct AhrsFloatQuat {
 
 extern struct AhrsFloatQuat ahrs_impl;
 
+
+#ifndef USE_CHIBIOS_RTOS
 static inline void ReadGX3Buffer(void) {
   while (uart_char_available(&GX3_PORT) && !ahrs_impl.gx3_packet.msg_available)
     gx3_packet_parse(uart_getch(&GX3_PORT));
@@ -122,6 +153,9 @@ static inline void ImuEvent(void (* _gyro_handler)(void), void (* _accel_handler
     ahrs_impl.gx3_packet.msg_available = FALSE;
   }
 }
+#endif
+
+extern struct FloatEulers ltp_to_body_eulers;
 
 #ifdef AHRS_UPDATE_FW_ESTIMATOR
 extern float ins_roll_neutral;

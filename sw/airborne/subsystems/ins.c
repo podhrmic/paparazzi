@@ -29,3 +29,6 @@
 
 struct Ins ins;
 
+#ifdef USE_CHIBIOS_RTOS
+Mutex ins_data_flag;
+#endif

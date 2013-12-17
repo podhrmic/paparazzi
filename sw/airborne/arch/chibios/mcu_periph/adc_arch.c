@@ -54,7 +54,7 @@
 uint8_t adc_error_flag = 0;
 ADCDriver* adcp_err = NULL;
 
-#define ADC_NUM_CHANNELS 5
+#define ADC_NUM_CHANNELS 5//9
 
 #ifndef ADC_BUF_DEPTH
 #define ADC_BUF_DEPTH   MAX_AV_NB_SAMPLE/2
@@ -90,24 +90,44 @@ static uint8_t adc1_samples_tmp[ADC_NUM_CHANNELS] = {0};
 void adc1callback(ADCDriver *adcp, adcsample_t *buffer, size_t n) {
   if (adcp->state != ADC_STOP) {
 #if USE_AD1
-      for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel++) {
-            if (adc1_buffers[channel] != NULL) {
-              adc1_sum_tmp[channel] = 0;
-              adc1_samples_tmp[channel] = n;
-              for (uint8_t sample = 0; sample < n; sample++) {
-                adc1_sum_tmp[channel] += buffer[channel + sample*ADC_NUM_CHANNELS];
-              }
-              adc1_sum_tmp[channel] = (adc1_sum_tmp[channel])*ADC_V_REF_MV/ADC_12_BIT_RESOLUTION;
-            }
-          }
-          chSysLockFromIsr();
-          for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel++) {
-            if (adc1_buffers[channel] != NULL) {
-              adc1_buffers[channel]->sum = adc1_sum_tmp[channel];
-              adc1_buffers[channel]->av_nb_sample = adc1_samples_tmp[channel];
-            }
-          }
-          chSysUnlockFromIsr();
+      /*
+    for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel+=2) {
+      if (adc1_buffers[channel/2] != NULL) {
+        adc1_sum_tmp[channel/2] = 0;
+        adc1_samples_tmp[channel/2] = n;
+        for (uint8_t sample = 0; sample < n; sample++) {
+          adc1_sum_tmp[channel/2] += buffer[channel + sample*ADC_NUM_CHANNELS];
+        }
+        adc1_sum_tmp[channel/2] = (adc1_sum_tmp[channel/2])*ADC_V_REF_MV/ADC_12_BIT_RESOLUTION;
+      }
+    }
+    chSysLockFromIsr();
+    for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel+=2) {
+      if (adc1_buffers[channel/2] != NULL) {
+        adc1_buffers[channel/2]->sum = adc1_sum_tmp[channel/2];
+        adc1_buffers[channel/2]->av_nb_sample = adc1_samples_tmp[channel/2];
+      }
+    }
+    chSysUnlockFromIsr();
+    */
+    for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel++) {
+      if (adc1_buffers[channel] != NULL) {
+        adc1_sum_tmp[channel] = 0;
+        adc1_samples_tmp[channel] = n;
+        for (uint8_t sample = 0; sample < n; sample++) {
+          adc1_sum_tmp[channel] += buffer[channel + sample*ADC_NUM_CHANNELS];
+        }
+        adc1_sum_tmp[channel] = (adc1_sum_tmp[channel])*ADC_V_REF_MV/ADC_12_BIT_RESOLUTION;
+      }
+    }
+    chSysLockFromIsr();
+    for(uint8_t channel = 0; channel < ADC_NUM_CHANNELS; channel++) {
+      if (adc1_buffers[channel] != NULL) {
+        adc1_buffers[channel]->sum = adc1_sum_tmp[channel];
+        adc1_buffers[channel]->av_nb_sample = adc1_samples_tmp[channel];
+      }
+    }
+    chSysUnlockFromIsr();
 #endif
   }
 }
@@ -135,6 +155,22 @@ static void adcerrorcallback(ADCDriver *adcp, adcerror_t err) {
  *
  * @note: This should be probably moved into boar.h
  */
+/*
+static const ADCConversionGroup adcgrpcfg = {
+  TRUE,
+  ADC_NUM_CHANNELS,
+  adc1callback,
+  adcerrorcallback,
+  0, ADC_CR2_TSVREFE,
+  ADC_SMPR1_SMP_AN10(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_41P5) |
+  ADC_SMPR1_SMP_AN13(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_7P5),
+  0,
+  ADC_SQR1_NUM_CH(ADC_NUM_CHANNELS),
+  ADC_SQR2_SQ9_N(ADC_CHANNEL_SENSOR) |ADC_SQR2_SQ7_N(ADC_CHANNEL_IN14),
+  ADC_SQR3_SQ5_N(ADC_CHANNEL_IN11) |  ADC_SQR3_SQ3_N(ADC_CHANNEL_IN10)  | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN13)
+};
+*/
+#ifdef __STM32F10x_H
 static const ADCConversionGroup adcgrpcfg = {
   TRUE,
   ADC_NUM_CHANNELS,
@@ -149,6 +185,63 @@ static const ADCConversionGroup adcgrpcfg = {
   ADC_SQR3_SQ5_N(ADC_CHANNEL_SENSOR)  | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN11) |
   ADC_SQR3_SQ3_N(ADC_CHANNEL_IN14) |  ADC_SQR3_SQ2_N(ADC_CHANNEL_IN10)  | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN13)
 };
+#endif
+
+#ifdef __STM32F4xx_H
+static const ADCConversionGroup adcgrpcfg = {
+  TRUE,//circular
+  ADC_NUM_CHANNELS,//num channles
+  adc1callback,//callback
+  adcerrorcallback,//error cb
+  0, // CR1
+  ADC_CR2_SWSTART, //CR2
+  ADC_SMPR1_SMP_AN10(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_56) |
+  ADC_SMPR1_SMP_AN13(ADC_SAMPLE_56) | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_56) | ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_84), //SMPR1
+  0, //SMPR2
+  ADC_SQR1_NUM_CH(ADC_NUM_CHANNELS), // SQR1
+  0, // SQR2
+  ADC_SQR3_SQ5_N(ADC_CHANNEL_SENSOR)  | ADC_SQR3_SQ4_N(ADC_CHANNEL_IN11) |
+  ADC_SQR3_SQ3_N(ADC_CHANNEL_IN14) |  ADC_SQR3_SQ2_N(ADC_CHANNEL_IN10)  | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN13) //SQR3
+};
+#endif
+
+
+/*
+static const ADCConversionGroup adcgrpcfg = {
+  TRUE,
+  ADC_NUM_CHANNELS,
+  adc1callback,
+  adcerrorcallback,
+  0, ADC_CR2_TSVREFE,
+  ADC_SMPR1_SMP_AN10(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_41P5) |
+  ADC_SMPR1_SMP_AN13(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_41P5) |
+  ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_7P5),
+  0,
+  ADC_SQR1_NUM_CH(ADC_NUM_CHANNELS),
+  ADC_SQR2_SQ9_N(ADC_CHANNEL_SENSOR)  | ADC_SQR2_SQ7_N(ADC_CHANNEL_IN14),
+  ADC_SQR3_SQ6_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN11) |
+  ADC_SQR3_SQ4_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ3_N(ADC_CHANNEL_IN10) |
+  ADC_SQR3_SQ2_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN13)
+};
+*/
+/*
+static const ADCConversionGroup adcgrpcfg = {
+  TRUE,
+  ADC_NUM_CHANNELS,
+  adc1callback,
+  adcerrorcallback,
+  0, ADC_CR2_TSVREFE,
+  ADC_SMPR1_SMP_AN10(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN11(ADC_SAMPLE_41P5) |
+  ADC_SMPR1_SMP_AN13(ADC_SAMPLE_41P5) | ADC_SMPR1_SMP_AN14(ADC_SAMPLE_41P5) |
+  ADC_SMPR1_SMP_SENSOR(ADC_SAMPLE_7P5),
+  0,
+  ADC_SQR1_NUM_CH(ADC_NUM_CHANNELS),
+  ADC_SQR2_SQ9_N(ADC_CHANNEL_SENSOR)  | ADC_SQR2_SQ7_N(ADC_CHANNEL_VREFINT) | ADC_SQR2_SQ7_N(ADC_CHANNEL_IN14),
+  ADC_SQR3_SQ6_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ5_N(ADC_CHANNEL_IN11) |
+  ADC_SQR3_SQ4_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ3_N(ADC_CHANNEL_IN10) |
+  ADC_SQR3_SQ2_N(ADC_CHANNEL_VREFINT) | ADC_SQR3_SQ1_N(ADC_CHANNEL_IN13)
+};
+*/
 
 /**
  * Link between ChibiOS ADC drivers and Paparazzi adc_buffers

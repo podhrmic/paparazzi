@@ -45,7 +45,6 @@
 
 struct Ms5611_Spi bb_ms5611;
 
-
 void baro_init(void) {
   ms5611_spi_init(&bb_ms5611, &BB_MS5611_SPI_DEV, BB_MS5611_SLAVE_IDX);
 

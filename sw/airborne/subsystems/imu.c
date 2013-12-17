@@ -29,6 +29,10 @@
 struct Imu imu;
 struct ImuFloat imuf;
 
+#ifdef USE_CHIBIOS_RTOS
+Mutex imu_get_data_flag;
+#endif
+
 void imu_init(void) {
 
   /* initialises neutrals */

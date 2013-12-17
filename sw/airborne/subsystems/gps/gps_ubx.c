@@ -110,6 +110,7 @@ void gps_ubx_read_message(void) {
       gps.sacc       = UBX_NAV_SOL_Sacc(gps_ubx.msg_buf);
       gps.pdop       = UBX_NAV_SOL_PDOP(gps_ubx.msg_buf);
       gps.num_sv     = UBX_NAV_SOL_numSV(gps_ubx.msg_buf);
+      gps_ubx.new_data_available = TRUE;
 #ifdef GPS_LED
       if (gps.fix == GPS_FIX_3D) {
         LED_ON(GPS_LED);

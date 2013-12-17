@@ -31,7 +31,11 @@
 #ifdef SITL
 #define STATIC_INLINE extern
 #else
+#ifdef USE_CHIBIOS_RTOS
+#define STATIC_INLINE static
+#else
 #define STATIC_INLINE static inline
+#endif
 #endif
 
 STATIC_INLINE void main_init( void );

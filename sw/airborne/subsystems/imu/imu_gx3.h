@@ -61,13 +61,15 @@
 
 #ifdef USE_CHIBIOS_RTOS
 #include "subsystems/ahrs.h"
+
 #define GX3_QUEUE_SIZE 5
 #define CH_THREAD_AREA_IMU_RX 1024
-#define CH_THREAD_AREA_IMU_TX 1024
-extern Mutex imu_get_data_flag;
-extern Mutex states_mutex_flag;
+#define INIT_IMU_THREAD 1
+
 extern __attribute__((noreturn)) msg_t thd_imu_rx(void *arg);
-extern __attribute__((noreturn)) msg_t thd_imu_tx(void *arg);
+
+#define GX3_DMA_PORT UARTD3
+#define GX3_DMA_BAUD 921600
 #endif
 
 #define IMU_GX3_LONG_DELAY 8000000
@@ -102,6 +104,11 @@ enum GX3PacketStatus {
 
 enum GX3Status {
   GX3Uninit,
+  GX3StopContinuousMode,
+  GX3StopContinuousMode_OK,
+  GX3SamplingSettings,
+  GX3SamplingSettings_OK,
+  GX3ContinuousMode,
   GX3Running
 };
 
@@ -126,12 +133,17 @@ struct ImuGX3 {
 
 extern struct ImuGX3 imu_gx3;
 
-#ifndef USE_CHIBIOS_RTOS
+#ifdef USE_CHIBIOS_RTOS
+static inline void ImuEvent(void (* _gyro_handler)(void) __attribute__((unused)),
+                               void (* _accel_handler)(void) __attribute__((unused)),
+                               void (* _mag_handler)(void) __attribute__((unused))) {}
+
+#else /* NO CHIBIOS */
+
 static inline void ReadGX3Buffer(void) {
   while (uart_char_available(&GX3_PORT) && !imu_gx3.gx3_packet.msg_available)
     gx3_packet_parse(uart_getch(&GX3_PORT));
 }
-
 static inline void ImuEvent(void (* _gyro_handler)(void), void (* _accel_handler)(void), void (* _mag_handler)(void)) {
   if (uart_char_available(&GX3_PORT)) {
     ReadGX3Buffer();
@@ -144,6 +156,6 @@ static inline void ImuEvent(void (* _gyro_handler)(void), void (* _accel_handler
     imu_gx3.gx3_packet.msg_available = FALSE;
   }
 }
-#endif
+#endif /* USE_CHIBIOS_RTOS */
 
 #endif /* IMU_GX3_H*/

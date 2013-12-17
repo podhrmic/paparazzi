@@ -1,0 +1,43 @@
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+
+<flight_plan alt="1410" ground_alt="1353" lat0="41.812191" lon0="-111.970260" max_dist_from_home="20000" name="CacheJunction5Square" security_height="0">
+  <!--header>
+#include "nav_line.h"
+#include "datalink.h"
+#include "traffic_info.h"
+#include "OSAMNav.h"
+</header-->
+  <waypoints>
+    <waypoint name="HOME" x="0" y="0"/>
+    <waypoint alt="1353.0" name="Bungee" x="-12.8" y="41.2"/>
+    <waypoint alt="1453.0" name="STDBY" x="50.5" y="101.0"/>
+    <waypoint alt="1403.0" name="1" x="-22.8" y="36.9"/>
+    <waypoint alt="1403.0" name="2" x="-224.5" y="46.5"/>
+    <waypoint name="MOB" x="137.0" y="-11.6"/>
+    <waypoint alt="2353.0" name="S1" x="800" y="800"/>
+    <waypoint alt="2353.0" name="S2" x="-800" y="-800"/>
+    <waypoint alt="1377.0" name="AF" x="-251.9" y="-25.1"/>
+    <waypoint alt="1355.0" name="TD" x="-38.5" y="-25.0"/>
+    <waypoint name="_BASELEG" x="168.8" y="-13.8"/>
+    <waypoint name="CLIMB" x="-114.5" y="162.3"/>
+    <waypoint alt="1453.0" name="P1" x="-546.2" y="297.4"/>
+    <waypoint alt="1453.0" name="_P2" x="-129.8" y="744.1"/>
+    <waypoint alt="1553.0" name="_P3" x="1030.5" y="535.5"/>
+    <waypoint alt="1453.0" name="_P4" x="523.0" y="-236.7"/>
+    <waypoint alt="1453.0" name="_P5" x="-285.9" y="-255.7"/>
+  </waypoints>
+  <sectors>
+    <sector name="PolySector">
+      <corner name="P1"/>
+      <corner name="_P2"/>
+      <corner name="_P3"/>
+      <corner name="_P4"/>
+      <corner name="_P5"/>
+    </sector>
+  </sectors>
+  <blocks>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <circle radius="nav_radius" wp="STDBY"/>
+    </block>
+  </blocks>
+</flight_plan>

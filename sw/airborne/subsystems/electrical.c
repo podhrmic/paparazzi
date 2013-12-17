@@ -113,7 +113,7 @@ void electrical_periodic(void) {
   static uint8_t bat_low_counter = 0;
   static uint8_t bat_critical_counter = 0;
 
-#if defined(ADC_CHANNEL_VSUPPLY) && !defined(SITL)
+#if defined(ADC_CHANNEL_VSUPPLY) && !defined(SITL) && !defined(USE_BATTERY_MONITOR)
   electrical.vsupply = 10 * VoltageOfAdc((electrical_priv.vsupply_adc_buf.sum/electrical_priv.vsupply_adc_buf.av_nb_sample));
 #endif
 

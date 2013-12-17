@@ -473,7 +473,6 @@ __attribute__((noreturn)) msg_t thd_modules_periodic(void *arg)
   {
     time += MS2ST(1000/MODULES_FREQUENCY);
     //modules_periodic_task();
-//      uart_transmit_buffer(&UGEAR_PORT, _buf, size);
     uart_transmit_buffer(&GPS_PORT, test_buffer, sizeof(test_buffer));
     chThdSleepUntil(time);
   }

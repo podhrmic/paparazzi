@@ -11,9 +11,10 @@
   <periodic fun="xgear_periodic()" freq="500"/>
 
   <makefile target="ap">
-    <raw> AHRS_CFLAGS += -DUSE_UART5 -DUART5_BAUD=B921600</raw>
+    <raw> ap.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B921600</raw>
     <file name="xgear_aggienav.c"/>
-    <define name="XGEAR_PORT" value="uart5" />
+    <!-- Lowercase value only for RT Paparazzi-->
+    <define name="XGEAR_PORT" value="uart1" />
   </makefile>
 
 </module>

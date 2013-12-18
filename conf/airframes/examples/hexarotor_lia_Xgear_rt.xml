@@ -30,7 +30,10 @@
       <define name="SERVO_HZ" value="500"/>
     </subsystem>
 
-    <subsystem name="telemetry"     type="transparent"/>
+    <subsystem name="telemetry"     type="transparent">
+      <configure name="MODEM_PORT" value="UART3"/>
+      <configure name="MODEM_BAUD" value="B57600"/>
+    </subsystem>
     <subsystem name="imu"           type="aspirin_v2.2"/>
     <subsystem name="gps"           type="ublox">
       <configure name="GPS_PORT" value="UART5"/>
@@ -44,8 +47,8 @@
   </firmware>
 
   <modules main_freq="500">
-    <!--load name="battery_monitor.xml"/-->
-    <!--load name="xgear.xml"/-->
+    <load name="battery_monitor.xml"/>
+    <load name="xgear.xml"/>
   </modules>
 
   <servos driver="Pwm">

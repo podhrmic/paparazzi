@@ -72,15 +72,14 @@ USART_CR2_STOP1_BITS,                                     /*    USART CR2   */
 0                                                         /*    USART CR3   */
 };
 
-
 void uart3_init(void) {
 /// Hack for GX3 only, assuming it is on UART3
-#ifdef USE_GX3
-  uart3.reg_addr = &UARTD3;
-#else
+//#ifdef USE_GX3
+//  uart3.reg_addr = &UARTD3;
+//#else
   sdStart(&SD3, &usart3_config);
   uart3.reg_addr = &SD3;
-#endif
+//#endif
 }
 #endif
 

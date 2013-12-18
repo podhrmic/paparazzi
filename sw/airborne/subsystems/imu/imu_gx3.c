@@ -109,7 +109,7 @@ void imu_impl_init(void) {
   imu_gx3.queue.front = 0;
   imu_gx3.queue.status = 0;
   imu_gx3.freq_err = 0;
-
+  imu_gx3.data_valid = FALSE;
 #else
 
   #ifdef GX3_INITIALIZE_DURING_STARTUP
@@ -225,9 +225,10 @@ void imu_periodic(void) {
           gx3_packet_read_message();
 
           /// Callbacks
-          on_accel_event();
-          on_gyro_event();
-          on_mag_event();
+          imu_gx3.data_valid = TRUE;
+          //on_accel_event();
+          //on_gyro_event();
+          //on_mag_event();
       }
       else {
           chMtxUnlock();

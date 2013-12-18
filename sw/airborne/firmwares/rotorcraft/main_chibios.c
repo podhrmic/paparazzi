@@ -465,7 +465,7 @@ __attribute__((noreturn)) msg_t thd_modules_periodic(void *arg)
 {
   chRegSetThreadName("pprz_modules_periodic");
   (void) arg;
-  systime_t time = chTimeNow();  
+  systime_t time = chTimeNow();
   while (TRUE)
   {
     time += MS2ST(1000/MODULES_FREQUENCY);

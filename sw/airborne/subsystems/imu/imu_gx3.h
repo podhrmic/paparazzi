@@ -65,11 +65,7 @@
 #define GX3_QUEUE_SIZE 5
 #define CH_THREAD_AREA_IMU_RX 1024
 #define INIT_IMU_THREAD 1
-
 extern __attribute__((noreturn)) msg_t thd_imu_rx(void *arg);
-
-#define GX3_DMA_PORT UARTD3
-#define GX3_DMA_BAUD 921600
 #endif
 
 #define IMU_GX3_LONG_DELAY 8000000
@@ -128,16 +124,24 @@ struct ImuGX3 {
   struct GX3Queue queue;              ///< packet queue
   uint16_t freq_err;                  ///< check timing errors
   uint8_t gx3_data_buffer[GX3_MSG_LEN];//< packet to be read
+  uint8_t data_valid;                  //< new data ready
 #endif
 };
 
 extern struct ImuGX3 imu_gx3;
 
 #ifdef USE_CHIBIOS_RTOS
-static inline void ImuEvent(void (* _gyro_handler)(void) __attribute__((unused)),
-                               void (* _accel_handler)(void) __attribute__((unused)),
-                               void (* _mag_handler)(void) __attribute__((unused))) {}
-
+//static inline void ImuEvent(void (* _gyro_handler)(void) __attribute__((unused)),
+//                               void (* _accel_handler)(void) __attribute__((unused)),
+//                               void (* _mag_handler)(void) __attribute__((unused))) {}
+static inline void ImuEvent(void (* _gyro_handler)(void), void (* _accel_handler)(void), void (* _mag_handler)(void)) {
+  if (imu_gx3.data_valid) {
+    _gyro_handler();
+    _accel_handler();
+    _mag_handler();
+    imu_gx3.data_valid = FALSE;
+  }
+}
 #else /* NO CHIBIOS */
 
 static inline void ReadGX3Buffer(void) {

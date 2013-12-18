@@ -465,11 +465,13 @@ __attribute__((noreturn)) msg_t thd_modules_periodic(void *arg)
 {
   chRegSetThreadName("pprz_modules_periodic");
   (void) arg;
-  systime_t time = chTimeNow();  
+  systime_t time = chTimeNow();
+  static uint8_t mybuf[10] = {0xAA};
   while (TRUE)
   {
     time += MS2ST(1000/MODULES_FREQUENCY);
-    modules_periodic_task();
+    //modules_periodic_task();
+    sdWrite(&SD1, mybuf, sizeof(mybuf));
     chThdSleepUntil(time);
   }
 }

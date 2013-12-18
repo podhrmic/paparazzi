@@ -46,9 +46,11 @@
 
 #ifdef USE_CHIBIOS_RTOS
 #include "ch.h"
-//extern void on_gps_event(void);
 extern Mutex gps_mutex_flag;
 extern __attribute__((noreturn)) msg_t thd_gps_rx(void *arg);
+
+#define EVT_GPS_DATA 4
+extern EventSource eventGpsData;
 #endif
 
 #ifndef GPS_NB_CHANNELS

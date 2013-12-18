@@ -36,6 +36,7 @@ struct GpsTimeSync gps_time_sync;
 
 #ifdef USE_CHIBIOS_RTOS
 Mutex gps_mutex_flag;
+EventSource eventGpsData;
 #endif
 
 void gps_init(void) {
@@ -49,6 +50,7 @@ void gps_init(void) {
 #endif
 #ifdef USE_CHIBIOS_RTOS
   chMtxInit(&gps_mutex_flag);
+  chEvtInit(&eventGpsData);
 #endif
 }
 

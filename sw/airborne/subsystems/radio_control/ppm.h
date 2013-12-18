@@ -26,7 +26,9 @@
 
 #ifdef USE_CHIBIOS_RTOS
 #define EVT_PPM_FRAME 1
+#define EVT_RADIO_DATA 2
 extern EventSource eventPpmFrame;
+extern EventSource eventRadioData;
 #define chibios_broadcast_ppm_frame {                        \
         chSysLockFromIsr();                                  \
         chEvtBroadcastFlagsI(&eventPpmFrame, EVT_PPM_FRAME); \

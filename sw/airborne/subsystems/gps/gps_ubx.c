@@ -306,6 +306,7 @@ __attribute__((noreturn)) msg_t thd_gps_rx(void *gps_callback)
      chMtxLock(&gps_mutex_flag);
      gps_ubx_read_message();
      gps_ubx_ucenter_event();
+     chEvtBroadcastFlags(&eventGpsData, EVT_GPS_DATA);
      if (gps_ubx.msg_class == UBX_NAV_ID &&
          (gps_ubx.msg_id == UBX_NAV_VELNED_ID ||
           (gps_ubx.msg_id == UBX_NAV_SOL_ID &&

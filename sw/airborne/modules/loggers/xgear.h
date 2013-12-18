@@ -39,6 +39,7 @@
 #include "mcu_periph/uart.h"
 #include "subsystems/gps.h"
 #include "subsystems/imu.h"
+#include "subsystems/radio_control.h"
 #include "state.h"
 
 /*

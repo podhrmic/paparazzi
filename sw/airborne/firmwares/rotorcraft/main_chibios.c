@@ -367,7 +367,7 @@ static __attribute__((noreturn)) msg_t thd_radio_event(void *arg)
       if (autopilot_rc)
       {
         RadioControlEvent(autopilot_on_rc_frame);
-        //chEvtBroadcastFlags(&initializedEventSource, SOME_DEFINED_EVENT);
+        chEvtBroadcastFlags(&eventRadioData, EVT_RADIO_DATA);
       }
     }
   }

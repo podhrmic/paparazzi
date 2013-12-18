@@ -12,7 +12,7 @@
 
   <makefile target="ap">
     <raw> ap.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B921600</raw>
-    <file name="xgear_aggienav.c"/>
+    <file name="xgear.c"/>
     <!-- Lowercase value only for RT Paparazzi-->
     <define name="XGEAR_PORT" value="uart1" />
   </makefile>

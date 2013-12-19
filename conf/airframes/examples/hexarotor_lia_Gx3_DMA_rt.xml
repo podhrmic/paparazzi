@@ -34,9 +34,8 @@
       <configure name="MODEM_PORT" value="UART3"/>
       <configure name="MODEM_BAUD" value="B57600"/>
     </subsystem>
-    <subsystem name="imu"           type="gx3">
-      <configure name="GX3_PORT" value="UART2"/>
-      <define name="GX3_INITIALIZE_DURING_STARTUP"/>
+    <subsystem name="imu"           type="gx3_dma">
+      <configure name="GX3_DMA_PORT" value="UARTD2"/>
     </subsystem>
     <subsystem name="gps"           type="ublox">
       <configure name="GPS_PORT" value="UART5"/>

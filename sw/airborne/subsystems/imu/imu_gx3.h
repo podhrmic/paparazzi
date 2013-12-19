@@ -60,13 +60,11 @@
 #define GX3_MIN_FREQ 300
 
 #ifdef USE_CHIBIOS_RTOS
-#include "subsystems/ahrs.h"
-
 #define GX3_QUEUE_SIZE 5
 #define CH_THREAD_AREA_IMU_RX 1024
 #define INIT_IMU_THREAD 1
 extern __attribute__((noreturn)) msg_t thd_imu_rx(void *arg);
-#endif
+#endif /* USE_CHIBIOS_RTOS */
 
 #define IMU_GX3_LONG_DELAY 8000000
 
@@ -90,7 +88,7 @@ struct GX3Queue {
   uint8_t queue_buf[GX3_QUEUE_SIZE][GX3_MSG_LEN];
   uint8_t status;
 };
-#endif
+#endif /* USE_CHIBIOS_RTOS */
 
 enum GX3PacketStatus {
   GX3PacketWaiting,
@@ -131,9 +129,6 @@ struct ImuGX3 {
 extern struct ImuGX3 imu_gx3;
 
 #ifdef USE_CHIBIOS_RTOS
-//static inline void ImuEvent(void (* _gyro_handler)(void) __attribute__((unused)),
-//                               void (* _accel_handler)(void) __attribute__((unused)),
-//                               void (* _mag_handler)(void) __attribute__((unused))) {}
 static inline void ImuEvent(void (* _gyro_handler)(void), void (* _accel_handler)(void), void (* _mag_handler)(void)) {
   if (imu_gx3.data_valid) {
     _gyro_handler();

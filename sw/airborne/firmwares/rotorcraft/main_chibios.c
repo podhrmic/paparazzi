@@ -34,6 +34,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 /*
  * Chibios includes
  */
@@ -52,12 +53,15 @@
 >>>>>>> [rt_paparazzi] update 0.3.1.
 =======
 /**
+=======
+/*
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
  * Chibios includes
  */
 #include "ch.h"
 #include "hal.h"
 
-/**
+/*
  * Paparazzi includes
  */
 >>>>>>> [rt_paparazzi] update 0.3.1
@@ -109,6 +113,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 /*
  * Thread Area Definitions
  */
@@ -117,6 +122,9 @@
 >>>>>>> [rt_paparazzi] update 0.3.1.
 =======
 /**
+=======
+/*
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
  * Thread Area Definitions
  */
 >>>>>>> [rt_paparazzi] update 0.3.1
@@ -128,10 +136,14 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 /*
 =======
 /**
 >>>>>>> [rt_paparazzi] update 0.3.1
+=======
+/*
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
  * Thread Area Initialization
  */
 static WORKING_AREA(wa_thd_heartbeat, CH_THREAD_AREA_HEARTBEAT);
@@ -150,7 +162,7 @@ static inline void failsafe_check(void);
 >>>>>>> [rt_paparazzi] update 0.3.1.
 =======
 
-/**
+/*
  * Static Thread Definitions
  */
 >>>>>>> [rt_paparazzi] update 0.3.1
@@ -160,6 +172,7 @@ static __attribute__((noreturn)) msg_t thd_electrical(void *arg);
 static __attribute__((noreturn)) msg_t thd_radio_control(void *arg);
 static __attribute__((noreturn)) msg_t thd_radio_event(void *arg);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 /*
@@ -182,6 +195,9 @@ __attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg);
 >>>>>>> [rt_paparazzi] update 0.3.1.
 =======
 /**
+=======
+/*
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
  * Static Auxilliary Functions Definitions
  */
 static inline void failsafe_check(void);
@@ -989,9 +1005,13 @@ int main(void) {
 =======
 int main(void)
 {
+<<<<<<< HEAD
 >>>>>>> [rt_paparazzi] update 0.3.1
   /**
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+  /*
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
    *   and performs the board-specific initializations.
@@ -1001,7 +1021,9 @@ int main(void)
   halInit();
   chSysInit();
 
-  /// Paparazzi initialization
+  /*
+   * Paparazzi initialization
+   */
   mcu_init();
 
   electrical_init();

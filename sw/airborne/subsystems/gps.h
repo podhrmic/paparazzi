@@ -47,9 +47,12 @@
 #ifdef USE_CHIBIOS_RTOS
 #include "ch.h"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 extern void on_gps_event(void);
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
 extern Mutex gps_mutex_flag;
 extern __attribute__((noreturn)) msg_t thd_gps_rx(void *arg);
 #endif

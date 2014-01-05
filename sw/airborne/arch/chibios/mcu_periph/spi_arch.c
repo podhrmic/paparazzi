@@ -311,10 +311,14 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 {
   SPIConfig spi_cfg = {
 <<<<<<< HEAD
+<<<<<<< HEAD
     NULL, // no callback
 =======
     NULL, /// no callback
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+    NULL, // no callback
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
     spi_resolve_slave_port(t->slave_idx),
     spi_resolve_slave_pin(t->slave_idx),
     spi_resolve_CR1(t)
@@ -334,6 +338,7 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   // Acquire exclusive access to the SPI bus
   spiAcquireBus((SPIDriver*)p->reg_addr);
 
@@ -347,22 +352,30 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 =======
   /// Acquire exclusive access to the SPI bus
 >>>>>>> [rt_paparazzi] update 0.3.1
+=======
+  // Acquire exclusive access to the SPI bus
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
   spiAcquireBus((SPIDriver*)p->reg_addr);
 
-  /// Configure SPI bus with the current slave select pin
+  // Configure SPI bus with the current slave select pin
   spiStart((SPIDriver*)p->reg_addr, &spi_cfg);
   spiSelect((SPIDriver*)p->reg_addr);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   /// Run the callback AFTER selecting the slave
 >>>>>>> [rt_paparazzi] update 0.3.1.
 =======
   /// Run the callback after selecting the slave
 >>>>>>> [rt_paparazzi] update 0.3.1
+=======
+  // Run the callback after selecting the slave
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
   if (t->before_cb != 0) {
     t->before_cb(t);
   }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   // Start synchronous data transfer
@@ -386,15 +399,18 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 =======
   /// Start synchronous data transfer
 >>>>>>> [rt_paparazzi] update 0.3.1
+=======
+  // Start synchronous data transfer
+>>>>>>> [rt_paparazzi] Documentation fixes and cleanup
   spiExchange((SPIDriver*)p->reg_addr, t_length, t->output_buf, t->input_buf);
 
-  /// Unselect the slave
+  // Unselect the slave
   spiUnselect((SPIDriver*)p->reg_addr);
 
-  /// Release the exclusive access to the bus
+  // Release the exclusive access to the bus
   spiReleaseBus((SPIDriver*)p->reg_addr);
 
-  /// Report the transaction as success
+  // Report the transaction as success
   t->status = SPITransSuccess;
 
 <<<<<<< HEAD

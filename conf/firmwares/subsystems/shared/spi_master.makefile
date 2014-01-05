@@ -9,6 +9,7 @@ SPI_CFLAGS = -DUSE_SPI -DSPI_MASTER
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 SPI_SRCS = mcu_periph/spi_pprz.c $(SRC_ARCH)/mcu_periph/spi_arch.c
 =======
 SPI_SRCS = mcu_periph/spi_pprzi.c $(SRC_ARCH)/mcu_periph/spi_arch.c
@@ -19,6 +20,9 @@ SPI_SRCS = mcu_periph/spi_pprz.c $(SRC_ARCH)/mcu_periph/spi_arch.c
 =======
 SPI_SRCS = mcu_periph/spi.c $(SRC_ARCH)/mcu_periph/spi_arch.c
 >>>>>>> [rt_paparazzi] remove "_pprz" suffix in some makefiles to be compatible with master version again
+=======
+SPI_SRCS = mcu_periph/spi_pprz.c $(SRC_ARCH)/mcu_periph/spi_arch.c
+>>>>>>> [rt_paparazzi] Correct linker file used, fixed spi master makefile
 
 ap.CFLAGS += $(SPI_CFLAGS)
 ap.srcs += $(SPI_SRCS)

@@ -26,10 +26,14 @@
 */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 /**
 =======
 /** 
 >>>>>>> [rt_paparazzi] update 0.3.1
+=======
+/**
+>>>>>>> [rt_paparazzi] Correct linker file used, fixed spi master makefile
  * @file arch/chibios/STM32F107xC.ld
  * ST32F107xC memory setup and linker script
  *

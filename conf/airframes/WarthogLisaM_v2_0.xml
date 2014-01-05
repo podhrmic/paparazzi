@@ -15,7 +15,7 @@
       <configure name="PERIODIC_FREQUENCY" value="60"/>
       <configure name="AHRS_PROPAGATE_FREQUENCY" value="60"/>
       <configure name="AHRS_CORRECT_FREQUENCY" value="60"/>
-      <configure name="FLASH_MODE" value="JTAG"/>
+      <configure name="FLASH_MODE" value="SWD"/>
     </target>
     <define name="USE_MAGNETOMETER" value="FALSE"/>
     <define name="AHRS_USE_GPS_HEADING"/>
@@ -23,13 +23,18 @@
     <subsystem name="radio_control" type="ppm">
       <configure name="RADIO_CONTROL_PPM_PIN" value="UART1_RX"/>
     </subsystem>
-    <subsystem name="telemetry" type="transparent"/>
+    <subsystem name="telemetry" type="transparent_rt"/>
     <subsystem name="control"/>
     <subsystem name="imu" type="aspirin_v2.2"/>
     <subsystem name="ahrs" type="float_dcm"/>
     <subsystem name="gps" type="ublox"/>
     <subsystem name="navigation"/>
-    <subsystem name="ins" type="alt_float"/>
+    <!--subsystem name="ins" type="alt_float"/-->
+    <subsystem name="ins"/>
+    
+    <subsystem name="actuators"     type="pwm">
+      <!--define name="SERVO_HZ" value="500"/-->
+    </subsystem>
 
 <!-- Extra Definitions -->
     <define name="AGR_CLIMB" />

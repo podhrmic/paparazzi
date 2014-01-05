@@ -120,6 +120,14 @@ ap.srcs += subsystems/actuators.c
 ap.srcs	+= state.c
 ap.srcs += $(SRC_FIRMWARE)/autopilot.c
 
+ap.srcs += $(SRC_FIRMWARE)/stabilization.c
+
+# Navigation
+# we have subsystem "navigation.makefile"
+#ap.CFLAGS += -DUSE_NAVIGATION
+#ap.srcs += $(SRC_FIRMWARE)/navigation.c
+#ap.srcs += subsystems/navigation/common_flight_plan.c
+
 #
 # Maybe?
 #

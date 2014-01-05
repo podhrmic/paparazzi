@@ -39,7 +39,8 @@
 #include "subsystems/navigation/traffic_info.h"
 #endif // TRAFFIC_INFO
 
-#if defined NAV || defined WIND_INFO
+//#if defined NAV || defined WIND_INFO
+#if USE_NAVIGATION
 #include "state.h"
 #include "subsystems/nav.h"
 #endif

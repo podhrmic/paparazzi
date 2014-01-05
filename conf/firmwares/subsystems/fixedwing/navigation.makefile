@@ -5,7 +5,7 @@
 
 #add these to all targets
 
-$(TARGET).CFLAGS += -DNAV
+$(TARGET).CFLAGS += -DUSE_NAVIGATION #-DNAV
 $(TARGET).srcs += $(SRC_SUBSYSTEMS)/nav.c
 $(TARGET).srcs += $(SRC_SUBSYSTEMS)/navigation/common_flight_plan.c
 $(TARGET).srcs += $(SRC_SUBSYSTEMS)/navigation/traffic_info.c

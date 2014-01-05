@@ -133,6 +133,7 @@ void uart_transmit(struct uart_periph* p, uint8_t data ) {
 */
 void uart_transmit_buffer(struct uart_periph* p, uint8_t* data_buffer, size_t length) {
   sdWrite((SerialDriver*)p->reg_addr, data_buffer, length);
+<<<<<<< HEAD
 }
 
 /**
@@ -166,4 +167,6 @@ void uart_receive_buffer(struct uart_periph* p, flagsmask_t flags, void *on_rece
     }
     while (charbuf != Q_TIMEOUT);
   }
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1.
 }

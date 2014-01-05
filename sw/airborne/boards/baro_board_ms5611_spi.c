@@ -81,6 +81,10 @@ void baro_periodic(void) {
     ms5611_spi_periodic(&bb_ms5611);
 #endif /* USE_CHIBIOS_RTOS */
 
+#ifdef USE_CHIBIOS_RTOS
+    baro_event();
+#endif
+
 #if DEBUG
     if (bb_ms5611.initialized)
       RunOnceEvery((50*30),  DOWNLINK_SEND_MS5611_COEFF(DefaultChannel, DefaultDevice,
@@ -98,7 +102,9 @@ void baro_periodic(void) {
 
 void baro_event(void) {
   if (sys_time.nb_sec > 1) {
+#ifndef USE_CHIBIOS_RTOS
     ms5611_spi_event(&bb_ms5611);
+#endif
 
     if (bb_ms5611.data_available) {
       float pressure = (float)bb_ms5611.data.pressure;

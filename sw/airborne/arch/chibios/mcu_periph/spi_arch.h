@@ -23,10 +23,19 @@
  * Boston, MA 02111-1307, USA.
  */
 /**
+<<<<<<< HEAD
  * @file arch/chibios/mcu_periph/spi_arch.h
  * Implementation of SPI interface for ChibiOS arch
+=======
+ * @brief chibios arch dependant implementation of SPI interface
+>>>>>>> [rt_paparazzi] update 0.3.1.
  */
 #ifndef SPI_ARCH_H
 #define SPI_ARCH_H
 
+<<<<<<< HEAD
 #endif /* SPI_ARCH_H */
+=======
+
+#endif // SPI_ARCH_H
+>>>>>>> [rt_paparazzi] update 0.3.1.

@@ -113,7 +113,11 @@
  * PB15 - B - Alternate Push Pull output 50MHz (IMU_SPI_MOSI)
  */
 #define VAL_GPIOBCRL            0xBB474444      /*  PB7...PB0 */
+<<<<<<< HEAD:sw/airborne/boards/lia/chibios_f1/board.h
 #define VAL_GPIOBCRH            0xB4B3EE74      /* PB15...PB8 */
+=======
+#define VAL_GPIOBCRH            0xB4B3EE74      /* PB15...PB8 */
+>>>>>>> [rt_paparazzi] update 0.3.1.:sw/airborne/boards/lia/chibios/board.h
 #define VAL_GPIOBODR            0xFFFFFFFF
 
 /*

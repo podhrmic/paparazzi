@@ -32,6 +32,7 @@
  * @author {Michal Podhradsky, Calvin Coopmans}
  */
 
+<<<<<<< HEAD
 /*
  * Chibios includes
  */
@@ -41,6 +42,13 @@
 /*
  * Paparazzi includes
  */
+=======
+/// Chibios includes
+#include "ch.h"
+#include "hal.h"
+
+/// Paparazzi includes
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #include "led.h"
 #include "mcu.h"
 
@@ -87,15 +95,20 @@
 #include "subsystems/abi.h"
 
 
+<<<<<<< HEAD
 /*
  * Thread Area Definitions
  */
+=======
+/// Thread definitions
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #define CH_THREAD_AREA_HEARTBEAT 128
 #define CH_THREAD_AREA_FAILSAFE 256
 #define CH_THREAD_AREA_ELECTRICAL 256
 #define CH_THREAD_AREA_RADIO_CONTROL 256
 #define CH_THREAD_AREA_RADIO_EVENT 512
 
+<<<<<<< HEAD
 /*
  * Thread Area Initialization
  */
@@ -108,17 +121,35 @@ static WORKING_AREA(wa_thd_radio_event, CH_THREAD_AREA_RADIO_EVENT);
 /*
  * Static Thread Definitions
  */
+=======
+static inline void failsafe_check(void);
+
+>>>>>>> [rt_paparazzi] update 0.3.1.
 static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg);
 static __attribute__((noreturn)) msg_t thd_failsafe(void *arg);
 static __attribute__((noreturn)) msg_t thd_electrical(void *arg);
 static __attribute__((noreturn)) msg_t thd_radio_control(void *arg);
 static __attribute__((noreturn)) msg_t thd_radio_event(void *arg);
 
+<<<<<<< HEAD
 /*
  * Static Auxilliary Functions Definitions
  */
 static inline void failsafe_check(void);
 
+=======
+#if USE_BARO_BOARD
+#define CH_THREAD_AREA_BARO 512
+static __attribute__((noreturn)) msg_t thd_baro(void *arg);
+#endif
+
+#ifdef DOWNLINK
+#define CH_THREAD_AREA_DOWNLINK_TX 1024
+#define CH_THREAD_AREA_DOWNLINK_RX 1024
+__attribute__((noreturn)) msg_t thd_telemetry_tx(void *arg);
+__attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg);
+#endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
 #if USE_GPS
 static WORKING_AREA(wa_thd_gps_rx, CH_THREAD_AREA_GPS_RX);
@@ -129,18 +160,32 @@ static WORKING_AREA(wa_thd_gps_rx, CH_THREAD_AREA_GPS_RX);
  * The same functionality as on_gps_event() in
  * standard paparazzi
  */
+<<<<<<< HEAD
 void on_gps_event(void)
 {
   ahrs_update_gps();
   ins_update_gps();
 }
 #endif /* USE_GPS */
+=======
+void on_gps_event(void) {
+  //chMtxLock(&ahrs_states_mutex_flag);
+  ahrs_update_gps();
+  //chMtxUnlock();
+
+  //chMtxLock(&ins_data_flag);
+  ins_update_gps();
+  //chMtxUnlock();
+}
+#endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
 #ifdef USE_IMU
 #ifdef INIT_IMU_THREAD
   static WORKING_AREA(wa_thd_imu_rx, CH_THREAD_AREA_IMU_RX);
 #endif
 
+<<<<<<< HEAD
 /**
  * IMU Accel callback
  */
@@ -185,6 +230,53 @@ void on_mag_event(void)
 #endif
 }
 #endif /* USE_IMU */
+=======
+  /**
+   * IMU Accel callback
+   */
+  void on_accel_event( void ) {
+    ImuScaleAccel(imu);
+    if (ahrs.status != AHRS_UNINIT) {
+  //    chMtxLock(&ahrs_states_mutex_flag);
+      ahrs_update_accel();
+  //    chMtxUnlock();
+    }
+  }
+
+  /**
+   * IMU Gyro callback
+   */
+  void on_gyro_event( void ) {
+    ImuScaleGyro(imu);
+    if (ahrs.status == AHRS_UNINIT) {
+      ahrs_aligner_run();
+      if (ahrs_aligner.status == AHRS_ALIGNER_LOCKED)
+        ahrs_align();
+    }
+    else {
+    //  chMtxLock(&ahrs_states_mutex_flag);
+      ahrs_propagate();
+      //chMtxUnlock();
+
+      //chMtxLock(&ins_data_flag);
+      ins_propagate();
+      //chMtxUnlock();
+    }
+  }
+
+  /**
+   * IMU Mag callback
+   */
+  void on_mag_event(void) {
+    ImuScaleMag(imu);
+  #if USE_MAGNETOMETER
+    if (ahrs.status == AHRS_RUNNING) {
+      ahrs_update_mag();
+    }
+  #endif
+  }
+  #endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
 #ifdef MODULES_C
   __attribute__((noreturn)) msg_t thd_modules_periodic(void *arg);
@@ -193,13 +285,21 @@ void on_mag_event(void)
 /* if PRINT_CONFIG is defined, print some config options */
 PRINT_CONFIG_VAR(PERIODIC_FREQUENCY)
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> [rt_paparazzi] update 0.3.1.
  *  TELEMETRY_FREQUENCY is defined in generated/periodic_telemetry.h
  * defaults to 60Hz or set by TELEMETRY_FREQUENCY configure option in airframe file
  */
 PRINT_CONFIG_VAR(TELEMETRY_FREQUENCY)
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> [rt_paparazzi] update 0.3.1.
  * MODULES_FREQUENCY is defined in generated/modules.h
  * according to main_freq parameter set for modules in airframe file
  */
@@ -244,10 +344,16 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
     LED_TOGGLE(SYS_TIME_LED);
     sys_time.nb_sec++;
 
+<<<<<<< HEAD
     if (autopilot_in_flight)
     {
       autopilot_flight_time++;
       datalink_time++;
+=======
+    if (autopilot_in_flight) {
+        autopilot_flight_time++;
+        datalink_time++;
+>>>>>>> [rt_paparazzi] update 0.3.1.
     }
 
     core_free_memory = chCoreStatus();
@@ -258,9 +364,14 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
     do
     {
       thread_counter++;
+<<<<<<< HEAD
       if (tp ==chSysGetIdleThread())
       {
         idle_counter =  (uint32_t)tp->p_time;
+=======
+      if (tp ==chSysGetIdleThread()) {
+          idle_counter =  (uint32_t)tp->p_time;
+>>>>>>> [rt_paparazzi] update 0.3.1.
       }
       tp = chRegNextThread(tp);
     }
@@ -276,6 +387,7 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
   }
 }
 
+<<<<<<< HEAD
 /**
  * Failsafe Thread
  *
@@ -310,11 +422,29 @@ static __attribute__((noreturn)) msg_t thd_electrical(void *arg)
   {
     time += US2ST(1000000/ELECTRICAL_PERIODIC_FREQ);
     electrical_periodic();
+=======
+/*
+ * Failsafe Thread
+ * @note: Replaces failsafe_periodic(), eventually
+ * it will check also other threads (~hypervisor)
+ */
+static WORKING_AREA(wa_thd_failsafe, CH_THREAD_AREA_FAILSAFE);
+static __attribute__((noreturn)) msg_t thd_failsafe(void *arg)
+{
+  chRegSetThreadName("pprz_failsafe");
+  (void) arg;
+  systime_t time = chTimeNow();
+  while (TRUE) {
+    time += US2ST(1000000/FAILSAFE_FREQUENCY);
+    failsafe_check();
+    //TODO: ChibiOS/RT failsafe check
+>>>>>>> [rt_paparazzi] update 0.3.1.
     chThdSleepUntil(time);
   }
 }
 
 /*
+<<<<<<< HEAD
  * Radio Control Periodic Thread
  *
  * Calls radio_control_periodic()
@@ -402,6 +532,93 @@ static __attribute__((noreturn)) msg_t thd_baro(void *arg)
 __attribute__((noreturn)) msg_t thd_telemetry_tx(void *arg);
 __attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg);
 
+=======
+ * Electrical Periodic Thread
+ * @note: Calls electrical_periodic()
+ */
+ static WORKING_AREA(wa_thd_electrical, CH_THREAD_AREA_ELECTRICAL);
+ static __attribute__((noreturn)) msg_t thd_electrical(void *arg)
+ {
+   chRegSetThreadName("pprz_electrical");
+   (void) arg;
+   systime_t time = chTimeNow();
+   while (TRUE) {
+     time += US2ST(1000000/ELECTRICAL_PERIODIC_FREQ);
+     electrical_periodic();
+     chThdSleepUntil(time);
+   }
+ }
+
+ /*
+  * Radio Control Periodic Thread
+  * @note: Calls radio_control_periodic()
+  */
+  static WORKING_AREA(wa_thd_radio_control, CH_THREAD_AREA_RADIO_CONTROL);
+  static __attribute__((noreturn)) msg_t thd_radio_control(void *arg)
+  {
+    chRegSetThreadName("pprz_radio_control");
+    (void) arg;
+    systime_t time = chTimeNow();
+    while (TRUE) {
+      time += US2ST(1000000/RADIO_CONTROL_FREQ);
+      radio_control_periodic_task();
+      chThdSleepUntil(time);
+    }
+  }
+
+  /**
+   * Radio Control Event Thread
+   *
+   * Waits for EVT_PPM_FRAME event flag to be broadcasted,
+   * then executes RadioControlEvent()
+   *
+   * @note: It is a nice example how to use event listeners.
+   * Optionally after the frame is processed, another event can be
+   * broadcasted, so it is possible to chain data processing (i.e. in AHRS)
+   * Maybe a similar structure can be used for GPS events etc.
+   */
+   static WORKING_AREA(wa_thd_radio_event, CH_THREAD_AREA_RADIO_EVENT);
+   static __attribute__((noreturn)) msg_t thd_radio_event(void *arg)
+   {
+     chRegSetThreadName("pprz_radio_event");
+     (void) arg;
+     EventListener elRadioEvt;
+     chEvtRegister(&eventPpmFrame, &elRadioEvt, EVT_PPM_FRAME);
+     flagsmask_t rc_flags;
+     while (TRUE) {
+       chEvtWaitOne(EVENT_MASK(EVT_PPM_FRAME));
+       rc_flags = chEvtGetAndClearFlags(&elRadioEvt);
+       if (rc_flags & EVT_PPM_FRAME) {
+           if (autopilot_rc) {
+             RadioControlEvent(autopilot_on_rc_frame);
+             ///chEvtBroadcastFlags(&initializedEventSource, SOME_DEFINED_EVENT);
+           }
+       }
+     }
+   }
+
+#if USE_BARO_BOARD
+   /**
+    * Baro thread
+    */
+   static WORKING_AREA(wa_thd_baro, CH_THREAD_AREA_BARO);
+   static __attribute__((noreturn)) msg_t thd_baro(void *arg) {
+     chRegSetThreadName("pprz_baro");
+     (void) arg;
+     baro_init();
+     systime_t time = chTimeNow();
+     while (TRUE) {
+       time += US2ST(1000000/BARO_PERIODIC_FREQUENCY);
+       baro_periodic();
+       chThdSleepUntil(time);
+     }
+   }
+
+#endif
+
+
+#ifdef DOWNLINK
+>>>>>>> [rt_paparazzi] update 0.3.1.
 /**
  *  Telemetry TX thread
  *
@@ -442,8 +659,12 @@ __attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg)
     chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
     flags = chEvtGetAndClearFlags(&elTelemetryRx);
     ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &pprz_tp);
+<<<<<<< HEAD
     if (pprz_tp.trans.msg_received)
     {
+=======
+    if (pprz_tp.trans.msg_received) {
+>>>>>>> [rt_paparazzi] update 0.3.1.
       pprz_parse_payload(&(pprz_tp));
       pprz_tp.trans.msg_received = FALSE;
       dl_parse_msg();
@@ -493,6 +714,7 @@ static inline void failsafe_check(void)
   }
 #endif
 
+<<<<<<< HEAD
 #if USE_GPS
   if (autopilot_mode == AP_MODE_NAV &&
     autopilot_motors_on &&
@@ -500,6 +722,35 @@ static inline void failsafe_check(void)
     radio_control.status != RC_OK &&
 #endif
     GpsIsLost())
+=======
+
+/**
+ * Paparazzi failsafe thread
+ */
+static inline void failsafe_check(void) {
+  if (radio_control.status != RC_OK &&
+      autopilot_mode != AP_MODE_KILL &&
+      autopilot_mode != AP_MODE_NAV)
+  {
+    autopilot_set_mode(AP_MODE_FAILSAFE);
+  }
+
+#if FAILSAFE_ON_BAT_CRITICAL
+  if (autopilot_mode != AP_MODE_KILL &&
+      electrical.bat_critical)
+  {
+    autopilot_set_mode(AP_MODE_FAILSAFE);
+  }
+#endif
+
+#if USE_GPS
+  if (autopilot_mode == AP_MODE_NAV &&
+      autopilot_motors_on &&
+#if NO_GPS_LOST_WITH_RC_VALID
+      radio_control.status != RC_OK &&
+#endif
+      GpsIsLost())
+>>>>>>> [rt_paparazzi] update 0.3.1.
   {
     autopilot_set_mode(AP_MODE_FAILSAFE);
   }
@@ -509,10 +760,16 @@ static inline void failsafe_check(void)
 }
 
 
+<<<<<<< HEAD
 /**
  * Thread initialization
  *
  * Done here, not in the submodules, so we don't
+=======
+/*
+ * Thread initialization
+ * @note: Done here, not in the submodules, so we don't
+>>>>>>> [rt_paparazzi] update 0.3.1.
  * have to include ChibiOs headers to each submodule
  */
 static void thread_init(void) {
@@ -520,9 +777,26 @@ chThdCreateStatic(wa_thd_heartbeat, sizeof(wa_thd_heartbeat), IDLEPRIO, thd_hear
 chThdCreateStatic(wa_thd_electrical, sizeof(wa_thd_electrical), LOWPRIO, thd_electrical, NULL);
 chThdCreateStatic(wa_thd_radio_control, sizeof(wa_thd_radio_control), NORMALPRIO, thd_radio_control, NULL);
 chThdCreateStatic(wa_thd_radio_event, sizeof(wa_thd_radio_event), NORMALPRIO, thd_radio_event, NULL);
+<<<<<<< HEAD
 
 #if USE_BARO_BOARD
   chThdCreateStatic(wa_thd_baro, sizeof(wa_thd_baro),LOWPRIO, thd_baro, NULL);
+=======
+
+#if USE_BARO_BOARD
+  chThdCreateStatic(wa_thd_baro, sizeof(wa_thd_baro),LOWPRIO, thd_baro, NULL);
+#endif
+
+#ifdef USE_IMU
+#ifdef INIT_IMU_THREAD
+  chThdCreateStatic(wa_thd_imu_rx, sizeof(wa_thd_imu_rx), HIGHPRIO, thd_imu_rx, NULL);
+#else
+  imu_init();
+  #if USE_IMU_FLOAT
+  imu_float_init();
+  #endif
+#endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #endif
 
 #ifdef USE_IMU
@@ -537,8 +811,13 @@ chThdCreateStatic(wa_thd_radio_event, sizeof(wa_thd_radio_event), NORMALPRIO, th
 #endif /* USE_IMU */
 
 #ifdef DOWNLINK
+<<<<<<< HEAD
   chThdCreateStatic(wa_thd_telemetry_tx, sizeof(wa_thd_telemetry_tx),NORMALPRIO, thd_telemetry_tx, NULL);
   chThdCreateStatic(wa_thd_telemetry_rx, sizeof(wa_thd_telemetry_rx),NORMALPRIO, thd_telemetry_rx, NULL);
+=======
+chThdCreateStatic(wa_thd_telemetry_tx, sizeof(wa_thd_telemetry_tx),NORMALPRIO, thd_telemetry_tx, NULL);
+chThdCreateStatic(wa_thd_telemetry_rx, sizeof(wa_thd_telemetry_rx),NORMALPRIO, thd_telemetry_rx, NULL);
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #endif
 
 #ifdef USE_GPS
@@ -546,22 +825,30 @@ chThdCreateStatic(wa_thd_radio_event, sizeof(wa_thd_radio_event), NORMALPRIO, th
 #endif
 
 #ifdef MODULES_C
-  chThdCreateStatic(wa_thd_modules_periodic, sizeof(wa_thd_modules_periodic),LOWPRIO, thd_modules_periodic, NULL);
+chThdCreateStatic(wa_thd_modules_periodic, sizeof(wa_thd_modules_periodic),LOWPRIO, thd_modules_periodic, NULL);
 #endif
 
 chThdCreateStatic(wa_thd_failsafe, sizeof(wa_thd_failsafe), HIGHPRIO, thd_failsafe, NULL);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1.
 /**
  * Main loop
  *
  * Initializes system (both chibios and paparazzi),
  * then turns into main thread - main_periodic()
  */
+<<<<<<< HEAD
 int main(void)
 {
   /*
+=======
+int main(void) {
+  /**
+>>>>>>> [rt_paparazzi] update 0.3.1.
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
    *   and performs the board-specific initializations.
@@ -571,9 +858,7 @@ int main(void)
   halInit();
   chSysInit();
 
-  /*
-   * Paparazzi initialization
-   */
+  /// Paparazzi initialization
   mcu_init();
 
   electrical_init();
@@ -589,6 +874,7 @@ int main(void)
   radio_control_init();
 
   air_data_init();
+<<<<<<< HEAD
 #if USE_BARO_BOARD
   baro_init();
 #endif
@@ -601,8 +887,22 @@ imu_init();
 
   ahrs_aligner_init();
   ahrs_init();
+=======
+ #if USE_BARO_BOARD
+   baro_init();
+ #endif
 
-  ins_init();
+
+   imu_init();
+ #if USE_IMU_FLOAT
+   imu_float_init();
+ #endif
+
+   ahrs_aligner_init();
+   ahrs_init();
+>>>>>>> [rt_paparazzi] update 0.3.1.
+
+   ins_init();
 
 #if USE_GPS
   gps_init();
@@ -629,6 +929,7 @@ imu_init();
 
   chThdSleep(MS2ST(1500));
   systime_t main_time = chTimeNow();
+<<<<<<< HEAD
   while (TRUE)
   {
     main_time += US2ST(1000000/PERIODIC_FREQUENCY);
@@ -637,6 +938,14 @@ imu_init();
     autopilot_periodic();
     SetActuatorsFromCommands(commands, autopilot_mode);
     chThdSleepUntil(main_time);
+=======
+  while (TRUE) {
+      main_time += US2ST(1000000/PERIODIC_FREQUENCY);
+      imu_periodic();
+      autopilot_periodic();
+      SetActuatorsFromCommands(commands, autopilot_mode);
+      chThdSleepUntil(main_time);
+>>>>>>> [rt_paparazzi] update 0.3.1.
   }
 
   return TRUE;

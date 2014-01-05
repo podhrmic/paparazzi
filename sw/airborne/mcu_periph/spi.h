@@ -37,9 +37,12 @@
 
 #ifdef USE_CHIBIOS_RTOS
 #include "hal.h"
+<<<<<<< HEAD
 #define SPI_VOLATILE
 #else
 #define SPI_VOLATILE volatile
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #endif
 
 /**
@@ -147,8 +150,18 @@ typedef void (*SPICallback)( struct spi_transaction *trans );
  *   0 is sent for the remaining words
  */
 struct spi_transaction {
+<<<<<<< HEAD
   SPI_VOLATILE uint8_t* input_buf;  ///< pointer to receive buffer for DMA
   SPI_VOLATILE uint8_t* output_buf; ///< pointer to transmit buffer for DMA
+=======
+#ifdef USE_CHIBIOS_RTOS
+  uint8_t* input_buf;           ///< pointer to receive buffer for DMA
+  uint8_t* output_buf;          ///< pointer to transmit buffer for DMA
+#else
+  volatile uint8_t* input_buf;  ///< pointer to receive buffer for DMA
+  volatile uint8_t* output_buf; ///< pointer to transmit buffer for DMA
+#endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
   uint8_t input_length;         ///< number of data words to read
   uint8_t output_length;        ///< number of data words to write
   uint8_t slave_idx;            ///< slave id: #SPI_SLAVE0 to #SPI_SLAVE4

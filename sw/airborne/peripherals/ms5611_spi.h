@@ -36,8 +36,18 @@
 struct Ms5611_Spi {
   struct spi_periph *spi_p;
   struct spi_transaction spi_trans;
+<<<<<<< HEAD
   SPI_VOLATILE uint8_t tx_buf[1];
   SPI_VOLATILE uint8_t rx_buf[4];
+=======
+  #ifdef USE_CHIBIOS_RTOS
+  uint8_t tx_buf[1];
+  uint8_t rx_buf[4];
+  #else
+  volatile uint8_t tx_buf[1];
+  volatile uint8_t rx_buf[4];
+  #endif
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
   enum Ms5611Status status;
   bool_t initialized;                 ///< config done flag
@@ -69,8 +79,11 @@ static inline void ms5611_spi_read(struct Ms5611_Spi* ms) {
 
 /// convenience function
 static inline void ms5611_spi_periodic(struct Ms5611_Spi* ms) {
+#ifndef USE_CHIBIOS_RTOS
   ms5611_spi_read(ms);
+#else
   ms5611_spi_periodic_check(ms);
+#endif
 }
 
 

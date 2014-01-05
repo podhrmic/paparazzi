@@ -23,10 +23,15 @@
  * Boston, MA 02111-1307, USA.
  */
 /**
+<<<<<<< HEAD
  * @file arch/chibios/mcu_periph/spi_arch.c
  * Implementation of SPI interface for ChibiOS arch
  *
  * Only Master mode is allowed in ChibiOS.
+=======
+ * @brief chibios arch dependant implementation of SPI interface
+ * @note Assume SPI master for now
+>>>>>>> [rt_paparazzi] update 0.3.1.
  */
 #include "mcu_periph/spi.h"
 
@@ -100,7 +105,11 @@ static inline ioportid_t spi_resolve_slave_port(uint8_t slave) {
 }
 
 /**
+<<<<<<< HEAD
  * Resolve slave pin
+=======
+ * Resolve slave port
+>>>>>>> [rt_paparazzi] update 0.3.1.
  *
  * Given the slave number and the board config file, returns the right
  * pin (i.e. 12)
@@ -151,13 +160,21 @@ static inline uint16_t spi_resolve_slave_pin(uint8_t slave) {
  * Given the transaction settings, returns the right configuration of
  * SPIx_CR1 register.
  *
+<<<<<<< HEAD
  * This function is currently architecture dependent (for STM32F1xx only)
  * TODO: implement for STM32F4 and possible other architectures too
  *
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1.
  * @param[in] t pointer to a @p spi_transaction struct
  */
 static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
   uint16_t CR1 = 0;
+<<<<<<< HEAD
+=======
+  /// The settings are architecture dependent
+  /// TODO: Now for STM32F1xx only
+>>>>>>> [rt_paparazzi] update 0.3.1.
 #ifdef __STM32F10x_H
   if (t->dss == SPIDss16bit) {
     CR1 |= SPI_CR1_DFF;
@@ -172,6 +189,7 @@ static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
     CR1 |= SPI_CR1_CPOL;
   }
 
+<<<<<<< HEAD
   switch (t->cdiv) {
     case SPIDiv2://000
       break;
@@ -201,6 +219,37 @@ static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
   }
 #endif
   return CR1;
+=======
+   switch (t->cdiv) {
+     case SPIDiv2://000
+       break;
+     case SPIDiv4://001
+       CR1 |= SPI_CR1_BR_0;
+       break;
+     case SPIDiv8://010
+       CR1 |= SPI_CR1_BR_1;
+       break;
+     case SPIDiv16://011
+       CR1 |= SPI_CR1_BR_1 | SPI_CR1_BR_0;
+       break;
+     case SPIDiv32://100
+       CR1 |= SPI_CR1_BR_2;
+       break;
+     case SPIDiv64://101
+       CR1 |= SPI_CR1_BR_2 | SPI_CR1_BR_0;
+       break;
+     case SPIDiv128://110
+       CR1 |= SPI_CR1_BR_2 | SPI_CR1_BR_1;
+       break;
+     case SPIDiv256://111
+       CR1 |= SPI_CR1_BR;
+       break;
+     default:
+       break;
+   }
+#endif
+   return CR1;
+>>>>>>> [rt_paparazzi] update 0.3.1.
 }
 
 
@@ -212,11 +261,15 @@ static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
  * callbacks are called accordingly.
  *
  * ChibiOS doesn't provide error checking for the SPI transactions,
+<<<<<<< HEAD
  * since all spi functions are return void. The SPI transaction is
  * synchronous, so we always assume success if the transaction finishes.
  *
  * There is no explicit timeout on SPI transaction.
  * TODO: Timeout on SPI trans and error detection.
+=======
+ * since all spi functions are return void. The API is asynchronous.
+>>>>>>> [rt_paparazzi] update 0.3.1.
  *
  * @param[in] p pointer to a @p spi_periph struct
  * @param[in] t pointer to a @p spi_transaction struct
@@ -224,7 +277,11 @@ static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
 bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 {
   SPIConfig spi_cfg = {
+<<<<<<< HEAD
     NULL, // no callback
+=======
+    NULL, /// no callback
+>>>>>>> [rt_paparazzi] update 0.3.1.
     spi_resolve_slave_port(t->slave_idx),
     spi_resolve_slave_pin(t->slave_idx),
     spi_resolve_CR1(t)
@@ -242,6 +299,7 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
     t_length = (size_t)t->output_length;
   }
 
+<<<<<<< HEAD
   // Acquire exclusive access to the SPI bus
   spiAcquireBus((SPIDriver*)p->reg_addr);
 
@@ -250,10 +308,21 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
   spiSelect((SPIDriver*)p->reg_addr);
 
   // Run the callback after selecting the slave
+=======
+  /// Acquire exclusive access to the spi bus
+  spiAcquireBus((SPIDriver*)p->reg_addr);
+
+  /// Configure spi bus with the current slave select pin
+  spiStart((SPIDriver*)p->reg_addr, &spi_cfg);
+  spiSelect((SPIDriver*)p->reg_addr);
+
+  /// Run the callback AFTER selecting the slave
+>>>>>>> [rt_paparazzi] update 0.3.1.
   if (t->before_cb != 0) {
     t->before_cb(t);
   }
 
+<<<<<<< HEAD
   // Start synchronous data transfer
   spiExchange((SPIDriver*)p->reg_addr, t_length, t->output_buf, t->input_buf);
 
@@ -270,6 +339,22 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
    * Run the callback after deselecting the slave
    * to avoid recursion and/or concurency over the bus
    */
+=======
+  /// Start asynchronous data transfer
+  spiExchange((SPIDriver*)p->reg_addr, t_length, t->output_buf, t->input_buf);
+
+  spiUnselect((SPIDriver*)p->reg_addr);
+
+  /// Release the exclusive access to the bus
+  spiReleaseBus((SPIDriver*)p->reg_addr);
+
+
+  /// Report the transaction as success
+  t->status = SPITransSuccess;
+
+  /// Run the callback AFTER deselecting the slave
+  /// to avoid recursion and/or concurency over the bus
+>>>>>>> [rt_paparazzi] update 0.3.1.
   if (t->after_cb != 0) {
     t->after_cb(t);
   }
@@ -283,21 +368,39 @@ bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
  *
  * Empty, for paparazzi compatibility only
  */
+<<<<<<< HEAD
 void spi_slave_select(uint8_t slave __attribute__((unused))) {}
+=======
+void spi_slave_select(uint8_t slave) {
+  (void) slave;
+}
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
 /**
  * spi_slave_unselect() function
  *
  * Empty, for paparazzi compatibility only
  */
+<<<<<<< HEAD
 void spi_slave_unselect(uint8_t slave __attribute__((unused))) {}
+=======
+void spi_slave_unselect(uint8_t slave) {
+  (void) slave;
+}
+>>>>>>> [rt_paparazzi] update 0.3.1.
 
 /**
  * spi_lock() function
  *
  * Empty, for paparazzi compatibility only
  */
+<<<<<<< HEAD
 bool_t spi_lock(struct spi_periph* p __attribute__((unused)), uint8_t slave __attribute__((unused))) {
+=======
+bool_t spi_lock(struct spi_periph* p, uint8_t slave) {
+  (void) slave;
+  (void) p;
+>>>>>>> [rt_paparazzi] update 0.3.1.
   return TRUE;
 }
 
@@ -306,7 +409,13 @@ bool_t spi_lock(struct spi_periph* p __attribute__((unused)), uint8_t slave __at
  *
  * Empty, for paparazzi compatibility only
  */
+<<<<<<< HEAD
 bool_t spi_resume(struct spi_periph* p __attribute__((unused)), uint8_t slave __attribute__((unused))) {
+=======
+bool_t spi_resume(struct spi_periph* p, uint8_t slave) {
+  (void) slave;
+  (void) p;
+>>>>>>> [rt_paparazzi] update 0.3.1.
   return TRUE;
 }
 

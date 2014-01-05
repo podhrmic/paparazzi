@@ -46,6 +46,12 @@ extern uint8_t cpu_frequency;
 
 #define SysTimeTimerStart(_t) {}
 
+<<<<<<< HEAD
+=======
+/*
+ * FIXME: Not implemented
+ */
+>>>>>>> [rt_paparazzi] update 0.3.1.
 static inline uint32_t get_sys_time_usec(void) {
   return 0;
 }

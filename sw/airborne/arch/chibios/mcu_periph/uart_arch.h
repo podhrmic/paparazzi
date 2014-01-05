@@ -79,6 +79,7 @@
     }                                                           \
 }
 
+<<<<<<< HEAD
 #define ch_uart_receive(_port, _flag, _callback) {                   \
 >>>>>>> [rt_paparazzi] update 0.3.1.
     if ((_flag & (SD_FRAMING_ERROR | SD_OVERRUN_ERROR |         \
@@ -104,6 +105,8 @@
        while (charbuf != Q_TIMEOUT);                            \
     }                                                           \
 }
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
 
 <<<<<<< HEAD
 

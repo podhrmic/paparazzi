@@ -35,9 +35,13 @@
 
 #include "mcu_periph/sys_time.h"
 
+<<<<<<< HEAD
 /*
  * Extra defines for ChibiOS CPU monitoring
  */
+=======
+/// Extra defines for ChibiOS CPU monitoring
+>>>>>>> [rt_paparazzi] update 0.3.1
 extern uint32_t core_free_memory;
 extern uint8_t thread_counter;
 extern uint32_t cpu_counter;
@@ -47,11 +51,14 @@ extern uint8_t cpu_frequency;
 #define SysTimeTimerStart(_t) {}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 /*
  * FIXME: Not implemented
  */
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
 static inline uint32_t get_sys_time_usec(void) {
   return 0;
 }

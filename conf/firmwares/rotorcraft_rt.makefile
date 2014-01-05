@@ -44,9 +44,12 @@ ap.ARCHDIR = $(ARCH)
 
 #we are using normal rotorcraft firmware, just different arch
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 $(TARGET).CFLAGS 	+= -DFIRMWARE=ROTORCRAFT
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
 $(TARGET).CFLAGS += -DUSE_CHIBIOS_RTOS
 ap.CFLAGS += $(ROTORCRAFT_INC)
 ap.CFLAGS += -DBOARD_CONFIG=$(BOARD_CFG) -DPERIPHERALS_AUTO_INIT
@@ -98,10 +101,14 @@ ap.srcs += mcu_periph/uart_pprz.c
 ap.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # I2C
 =======
 # I2C 
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+# I2C
+>>>>>>> [rt_paparazzi] update 0.3.1
 ifeq ($(TARGET), ap)
   $(TARGET).srcs += mcu_periph/i2c_pprz.c
   $(TARGET).srcs += $(SRC_ARCH)/mcu_periph/i2c_arch.c

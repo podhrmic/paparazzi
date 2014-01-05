@@ -58,6 +58,7 @@ struct ImuAspirin2Spi {
 
   struct spi_transaction wait_slave4_trans;
 <<<<<<< HEAD
+<<<<<<< HEAD
   SPI_VOLATILE uint8_t wait_slave4_tx_buf[1];
   SPI_VOLATILE uint8_t wait_slave4_rx_buf[2];
 =======
@@ -69,6 +70,10 @@ struct ImuAspirin2Spi {
   volatile uint8_t wait_slave4_rx_buf[2];
 #endif
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+  SPI_VOLATILE uint8_t wait_slave4_tx_buf[1];
+  SPI_VOLATILE uint8_t wait_slave4_rx_buf[2];
+>>>>>>> [rt_paparazzi] update 0.3.1
 
   volatile bool_t slave4_ready;
 };

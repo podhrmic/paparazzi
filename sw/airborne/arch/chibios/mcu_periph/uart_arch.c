@@ -170,3 +170,37 @@ void uart_receive_buffer(struct uart_periph* p, flagsmask_t flags, void *on_rece
 =======
 >>>>>>> [rt_paparazzi] update 0.3.1.
 }
+
+/**
+ * Uart/SerialDriver receive loop implementation
+ *
+ * @param[in] p pointer to a @p uart_periph object
+ * @param[in] flags flagmask for SD event flags
+ * @param[in] on_receive_callback pointer to a callback function
+ */
+void uart_receive_buffer(struct uart_periph* p, flagsmask_t flags, void *on_receive_callback){
+  if ((flags & (SD_FRAMING_ERROR | SD_OVERRUN_ERROR |
+                SD_NOISE_ERROR)) != 0) {
+      if (flags & SD_OVERRUN_ERROR) {
+          p->ore++;
+      }
+      if (flags & SD_NOISE_ERROR) {
+          p->ne_err++;
+      }
+      if (flags & SD_FRAMING_ERROR) {
+          p->fe_err++;
+      }
+  }
+  if (flags & CHN_INPUT_AVAILABLE) {
+     msg_t charbuf;
+     do {
+         charbuf = sdGetTimeout((SerialDriver*)p->reg_addr, TIME_IMMEDIATE);
+        if ( charbuf != Q_TIMEOUT ) {
+            if (on_receive_callback != NULL) {
+              ((void(*)(uint8_t))on_receive_callback)((uint8_t) charbuf);
+            }
+        }
+     }
+     while (charbuf != Q_TIMEOUT);
+  }
+}

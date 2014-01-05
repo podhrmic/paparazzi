@@ -102,12 +102,18 @@ void i2c_setbitrate(struct i2c_periph* p __attribute__((unused)), int bitrate __
  * OK because in i2c transaction is Tx always before Rx.
  *
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
  * I2C calls are synchronous, timeout is set to 1/PERIODIC_FREQUENCY seconds
  * TODO: Note that on STM32F1xx such as Lia board I2C bus can easily hang in
  * an interrupt (see issue #531). Use I2C bus with care and caution.
  *
+<<<<<<< HEAD
 =======
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
  * @param[in] p pointer to a @p i2c_periph struct
  * @param[in] t pointer to a @p i2c_transaction struct
  */
@@ -121,35 +127,35 @@ bool_t i2c_submit(struct i2c_periph* p, struct i2c_transaction* t){
   i2cReleaseBus((I2CDriver*)p->reg_addr);
 
   if (status != RDY_OK) {
-      t->status = I2CTransFailed;
-      static i2cflags_t errors = 0;
-      errors = i2cGetErrors((I2CDriver*)p->reg_addr);
-      if (errors & I2CD_BUS_ERROR) {
-        p->errors->miss_start_stop_cnt++;
-      }
-      if (errors & I2CD_ARBITRATION_LOST) {
-        p->errors->arb_lost_cnt++;
-      }
-      if (errors & I2CD_ACK_FAILURE) {
-        p->errors->ack_fail_cnt++;
-      }
-      if (errors & I2CD_OVERRUN) {
-        p->errors->over_under_cnt++;
-      }
-      if (errors & I2CD_PEC_ERROR) {
-        p->errors->pec_recep_cnt++;
-      }
-      if (errors & I2CD_TIMEOUT) {
-        p->errors->timeout_tlow_cnt++;
-      }
-      if (errors & I2CD_SMB_ALERT) {
-        p->errors->smbus_alert_cnt++;
-      }
-      return FALSE;
+    t->status = I2CTransFailed;
+    static i2cflags_t errors = 0;
+    errors = i2cGetErrors((I2CDriver*)p->reg_addr);
+    if (errors & I2CD_BUS_ERROR) {
+      p->errors->miss_start_stop_cnt++;
+    }
+    if (errors & I2CD_ARBITRATION_LOST) {
+      p->errors->arb_lost_cnt++;
+    }
+    if (errors & I2CD_ACK_FAILURE) {
+      p->errors->ack_fail_cnt++;
+    }
+    if (errors & I2CD_OVERRUN) {
+      p->errors->over_under_cnt++;
+    }
+    if (errors & I2CD_PEC_ERROR) {
+      p->errors->pec_recep_cnt++;
+    }
+    if (errors & I2CD_TIMEOUT) {
+      p->errors->timeout_tlow_cnt++;
+    }
+    if (errors & I2CD_SMB_ALERT) {
+      p->errors->smbus_alert_cnt++;
+    }
+    return FALSE;
   }
   else {
-      t->status = I2CTransSuccess;
-      return TRUE;
+    t->status = I2CTransSuccess;
+    return TRUE;
   }
 #else
   (void) p;
@@ -157,9 +163,12 @@ bool_t i2c_submit(struct i2c_periph* p, struct i2c_transaction* t){
   return FALSE;
 #endif
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
 }
 
 /**

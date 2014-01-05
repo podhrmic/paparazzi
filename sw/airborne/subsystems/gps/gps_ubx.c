@@ -292,12 +292,18 @@ __attribute__((noreturn)) msg_t thd_gps_rx(void *gps_callback)
 {
   chRegSetThreadName("pprz_gps_rx");
 <<<<<<< HEAD
+<<<<<<< HEAD
 
   gps_init();
 
 =======
   (void) arg;
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+
+  gps_init();
+
+>>>>>>> [rt_paparazzi] update 0.3.1
   EventListener elGPSdata;
   flagsmask_t flags;
   chEvtRegisterMask((EventSource *)chnGetEventSource((SerialDriver*)GPS_PORT.reg_addr), &elGPSdata, EVENT_MASK(1));
@@ -305,10 +311,14 @@ __attribute__((noreturn)) msg_t thd_gps_rx(void *gps_callback)
      chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
      flags = chEvtGetAndClearFlags(&elGPSdata);
 <<<<<<< HEAD
+<<<<<<< HEAD
      uart_receive_buffer(&GPS_PORT, flags, &gps_ubx_parse);
 =======
      ch_uart_receive(GPS_PORT, flags, gps_ubx_parse);
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+     uart_receive_buffer(&GPS_PORT, flags, &gps_ubx_parse);
+>>>>>>> [rt_paparazzi] update 0.3.1
    if (gps_ubx.msg_available) {
      chMtxLock(&gps_mutex_flag);
      gps_ubx_read_message();
@@ -322,13 +332,19 @@ __attribute__((noreturn)) msg_t thd_gps_rx(void *gps_callback)
          gps.last_fix_time = sys_time.nb_sec;
        }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
        if (gps_callback != NULL) {
          /// it can be probably prettified with macro GPS_CB(_x) (void(*)(void))_x();
          ((void(*)(void))gps_callback)();
        }
+<<<<<<< HEAD
 =======
        on_gps_event();
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+>>>>>>> [rt_paparazzi] update 0.3.1
      }
      chMtxUnlock();
      gps_ubx.msg_available = FALSE;

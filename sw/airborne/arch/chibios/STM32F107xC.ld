@@ -25,7 +25,11 @@
     for full details of how and when the exception can be applied.
 */
 
+<<<<<<< HEAD
 /**
+=======
+/** 
+>>>>>>> [rt_paparazzi] update 0.3.1
  * @file arch/chibios/STM32F107xC.ld
  * ST32F107xC memory setup and linker script
  *

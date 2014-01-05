@@ -52,6 +52,7 @@ struct Mpu60x0_Spi {
   struct spi_periph *spi_p;
   struct spi_transaction spi_trans;
 <<<<<<< HEAD
+<<<<<<< HEAD
   SPI_VOLATILE uint8_t tx_buf[2];
   SPI_VOLATILE uint8_t rx_buf[MPU60X0_BUFFER_LEN];
 =======
@@ -63,6 +64,10 @@ struct Mpu60x0_Spi {
   volatile uint8_t rx_buf[MPU60X0_BUFFER_LEN];
 #endif
 >>>>>>> [rt_paparazzi] update 0.3.1.
+=======
+  SPI_VOLATILE uint8_t tx_buf[2];
+  SPI_VOLATILE uint8_t rx_buf[MPU60X0_BUFFER_LEN];
+>>>>>>> [rt_paparazzi] update 0.3.1
   volatile bool_t data_available;     ///< data ready flag
   union {
     struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system

@@ -1449,7 +1449,6 @@
      <field name="status"   type="uint8" values="OK|LOST|REALLY_LOST"/>
   </message>
 
-  <!-- 161 is free -->
   <message name="VFF_EXTENDED" id="161">
       <field name="measure1"        type="float"/>
       <field name="measure2"        type="float"/>
@@ -1895,7 +1894,16 @@
     <field name="ref_zd"    type="int32" alt_unit="m/s"  alt_unit_coef="0.0000019"/>
   </message>
 
- <!--214 is free -->
+  <message name="BATTERY_MONITOR" id="214">
+    <field name="bus_current"	type="uint16" unit="mV"/>
+    <field name="bus_voltage"	type="uint16" unit="mV"/>
+    <field name="current"	type="float" unit="A"/>
+    <field name="integrated_charge"	type="float" unit="C"/>
+    <field name="SOC"	type="float" unit="%"/>
+    <field name="ADC2_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="ADC1_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="balancer_ports" type="uint8[]" unit="mV"/>
+  </message>
  <!--215 is free -->
  <!--216 is free -->
  <!--217 is free -->

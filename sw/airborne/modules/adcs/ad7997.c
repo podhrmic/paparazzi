@@ -5,6 +5,9 @@
 
 #include "modules/adcs/ad7997.h"
 
+#include "subsystems/datalink/telemetry.h"
+
+
 struct i2c_transaction ad7997_trans_bus;
 struct i2c_transaction ad7997_trans_balancer;
 uint8_t ad7997_status_bus = AD7997_UNINIT;
@@ -18,6 +21,19 @@ float measured_current, charge_integrated, charge_remaining;
 float soc_values[] = {100,88,77,70,60,52,38,28,18,8,0};
 float voltage_values[] = {16.7, 16.2, 15.9, 15.7, 15.5, 15.4, 15.17, 15, 14.87, 14.12,0};
 float soc_offset = 0;
+
+static void send_battery_monitor(void) {
+DOWNLINK_SEND_BATTERY_MONITOR(DefaultChannel, DefaultDevice,
+    &bus_current,
+    &bus_voltage,
+    &measured_current,
+    &charge_integrated,
+    &charge_remaining,
+    &ad7997_trans_status_bus,
+    &ad7997_trans_status_balancer,
+    2*BATTERY_CELL_NB,
+    balancer_ports);
+}
 
 void init_ad7997(void) {
   bus_current = 0;
@@ -43,6 +59,8 @@ void init_ad7997(void) {
   i2c_transmit(&AD7997_I2C_DEV, &ad7997_trans_bus, AD7997_BUS_ADDR, 3);
   ad7997_status_bus = AD7997_INIT;
   ad7997_trans_status_bus = ad7997_trans_bus.status;
+  
+  register_periodic_telemetry(DefaultPeriodic, "BATTERY_MONITOR", send_battery_monitor);
 }
 
 void read_ad7997_debug(void) {

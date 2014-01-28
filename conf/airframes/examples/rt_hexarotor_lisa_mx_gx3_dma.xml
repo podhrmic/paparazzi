@@ -45,6 +45,7 @@
   </firmware>
 
   <modules main_freq="500">
+    <load name="xgear.xml"/>
   </modules>
 
   <servos driver="Pwm">

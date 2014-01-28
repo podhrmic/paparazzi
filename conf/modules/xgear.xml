@@ -1,0 +1,21 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="xgear" dir="loggers">
+  <doc>
+    <description>Data logging and block smashing code for AggieAir</description>
+  </doc>
+
+  <header>
+    <file name="xgear.h"/>
+  </header>
+  <init fun="xgear_init()"/>
+  <periodic fun="xgear_periodic()" freq="500"/>
+
+  <makefile target="ap">
+    <raw> ap.CFLAGS += -DUSE_UART1 -DUART1_BAUD=B921600</raw>
+    <file name="xgear.c"/>
+    <!-- Lowercase value only for RT Paparazzi-->
+    <define name="XGEAR_PORT" value="uart1" />
+  </makefile>
+
+</module>
+

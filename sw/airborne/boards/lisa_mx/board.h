@@ -105,8 +105,8 @@
                                      PIN_MODE_OUTPUT(8)    | \
                                      PIN_MODE_INPUT(9)     | \
                                      PIN_MODE_ALTERNATE(10)    | \
-                                     PIN_MODE_INPUT(11)    | \
-                                     PIN_MODE_INPUT(12)    | \
+                                     PIN_MODE_ALTERNATE(11)    | \
+                                     PIN_MODE_ALTERNATE(12)    | \
                                      PIN_MODE_ALTERNATE(13)    | \
                                      PIN_MODE_ALTERNATE(14)    | \
                                      PIN_MODE_ALTERNATE(15))
@@ -137,8 +137,8 @@
                                      PIN_OSPEED_50M(8)  | \
                                      PIN_OSPEED_50M(9)  | \
                                      PIN_OSPEED_50M(10) | \
-                                     PIN_OSPEED_50M(11) | \
-                                     PIN_OSPEED_50M(12) | \
+                                     PIN_OSPEED_100M(11) | \
+                                     PIN_OSPEED_100M(12) | \
                                      PIN_OSPEED_100M(13) | \
                                      PIN_OSPEED_100M(14) | \
                                      PIN_OSPEED_100M(15))
@@ -185,8 +185,8 @@
 #define VAL_GPIOA_AFRH              (PIN_AFIO_AF(8, 0)  | \
                                      PIN_AFIO_AF(9, 0)   | \
                                      PIN_AFIO_AF(10, 1) | \
-                                     PIN_AFIO_AF(11, 0) | \
-                                     PIN_AFIO_AF(12, 0) | \
+                                     PIN_AFIO_AF(11, 10) | \
+                                     PIN_AFIO_AF(12, 10) | \
                                      PIN_AFIO_AF(13, 0)  | \
                                      PIN_AFIO_AF(14, 0)  | \
                                      PIN_AFIO_AF(15, 0))

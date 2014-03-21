@@ -438,10 +438,6 @@ __attribute__((noreturn)) msg_t thd_telemetry_tx(void *arg)
   xbee_init();
 #endif
 
-#if DATALINK == UDP
-  udp_init();
-#endif
-
   systime_t time = chTimeNow();
   while (TRUE)
   {
@@ -471,14 +467,7 @@ __attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg)
   {
     chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
     flags = chEvtGetAndClearFlags(&elTelemetryRx);
-    ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &pprz_tp);
-    if (pprz_tp.trans.msg_received)
-    {
-      pprz_parse_payload(&(pprz_tp));
-      pprz_tp.trans.msg_received = FALSE;
-      dl_parse_msg();
-      dl_msg_available = FALSE;
-    }
+    DatalinkEvent();
   }
 }
 #endif /* DOWNLINK */

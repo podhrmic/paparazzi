@@ -257,6 +257,15 @@ static inline void pprz_parse_payload(struct pprz_transport * t) {
 }
 
 
+#if USE_CHIBIOS_RTOS
+#define PprzCheckAndParse(_dev,_trans) {  \
+  ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &(_trans)); \
+  if (_trans.trans.msg_received) {      \
+    pprz_parse_payload(&(_trans));      \
+    _trans.trans.msg_received = FALSE;  \
+  }                                     \
+}
+#else
 #define PprzBuffer(_dev) TransportLink(_dev,ChAvailable())
 #define ReadPprzBuffer(_dev,_trans) { while (TransportLink(_dev,ChAvailable())&&!(_trans.trans.msg_received)) parse_pprz(&(_trans),TransportLink(_dev,Getch())); }
 #define PprzCheckAndParse(_dev,_trans) {  \
@@ -268,6 +277,7 @@ static inline void pprz_parse_payload(struct pprz_transport * t) {
     }                                     \
   }                                       \
 }
+#endif /* USE_CHIBIOS_RTOS */
 
 
 #endif /* PPRZ_TRANSPORT_H */

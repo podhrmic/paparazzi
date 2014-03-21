@@ -271,6 +271,15 @@ static inline void xbee_parse_payload(struct xbee_transport * t) {
   }
 }
 
+#if USE_CHIBIOS_RTOS
+#define XBeeCheckAndParse(_dev,_trans) {  \
+  ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_xbee, &(_trans)); \
+  if (_trans.trans.msg_received) {      \
+    xbee_parse_payload(&(_trans));      \
+    _trans.trans.msg_received = FALSE;  \
+  }                                     \
+}
+#else
 #define XBeeBuffer(_dev) TransportLink(_dev,ChAvailable())
 #define ReadXBeeBuffer(_dev,_trans) { while (TransportLink(_dev,ChAvailable())&&!(_trans.trans.msg_received)) parse_xbee(&(_trans),TransportLink(_dev,Getch())); }
 #define XBeeCheckAndParse(_dev,_trans) {  \
@@ -282,6 +291,7 @@ static inline void xbee_parse_payload(struct xbee_transport * t) {
     }                                     \
   }                                       \
 }
+#endif /* USE_CHIBIOS_RTOS */
 
 #define XBeePrintString(_dev, s) TransportLink(_dev,PrintString(s))
 #define XBeePrintHex16(_dev, x) TransportLink(_dev,PrintHex16(x))

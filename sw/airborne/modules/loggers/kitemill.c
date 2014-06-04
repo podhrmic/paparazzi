@@ -68,7 +68,6 @@ void kitemill_read_message(void){
  * Event func
  */
 void kitemill_event(void){
-/*
     if (LoggerBuffer()) {
       ReadLoggerBuffer();
     }
@@ -76,7 +75,6 @@ void kitemill_event(void){
       kitemill_read_message();
     }
     logger.msg_available = FALSE;
-*/
 }
 
 /**
@@ -118,6 +116,143 @@ void kitemill_periodic(void){
   kitemill_txbuf[idx] = 'D';
   idx++;
 
+/*
+  static float timestamp;
+
+  // System time [s]
+  timestamp = get_sys_time_float();
+  memcpy(&kitemill_txbuf[idx], &timestamp, sizeof(float));
+  idx += sizeof(float);
+
+
+  // Actuators value, int16
+  memcpy(&kitemill_txbuf[idx], actuators, ACTUATORS_NB*sizeof(int16_t));
+  idx += ACTUATORS_NB*sizeof(uint16_t);
+
+
+  // Pressure, float, hPa
+  memcpy(&kitemill_txbuf[idx], &ms5611_fbaroms, sizeof(float));
+  idx += sizeof(float);
+
+
+  //Attitude, float, [rads]
+  struct FloatEulers* att = stateGetNedToBodyEulers_f();
+  // phi
+  memcpy(&kitemill_txbuf[idx], &(att->phi), sizeof(float));
+  idx += sizeof(float);
+  //psi
+  memcpy(&kitemill_txbuf[idx], &(att->psi), sizeof(float));
+  idx += sizeof(float);
+  //theta
+  memcpy(&kitemill_txbuf[idx], &(att->theta), sizeof(float));
+  idx += sizeof(float);
+
+
+  // Accel (imu-frame), float, [m/s^-2]
+  struct FloatVect3 accel_float;
+  ACCELS_FLOAT_OF_BFP(accel_float, imu.accel)
+  memcpy(&kitemill_txbuf[idx], &accel_float.x, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &accel_float.y, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &accel_float.z, sizeof(float));
+  idx += sizeof(float);
+
+
+  // Rates (imu frame), float, [rad/s]
+  struct FloatRates gyro_float;
+  RATES_FLOAT_OF_BFP(gyro_float, imu.gyro);
+  memcpy(&kitemill_txbuf[idx], &gyro_float.p, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &gyro_float.q, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &gyro_float.r, sizeof(float));
+  idx += sizeof(float);
+
+
+  // Mag (imu frame), float [!]
+  struct FloatVect3 mag_float;
+  MAGS_FLOAT_OF_BFP(mag_float, imu.mag);
+  memcpy(&kitemill_txbuf[idx], &mag_float.x, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &mag_float.y, sizeof(float));
+  idx += sizeof(float);
+  memcpy(&kitemill_txbuf[idx], &mag_float.z, sizeof(float));
+  idx += sizeof(float);
+
+
+  // GPS data
+  //GPS ECEFCORD position, int32
+  for (uint8_t i = 0;i<4;i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_pos.x>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_pos.y>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_pos.z>>(i*8));
+    idx++;
+  }
+  //GPS LLA, int32
+  for (uint8_t i = 0;i<4;i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.lla_pos.lat>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.lla_pos.lon>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.lla_pos.alt>>(i*8));
+    idx++;
+  }
+  //GPS hmsl, int32
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.hmsl>>(i*8));
+    idx++;
+  }
+  //GPS ECEFCORD speed, int32
+  for (uint8_t i = 0;i<4;i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_vel.x>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_vel.y>>(i*8));
+    idx++;
+  }
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.ecef_vel.z>>(i*8));
+    idx++;
+  }
+  //GPS pacc, uint32
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.pacc>>(i*8));
+    idx++;
+  }
+  //GPS sacc, uint32
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.sacc>>(i*8));
+    idx++;
+  }
+  //GPS tow, uint32
+  for (uint8_t i = 0; i<4; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.tow>>(i*8));
+    idx++;
+  }
+  //GPS pdop, uint16
+  for (uint8_t i = 0; i<2; i++){
+    kitemill_txbuf[idx] = 0xFF&(gps.pdop>>(i*8));
+    idx++;
+  }
+  //GPS fix, uint8
+  kitemill_txbuf[idx] = gps.fix;
+  idx++;
+
+  //GPS num_sv, uint8
+  kitemill_txbuf[idx] = gps.num_sv;
+  idx++;
 
   // fill in data length, uint16
   kitemill_datalength(idx-KITEMILL_DATA_IDX, kitemill_txbuf);
@@ -128,7 +263,7 @@ void kitemill_periodic(void){
   idx++;
   kitemill_txbuf[idx] = cksum1;
   idx++;
-
+*/
 
   // transmit
   for (uint16_t k = 0; k<idx; k++){

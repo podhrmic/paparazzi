@@ -17,9 +17,7 @@
 #endif
 #define MS5611_BUFFER_LENGTH    4
 
-//#define SENSOR_SYNC_SEND 1
-
-#ifdef SENSOR_SYNC_SEND
+#if SENSOR_SYNC_SEND
 #ifndef DOWNLINK_DEVICE
 #define DOWNLINK_DEVICE DOWNLINK_AP_DEVICE
 #endif
@@ -33,7 +31,7 @@ uint8_t ms5611_status;
 int32_t prom_cnt;
 uint16_t ms5611_c[PROM_NB];
 uint32_t ms5611_d1, ms5611_d2;
-float fbaroms, ftempms;
+float ms5611_fbaroms, ms5611_ftempms;
 volatile uint8_t input_buf_ms5611[MS5611_BUFFER_LENGTH];
 volatile uint8_t output_buf_ms5611[MS5611_BUFFER_LENGTH];
 static void trans_cb_ms5611( struct spi_transaction *trans );
@@ -90,7 +88,7 @@ void baro_ms5611_periodic(void) {
       ms5611_status = MS5611_CONV_D1;
       ms5611_trans.output_buf[0] = MS5611_START_CONV_D1;
       spi_submit(&(MS5611_SPI_DEV), &ms5611_trans);
-    #ifdef SENSOR_SYNC_SEND
+    #if SENSOR_SYNC_SEND
     RunOnceEvery(300, { DOWNLINK_SEND_MS5611_COEFF(DefaultChannel, DefaultDevice,
               &ms5611_c[0], &ms5611_c[1], &ms5611_c[2], &ms5611_c[3],
               &ms5611_c[4], &ms5611_c[5], &ms5611_c[6], &ms5611_c[7]);});
@@ -209,11 +207,11 @@ void baro_ms5611_event(void ){
       /* Update baro structure */
       //baro.absolute = (int32_t)baroms;
 
-      #ifdef SENSOR_SYNC_SEND
-      ftempms = tempms / 100.;
-      fbaroms = baroms / 100.;
+      #if SENSOR_SYNC_SEND
+      ms5611_ftempms = tempms / 100.;
+      ms5611_fbaroms = baroms / 100.;
       DOWNLINK_SEND_BARO_MS5611(DefaultChannel, DefaultDevice,
-                                 &ms5611_d1, &ms5611_d2, &fbaroms, &ftempms);
+                                 &ms5611_d1, &ms5611_d2, &ms5611_fbaroms, &ms5611_ftempms);
       #endif
       break;
     }

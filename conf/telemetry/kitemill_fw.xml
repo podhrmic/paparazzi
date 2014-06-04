@@ -23,7 +23,6 @@
       <message name="STATE_FILTER_STATUS" period="2.2"/>
       <message name="DOWNLINK"            period="5.1"/>
       <message name="DL_VALUE"            period="1.5"/>
-      <!--message name="BARO_MS5611"         period="1.1"/-->
       <message name="IMU_ACCEL"           period=".8"/>
       <message name="IMU_GYRO"            period=".6"/>
       <message name="IMU_MAG"             period="1.3"/>

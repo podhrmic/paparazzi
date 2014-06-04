@@ -32,7 +32,6 @@
     </subsystem>
     <subsystem name="control"/>
     <subsystem name="imu" type="aspirin_v2.2"/>
-    <!--subsystem name="ahrs" type="float_dcm"/-->
     <subsystem name="ahrs" type="float_cmpl_quat"/>
     <subsystem name="gps" type="ublox">
       <configure name="GPS_PORT" value="UART5"/>
@@ -43,7 +42,7 @@
   </firmware>
 
   <modules>
-    <!--load name="battery_monitor.xml"/-->
+    <load name="sys_mon.xml"/>
     <load name="baro_ms5611_spi.xml"/>
     <load name="kitemill.xml">
       <configure name="KITEMILL_PORT" value="UART2"/>

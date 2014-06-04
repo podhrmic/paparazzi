@@ -82,14 +82,6 @@
 
 
   <section name="sessions">
-
-   <session name="ARDrone2 Flight">
-      <program name="Server"/>
-      <program name="GCS"/>
-      <program name="Data Link">
-        <arg flag="-udp"/>
-      </program>
-    </session>
     
    <session name="Flight USB-serial@9600">
       <program name="Data Link">
@@ -97,6 +89,7 @@
       </program>
       <program name="Server"/>
       <program name="GCS"/>
+      <program name="Messages"/>
     </session>
 
    <session name="Flight USB-serial@57600">
@@ -106,6 +99,7 @@
      </program>
      <program name="Server"/>
      <program name="GCS"/>
+    <program name="Messages"/>
    </session>
 
    <session name="Flight USB-XBee-API@57600">
@@ -116,6 +110,7 @@
       </program>
       <program name="Server"/>
       <program name="GCS"/>
+      <program name="Messages"/>
     </session>
 
     <session name="HITL">
@@ -146,8 +141,6 @@
       </program>
       <program name="Link Combiner"/>
     </session>
-
-
   </section>
 
 </control_panel>

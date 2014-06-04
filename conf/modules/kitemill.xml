@@ -1,0 +1,20 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="kitemill" dir="loggers">
+  <doc>
+    <description>Data logging for Kitemill OS</description>
+  </doc>
+  <header>
+    <file name="kitemill.h"/>
+  </header>
+  <init fun="kitemill_init()"/>
+  <periodic fun="kitemill_periodic()" freq="10."/>
+  <event fun="kitemill_event()"/>
+
+  <makefile target="ap">
+    <file name="kitemill.c"/>
+    <define name="USE_$(KITEMILL_PORT)"/>
+    <define name="$(KITEMILL_PORT)_BAUD=$(KITEMILL_BAUD)"/>
+    <define name="KITEMILL_LINK"  value="$(KITEMILL_PORT)"/>
+  </makefile>
+
+</module>

@@ -1076,4 +1076,43 @@
 #define PERIODIC_SEND_UART_ERRORS(_trans, _dev) {}
 #endif
 
+// CUSTOM
+#ifdef USE_AIRSPEED
+#include "modules/sensors/airspeed_ms45do.h"
+#define PERIODIC_SEND_MS45DO_AIRSPEED(_trans, _dev) DOWNLINK_SEND_MS45DO_AIRSPEED(_trans, _dev, \
+    &airspeed_adc, \
+    &airspeed_offset, \
+    &ms45xx_airspeed, \
+    &temperature_adc, \
+    &airspeed_status)
+#else
+#define PERIODIC_SEND_MS45DO_AIRSPEED(_trans, _dev) {}
+#endif
+
+#ifdef USE_AD7998
+#define PERIODIC_SEND_AD7998(_trans, _dev) DOWNLINK_SEND_AD7998(_trans, _dev,\
+    &ad7997_status_u1, \
+    &ad7997_status_u2, \
+    &ad7997_trans_status_u1, \
+    &ad7997_trans_status_u2,  \
+    16, u_ports)
+#else
+#define PERIODIC_SEND_AD7998(_trans, _dev) {}
+#endif
+
+#ifdef USE_CHIPCAP
+#include "modules/sensors/chipcap.h"
+#define PERIODIC_SEND_CHIPCAP(_trans, _dev) DOWNLINK_SEND_CHIPCAP(_trans, _dev,\
+    &chipcap_response, \
+    &chipcap_eeprom, \
+    &chipcap_trans_status, \
+    &chipcap_status, \
+    &rh_data, \
+    &tmp_data, \
+    &rh, \
+    &chipcap_tmp)
+#else
+#define PERIODIC_SEND_CHIPCAP(_trans, _dev) {}
+#endif
+
 #endif /* TELEMETRY_H */

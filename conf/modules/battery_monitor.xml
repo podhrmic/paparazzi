@@ -1,0 +1,19 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="battery_monitor" dir="adcs">
+	<doc>
+   <description>ADC 7997/8 I2C driver for battery monitoring. Use with the power board.</description>
+  </doc>
+  <header>
+    <file name="ad7997.h"/>
+  </header>
+  <init fun="init_ad7997()"/>
+  <periodic fun="read_ad7997_bus()" freq="10"/>
+  <!--periodic fun="read_ad7997_debug()" freq="100"/-->
+  <!--periodic fun="read_ad7997_balancer()" freq="10"/-->
+  <makefile target="ap">
+     <file name="ad7997.c"/>
+     <define name="USE_I2C1"/>
+     <define name="USE_BATTERY_MONITOR"/>
+  </makefile>
+</module>

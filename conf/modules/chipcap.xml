@@ -1,0 +1,18 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="chipcap" dir="sensors">
+	<doc>
+   <description>chipcap humidity sensor</description>
+  </doc>
+  <header>
+    <file name="chipcap.h"/>
+  </header>
+  <init fun="chipcap_init()"/>
+  <periodic fun="chipcap_periodic()" freq="10."/>
+  <event fun="chipcap_event()"/>
+  <makefile target="ap">
+     <file name="chipcap.c"/>
+     <define name="USE_I2C1"/>
+     <define name="USE_CHIPCAP"/>
+  </makefile>
+</module>

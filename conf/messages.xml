@@ -1105,7 +1105,13 @@
     <field name="status" type="uint8" values="UNINIT|RUNNING|LOCKED"/>
   </message>
 
-  <!-- 138 is free -->
+  <message name="MS45DO_AIRSPEED" id="138">
+    <field name="diffPress" type="uint16"/>
+    <field name="pressOffset" type="uint16"/>
+    <field name="airspeed" type="float" unit="m/s"/>
+    <field name="temperature" type="uint16"/>
+    <field name="status" type="uint8"/>
+  </message>
 
   <message name="FILTER_COR" id="139">
     <field name="mphi"   type="int32"/>
@@ -1831,8 +1837,25 @@
  <!--213 is free -->
  <!--214 is free -->
  <!--215 is free -->
- <!--216 is free -->
- <!--217 is free -->
+   <message name="AD7998" id="216">
+    <field name="U1_stat"	type="uint8" values="Uninit|Init|Reading"/>
+    <field name="U2_stat"	type="uint8" values="Uninit|Init|Reading"/>
+    <field name="U1_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="U2_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="u_ports" type="uint8[]" unit="mV"/>
+  </message>
+
+   <message name="CHIPCAP"  id="217">
+    <field name="cmd_res" type="uint8"/>
+    <field name="eeprom"  type="uint16" />
+    <field name="trans_stat"  type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="chipcap_stat"  type="uint8" values="Uninit|Write|Read|Wait"/>
+    <field name="RH"  type="uint16" />
+    <field name="Temp"  type="uint16"  unit="C"/>
+    <field name="RelHum"  type="float"  unit="%"/>
+    <field name="TempF"  type="float"  unit="C"/>
+  </message>
+
  <!--218 is free -->
   <message name="WEATHER" id="219">
     <field name="p_amb" type="float" unit="Pa" alt_unit="mBar" alt_unit_coef="0.01"/>

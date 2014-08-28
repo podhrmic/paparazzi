@@ -1,0 +1,52 @@
+<conf>
+  <aircraft
+   name="Bixler"
+   ac_id="24"
+   airframe="airframes/examples/bixler_lisa_m_2.xml"
+   radio="radios/cockpitSX.xml"
+   telemetry="telemetry/default_fixedwing_imu.xml"
+   flight_plan="flight_plans/versatile.xml"
+   settings=" settings/fixedwing_basic.xml settings/control/ctl_basic.xml settings/estimation/ins_neutrals.xml"
+   gui_color="blue"
+  />
+  <aircraft
+   name="Hexa_LisaL"
+   ac_id="153"
+   airframe="airframes/examples/h_hex.xml"
+   radio="radios/cockpitSX.xml"
+   telemetry="telemetry/default_rotorcraft.xml"
+   flight_plan="flight_plans/dummy.xml"
+   settings="settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml"
+   gui_color="white"
+  />
+  <aircraft
+   name="Kitemill"
+   ac_id="1"
+   airframe="airframes/kitemill/kitemill_lisa_m_2.xml"
+   radio="radios/Turnigy_9XR.xml"
+   telemetry="telemetry/kitemill_fw.xml"
+   flight_plan="flight_plans/basic.xml"
+   settings=" settings/fixedwing_basic.xml settings/estimation/ins_neutrals.xml settings/control/ctl_basic.xml"
+   gui_color="blue"
+  />
+  <aircraft
+   name="Kitemill_Quadtest"
+   ac_id="2"
+   airframe="airframes/kitemill/quadtest_lisa_m_2.xml"
+   radio="radios/Turnigy_9XR.xml"
+   telemetry="telemetry/kitemill_quadtest.xml"
+   flight_plan="flight_plans/rotorcraft_basic.xml"
+   settings=" settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml settings/control/stabilization_rate.xml"
+   gui_color="blue"
+  />
+  <aircraft
+   name="Quad_LisaM_2"
+   ac_id="162"
+   airframe="airframes/examples/quadrotor_lisa_m_2_pwm_spektrum.xml"
+   radio="radios/cockpitSX.xml"
+   telemetry="telemetry/default_rotorcraft.xml"
+   flight_plan="flight_plans/rotorcraft_basic.xml"
+   settings="settings/rotorcraft_basic.xml settings/control/rotorcraft_guidance.xml settings/control/stabilization_att_int.xml settings/control/stabilization_rate.xml"
+   gui_color="white"
+  />
+</conf>

@@ -1,0 +1,18 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+
+<module name="ad7998" dir="adcs">
+	<doc>
+   <description>ADC 7998 I2C driver for battery monitoring. Use with the power board.</description>
+  </doc>
+  <header>
+    <file name="ad7998.h"/>
+  </header>
+  <init fun="ad7998_init()"/>
+  <periodic fun="ad7998_periodic()" freq="100."/>
+  <event fun="ad7998_event()"/>
+  <makefile target="ap">
+     <file name="ad7998.c"/>
+     <define name="USE_I2C1"/>
+     <define name="USE_AD7998"/>
+  </makefile>
+</module>

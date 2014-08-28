@@ -19,7 +19,7 @@
       <message name="I2C_ERRORS"             period="1."/>
       <message name="UART_ERRORS"            period="1."/>
       <message name="MS45DO_AIRSPEED"        period="0.1"/>
-      <message name="AD7998"        period="0.1"/>
+      <message name="AD7998"                 period="0.1"/>
       <message name="CHIPCAP"                period="0.1"/>
     </mode>
 

@@ -38,6 +38,8 @@ static uint8_t kitemill_rxbuf[KITEMILL_BUFFER_SIZE];
 
 struct KitemillLogger logger;
 
+#define DEBUG 0
+
 /**
  * Init
  */
@@ -89,10 +91,14 @@ void kitemill_periodic(void){
 
   cksum0 = 0;
   cksum1 = 0;
+
+  kitemill_txbuf[2] = 0;
+  kitemill_txbuf[3] = 0;
   idx = KITEMILL_DATA_IDX;
 
 
-// DEBUG
+  // DEBUG
+if (DEBUG) {
   kitemill_txbuf[idx] = 'H';
   idx++;
   kitemill_txbuf[idx] = 'E';
@@ -115,22 +121,27 @@ void kitemill_periodic(void){
   idx++;
   kitemill_txbuf[idx] = 'D';
   idx++;
-
-/*
+}
+else {
   static float timestamp;
 
   // System time [s]
-  timestamp = get_sys_time_float();
+// TODO // Float doesnt return proper values
+// FIXME
+  timestamp = get_sys_time_usec()/1000000.0;//get_sys_time_float(); 
   memcpy(&kitemill_txbuf[idx], &timestamp, sizeof(float));
   idx += sizeof(float);
 
+  // Number of actuators, uint8_t
+  kitemill_txbuf[idx] = (uint8_t) ACTUATORS_NB;
+  idx++;
 
   // Actuators value, int16
   memcpy(&kitemill_txbuf[idx], actuators, ACTUATORS_NB*sizeof(int16_t));
   idx += ACTUATORS_NB*sizeof(uint16_t);
 
 
-  // Pressure, float, hPa
+  //Baro, float, hPa
   memcpy(&kitemill_txbuf[idx], &ms5611_fbaroms, sizeof(float));
   idx += sizeof(float);
 
@@ -253,6 +264,7 @@ void kitemill_periodic(void){
   //GPS num_sv, uint8
   kitemill_txbuf[idx] = gps.num_sv;
   idx++;
+}
 
   // fill in data length, uint16
   kitemill_datalength(idx-KITEMILL_DATA_IDX, kitemill_txbuf);
@@ -263,7 +275,7 @@ void kitemill_periodic(void){
   idx++;
   kitemill_txbuf[idx] = cksum1;
   idx++;
-*/
+
 
   // transmit
   for (uint16_t k = 0; k<idx; k++){
@@ -287,14 +299,10 @@ void kitemill_cksum(uint16_t size, uint8_t *buf, uint8_t *cksum0, uint8_t *cksum
   //size = packet_length - 2;
 
   //Start at byte five so the header is not part of the checksum
-  for ( i = 5; i < size; i++ ) {
+  for ( i = KITEMILL_DATA_IDX; i < size; i++ ) {
   	c0 += (uint8_t)buf[i];
     	c1 += c0;
   }
-
-  //DEBUG
-  c0 = '\r';
-  c1 = '\n';
 
   *cksum0 = c0;
   *cksum1 = c1;

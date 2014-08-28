@@ -1838,11 +1838,30 @@
  <!--214 is free -->
  <!--215 is free -->
    <message name="AD7998" id="216">
+<!-->
     <field name="U1_stat"	type="uint8" values="Uninit|Init|Reading"/>
     <field name="U2_stat"	type="uint8" values="Uninit|Init|Reading"/>
     <field name="U1_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
     <field name="U2_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
     <field name="u_ports" type="uint8[]" unit="mV"/>
+-->
+<!-->
+    <field name="ch1" type="float" unit="V"/>
+    <field name="ch2" type="float" unit="V"/>
+    <field name="ch3" type="float" unit="V"/>
+    <field name="ch4" type="float" unit="V"/>
+    <field name="ch5" type="float" unit="V"/>
+    <field name="ch6" type="float" unit="V"/>
+    <field name="ch7" type="float" unit="V"/>
+    <field name="ch8" type="float" unit="V"/>
+-->
+    <field name="ADC_stat"	type="uint8" values="Uninit|Init|Request|Reading"/>
+    <field name="i2c_trans_stat"	type="uint8" values="Pending|Running|Success|Failed|Done"/>
+    <field name="ch_id" type="uint8"/>
+    <field name="ch_flag" type="uint8"/>
+    <field name="ch1_raw" type="uint16"/>
+    <field name="ch1" type="float" unit="V"/>
+    <field name="channels" type="float[]" unit="V"/>
   </message>
 
    <message name="CHIPCAP"  id="217">

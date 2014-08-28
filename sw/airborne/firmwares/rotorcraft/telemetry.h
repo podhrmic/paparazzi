@@ -1091,11 +1091,13 @@
 
 #ifdef USE_AD7998
 #define PERIODIC_SEND_AD7998(_trans, _dev) DOWNLINK_SEND_AD7998(_trans, _dev,\
-    &ad7997_status_u1, \
-    &ad7997_status_u2, \
-    &ad7997_trans_status_u1, \
-    &ad7997_trans_status_u2,  \
-    16, u_ports)
+    &ad7998_status, \
+    &ad7998_trans_status, \
+    &ad7998_ch_id, \
+    &ad7998_flag, \
+    &ad7998_raw, \
+    &ad7998_voltage, \
+    8, ad7998_channels)
 #else
 #define PERIODIC_SEND_AD7998(_trans, _dev) {}
 #endif

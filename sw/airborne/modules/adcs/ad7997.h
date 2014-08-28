@@ -18,7 +18,7 @@
 #define AD7997_STARTUP_DELAY 0
 #endif
 
-#define AD7997_U1_ADDR 0x44// u1 airspeed etc
+#define AD7997_U1_ADDR 0x40// u1 airspeed etc
 #define AD7997_U2_ADDR 0x44// u2 servo current
 
 /* Config register addres */

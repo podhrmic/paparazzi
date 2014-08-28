@@ -8,7 +8,7 @@
     <file name="ad7997.h"/>
   </header>
   <init fun="ad7997_init()"/>
-  <periodic fun="ad7997_periodic()" freq="5."/>
+  <periodic fun="ad7997_periodic()" freq="20."/>
   <event fun="ad7997_event()"/>
   <!--periodic fun="read_ad7997_u1()" freq="10"/-->
   <!--periodic fun="read_ad7997_debug()" freq="100"/-->

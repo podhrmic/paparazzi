@@ -256,10 +256,11 @@ static inline void pprz_parse_payload(struct pprz_transport * t) {
   dl_msg_available = TRUE;
 }
 
+//  ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &(_trans)); 
 
 #if USE_CHIBIOS_RTOS
 #define PprzCheckAndParse(_dev,_trans) {  \
-  ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &(_trans)); \
+  parse_pprz(&(_trans),TransportLink(_dev,Getch())); \
   if (_trans.trans.msg_received) {      \
     pprz_parse_payload(&(_trans));      \
     _trans.trans.msg_received = FALSE;  \

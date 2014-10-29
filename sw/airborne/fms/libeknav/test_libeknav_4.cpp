@@ -71,7 +71,7 @@ static void main_init(void) {
   /* Initalize the event library */
   event_init();
   
-  /* Initalize our ô so accurate periodic timer */
+  /* Initalize our ï¿½ so accurate periodic timer */
   if (fms_periodic_init(main_periodic)) {
     TRACE(TRACE_ERROR, "%s", "failed to start periodic generator\n");
     return; 

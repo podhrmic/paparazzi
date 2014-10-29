@@ -293,9 +293,9 @@ __attribute__((noreturn)) msg_t thd_gps_rx(void *gps_callback)
   flagsmask_t flags;
   chEvtRegisterMask((EventSource *)chnGetEventSource((SerialDriver*)GPS_PORT.reg_addr), &elGPSdata, EVENT_MASK(1));
   while (TRUE) {
-     chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
-     flags = chEvtGetAndClearFlags(&elGPSdata);
-     uart_receive_buffer(&GPS_PORT, flags, &gps_ubx_parse);
+   chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
+   flags = chEvtGetAndClearFlags(&elGPSdata);
+   uart_receive_char(&GPS_PORT, flags, &gps_ubx_parse);
    if (gps_ubx.msg_available) {
      chMtxLock(&gps_mutex_flag);
      gps_ubx_read_message();

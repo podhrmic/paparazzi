@@ -27,7 +27,7 @@
       <define name="SERVO_HZ" value="500"/>
     </subsystem>
 
-    <subsystem name="telemetry"     type="transparent">
+    <subsystem name="telemetry"     type="transparent_usb">
       <configure name="MODEM_PORT" value="UART3"/>
       <configure name="MODEM_BAUD" value="B57600"/>
     </subsystem>

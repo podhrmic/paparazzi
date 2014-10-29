@@ -142,7 +142,7 @@ void uart_transmit_buffer(struct uart_periph* p, uint8_t* data_buffer, size_t le
  * @param[in] flags flagmask for SD event flags
  * @param[in] on_receive_callback pointer to a callback function
  */
-void uart_receive_buffer(struct uart_periph* p, flagsmask_t flags, void *on_receive_callback){
+void uart_receive_char(struct uart_periph* p, flagsmask_t flags, void *on_receive_callback){
   if ((flags & (SD_FRAMING_ERROR | SD_OVERRUN_ERROR | SD_NOISE_ERROR)) != 0) {
     if (flags & SD_OVERRUN_ERROR) {
       p->ore++;

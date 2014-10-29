@@ -260,7 +260,7 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
   while (TRUE)
   {
     time += S2ST(1);
-    LED_TOGGLE(SYS_TIME_LED);
+    //LED_TOGGLE(SYS_TIME_LED);
     sys_time.nb_sec++;
 
     if (autopilot_in_flight)
@@ -443,6 +443,7 @@ __attribute__((noreturn)) msg_t thd_telemetry_tx(void *arg)
   {
     time += US2ST(1000000/TELEMETRY_FREQUENCY);
     periodic_telemetry_send_Main();
+    RunOnceEvery(10, LED_TOGGLE(SYS_TIME_LED));
     chThdSleepUntil(time);
   }
 }
@@ -460,15 +461,19 @@ __attribute__((noreturn)) msg_t thd_telemetry_rx(void *arg)
 {
   chRegSetThreadName("pprz_telemetry_rx");
   (void) arg;
-  EventListener elTelemetryRx;
-  flagsmask_t flags;
-  chEvtRegisterMask((EventSource *)chnGetEventSource((SerialDriver*)DOWNLINK_PORT.reg_addr), &elTelemetryRx, EVENT_MASK(1));
+
+  //EventListener elTelemetryRx;
+  //flagsmask_t flags;
+  //chEvtRegisterMask((EventSource *)chnGetEventSource((SerialDriver*)DOWNLINK_PORT.reg_addr), &elTelemetryRx, EVENT_MASK(1));
   while (TRUE)
   {
-    chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
-    flags = chEvtGetAndClearFlags(&elTelemetryRx);
+    //chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
+    //flags = chEvtGetAndClearFlags(&elTelemetryRx);
+    LED_TOGGLE(GPS_LED);
     DatalinkEvent();
   }
+
+
 }
 #endif /* DOWNLINK */
 

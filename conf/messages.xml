@@ -1835,7 +1835,18 @@
   </message>
 
  <!--213 is free -->
- <!--214 is free -->
+  <message name="VMS_INFO" id="214">
+    <field name="packets"  type="uint16" />
+    <field name="hdr_err"	type="uint16" />
+    <field name="chk_err"	type="uint16" />
+    <field name="calc_chksum"  type="uint16" />
+    <field name="rx_chksum"  type="uint16" />
+    <field name="up_time"  type="uint16" unit="s"/>
+    <field name="dc_current"  type="int16" alt_unit="A" alt_unit_coef="0.1"/>
+    <field name="RPM"  type="int16" />
+    <field name="dc_voltage"  type="int16" alt_unit="V" alt_unit_coef="0.1"/>
+    <field name="torque_fb"  type="int16" alt_unit="N.m" alt_unit_coef="0.1"/>
+  </message>
  <!--215 is free -->
    <message name="AD7998" id="216">
 <!-->

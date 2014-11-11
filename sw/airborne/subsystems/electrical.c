@@ -64,7 +64,7 @@ PRINT_CONFIG_VAR(CURRENT_ESTIMATION_NONLINEARITY)
 }
 
 void electrical_periodic(void) {
-#if defined(ADC_CHANNEL_VSUPPLY) && !defined(SITL)
+#if defined(ADC_CHANNEL_VSUPPLY) && !defined(SITL) && !defined(USE_VMS)
   electrical.vsupply = 10 * VoltageOfAdc((electrical_priv.vsupply_adc_buf.sum/electrical_priv.vsupply_adc_buf.av_nb_sample));
 #endif
 

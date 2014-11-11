@@ -1117,4 +1117,23 @@
 #define PERIODIC_SEND_CHIPCAP(_trans, _dev) {}
 #endif
 
+
+// VMS
+#ifdef USE_VMS
+#include "modules/loggers/vms.h"
+#define PERIODIC_SEND_VMS_INFO(_trans, _dev) DOWNLINK_SEND_VMS_INFO(_trans, _dev,\
+    &bms.counter, \
+    &bms.vms_packet.hdr_error, \
+    &bms.vms_packet.chksm_error, \
+    &VMS_calcsm, \
+    &VMS_chksm, \
+    &bms.up_time, \
+    &bms.dc_current, \
+    &bms.motor_speed, \
+    &bms.dc_voltage, \
+    &bms.torque_fb)
+#else
+#define PERIODIC_SEND_VMS_INFO(_trans, _dev) {}
+#endif
+
 #endif /* TELEMETRY_H */

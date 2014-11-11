@@ -1,0 +1,21 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="vms_monitor" dir="loggers">
+  <doc>
+    <description>Data logging and block smashing code for VMS</description>
+  </doc>
+
+  <header>
+    <file name="vms.h"/>
+  </header>
+  <init fun="vms_init()"/>
+  <event fun="vms_event()"/>
+
+  <makefile target="ap">
+    <file name="vms.c"/>
+    <raw>ap.CFLAGS += -DUSE_$(VMS_PORT)</raw>
+    <raw>ap.CFLAGS += -D$(VMS_PORT)_BAUD=$(VMS_BAUD)</raw>
+    <raw>ap.CFLAGS += -DUSE_VMS -DVMS_LINK=$(VMS_PORT)</raw>
+  </makefile>
+
+</module>
+

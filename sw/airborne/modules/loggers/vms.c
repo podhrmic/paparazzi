@@ -68,6 +68,23 @@ void vms_packet_read_message(void) {
 
 	// torque_fb - estimated motor torque, int16_t
 	bms.torque_fb = (uint16_t)(bms.vms_packet.msg_buf[idx+1] << 8 | bms.vms_packet.msg_buf[idx]);
+	idx = idx + 2;
+	
+	//min cell volt
+	bms.min_cell_temp = bms.vms_packet.msg_buf[idx];
+	idx++;
+	
+	//max cell volt
+	bms.max_cell_temp = bms.vms_packet.msg_buf[idx];
+	idx++;
+	
+	// min cell volt
+	bms.min_cell_volt = (uint16_t)(bms.vms_packet.msg_buf[idx+1] << 8 | bms.vms_packet.msg_buf[idx]);
+	idx = idx + 2;
+
+  //max cell volt
+	bms.max_cell_volt = (uint16_t)(bms.vms_packet.msg_buf[idx+1] << 8 | bms.vms_packet.msg_buf[idx]);
+	idx = idx + 2;
 
 	//electrical current
 	electrical.vsupply = bms.dc_voltage;
@@ -102,7 +119,7 @@ void vms_packet_parse( uint8_t c) {
 		bms.vms_packet.msg_buf[bms.vms_packet.msg_idx] = c;
 		bms.vms_packet.msg_idx++;
 		if (bms.vms_packet.msg_idx == 2) {
-			bms.vms_packet.datalength = 12;// 10b data, 2b datalength, 2b header, 2b checksum - total 12+2
+			bms.vms_packet.datalength = 18;// 16b data, 2b datalength, 2b header, 2b checksum - total 12+2
 			bms.vms_packet.status = VMSData;
 		}
 		break;

@@ -80,6 +80,10 @@ struct VMS_data {
 	int16_t torque_fb;
 	uint16_t counter;
 	struct VMS_packet vms_packet;
+	int8_t min_cell_temp;
+	int8_t max_cell_temp;
+	uint16_t min_cell_volt;
+	uint16_t max_cell_volt;
 };
 
 

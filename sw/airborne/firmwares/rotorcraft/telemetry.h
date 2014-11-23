@@ -1131,7 +1131,11 @@
     &bms.dc_current, \
     &bms.motor_speed, \
     &bms.dc_voltage, \
-    &bms.torque_fb)
+    &bms.torque_fb,\
+    &bms.min_cell_temp, \
+    &bms.max_cell_temp, \
+    &bms.min_cell_volt, \
+    &bms.max_cell_volt)
 #else
 #define PERIODIC_SEND_VMS_INFO(_trans, _dev) {}
 #endif

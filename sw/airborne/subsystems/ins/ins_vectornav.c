@@ -319,9 +319,10 @@ void ins_propagate(float dt) {
 
 
   //FIXME: do we need utm?
-
+  // plus it doent reallt work
   // GPS UTM
   // Computes from (lat, long) in the referenced UTM zone
+  /*
   struct LlaCoor_f lla_f;
   lla_f.lat = ((float) gps.lla_pos.lat) / 1e7;
   lla_f.lon = ((float) gps.lla_pos.lon) / 1e7;
@@ -334,6 +335,7 @@ void ins_propagate(float dt) {
   gps.utm_pos.north = utm_f.north*100;
   gps.utm_pos.alt = utm_f.alt*1000;
   gps.utm_pos.zone = NAV_UTM_ZONE0;//nav_utm_zone0;
+  */
 
 
 

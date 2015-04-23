@@ -67,4 +67,6 @@ struct InsInt {
 /** global INS state */
 extern struct InsInt ins_impl;
 
+static inline void InsEvent(void) {};
+
 #endif /* INS_INT_H */

@@ -93,7 +93,8 @@ static void send_gps(struct transport_tx *trans, struct link_device *dev)
   pprz_msg_send_GPS(trans, dev, AC_ID, &gps.fix,
                     &gps.utm_pos.east, &gps.utm_pos.north,
                     &course, &gps.hmsl, &gps.gspeed, &climb,
-                    &gps.week, &gps.tow, &gps.utm_pos.zone, &zero);
+                    &gps.week, &gps.tow, &gps.utm_pos.zone, &zero,
+                    &gps.ned_vel.x, &gps.ned_vel.y, &gps.ned_vel.z);
   // send SVINFO for available satellites that have new data
   send_svinfo_available(trans, dev);
 }

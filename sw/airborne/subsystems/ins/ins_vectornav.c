@@ -34,11 +34,12 @@
 #include "subsystems/gps.h"
 
 #include "generated/airframe.h"
+#include "generated/flight_plan.h"
 
 #include "math/pprz_geodetic_int.h"
 #include "math/pprz_isa.h"
 
-#include "generated/flight_plan.h"
+
 
 #ifndef USE_INS_NAV_INIT
 #define USE_INS_NAV_INIT TRUE
@@ -60,32 +61,36 @@ uint16_t calc_chk;
 uint16_t rec_chk;
 uint16_t counter;
 
-#if DOWNLINK
+#if PERIODIC_TELEMETRY
 #include "subsystems/datalink/telemetry.h"
 
-static void send_ins(void) {
-  DOWNLINK_SEND_INS(DefaultChannel, DefaultDevice,
-      &ins_impl.ltp_pos.x, &ins_impl.ltp_pos.y, &ins_impl.ltp_pos.z,
-      &ins_impl.ltp_speed.x, &ins_impl.ltp_speed.y, &ins_impl.ltp_speed.z,
-      &ins_impl.ltp_accel.x, &ins_impl.ltp_accel.y, &ins_impl.ltp_accel.z);
+static void send_ins(struct transport_tx *trans, struct link_device *dev)
+{
+  pprz_msg_send_INS(trans, dev, AC_ID,
+                    &ins_impl.ltp_pos.x, &ins_impl.ltp_pos.y, &ins_impl.ltp_pos.z,
+                    &ins_impl.ltp_speed.x, &ins_impl.ltp_speed.y, &ins_impl.ltp_speed.z,
+                    &ins_impl.ltp_accel.x, &ins_impl.ltp_accel.y, &ins_impl.ltp_accel.z);
 }
 
-static void send_ins_z(void) {
-  DOWNLINK_SEND_INS_Z(DefaultChannel, DefaultDevice,
-      &ins_impl.baro_z, &ins_impl.ltp_pos.z, &ins_impl.ltp_speed.z, &ins_impl.ltp_accel.z);
+static void send_ins_z(struct transport_tx *trans, struct link_device *dev)
+{
+  pprz_msg_send_INS_Z(trans, dev, AC_ID,
+                      &ins_impl.baro_z, &ins_impl.ltp_pos.z, &ins_impl.ltp_speed.z, &ins_impl.ltp_accel.z);
 }
 
-static void send_ins_ref(void) {
+static void send_ins_ref(struct transport_tx *trans, struct link_device *dev)
+{
   if (ins_impl.ltp_initialized) {
-    DOWNLINK_SEND_INS_REF(DefaultChannel, DefaultDevice,
-        &ins_impl.ltp_def.ecef.x, &ins_impl.ltp_def.ecef.y, &ins_impl.ltp_def.ecef.z,
-        &ins_impl.ltp_def.lla.lat, &ins_impl.ltp_def.lla.lon, &ins_impl.ltp_def.lla.alt,
-        &ins_impl.ltp_def.hmsl, &ins_impl.qfe);
+    pprz_msg_send_INS_REF(trans, dev, AC_ID,
+                          &ins_impl.ltp_def.ecef.x, &ins_impl.ltp_def.ecef.y, &ins_impl.ltp_def.ecef.z,
+                          &ins_impl.ltp_def.lla.lat, &ins_impl.ltp_def.lla.lon, &ins_impl.ltp_def.lla.alt,
+                          &ins_impl.ltp_def.hmsl, &ins_impl.qfe);
   }
 }
 
-static void send_vn_info(void) {
-  DOWNLINK_SEND_VECTORNAV_INFO(DefaultChannel, DefaultDevice,
+static void send_vn_info(struct transport_tx *trans, struct link_device *dev)
+{
+  pprz_msg_send_VECTORNAV_INFO(trans, dev, AC_ID,
       &ins_impl.timestamp,
       &ins_impl.vn_packet.chksm_error,
       &ins_impl.vn_packet.hdr_error,
@@ -97,13 +102,12 @@ static void send_vn_info(void) {
       &ins_impl.YprU.psi);
 }
 
-static void send_vn_msg(void) {
+static void send_vn_msg(struct transport_tx *trans, struct link_device *dev)
+{
   uint16_t vnstatus = (uint16_t)ins_impl.mode;
   struct FloatEulers* attitude;
   attitude = stateGetNedToBodyEulers_f();
-  struct NedCoor_f* ned_speed;
-  ned_speed = stateGetSpeedNed_f();
-  DOWNLINK_SEND_VECTORNAV_MSG(DefaultChannel, DefaultDevice,
+  pprz_msg_send_VECTORNAV_MSG(trans, dev, AC_ID,
       &ins_impl.timestamp,
       &attitude->phi,
       &attitude->theta,
@@ -114,9 +118,9 @@ static void send_vn_msg(void) {
       &ins_impl.pos_lla[0],
       &ins_impl.pos_lla[1],
       &ins_impl.pos_lla[2],
-      &ned_speed->x,
-      &ned_speed->y,
-      &ned_speed->z,
+      &ins_impl.vel_ned.x,
+      &ins_impl.vel_ned.y,
+      &ins_impl.vel_ned.z,
       &imuf.accel.x,
       &imuf.accel.y,
       &imuf.accel.z,
@@ -136,11 +140,6 @@ static void send_vn_msg(void) {
       );
 }
 #endif
-
-
-#if USE_GPS
-void gps_impl_init(void) {}
-#endif /* USE_GPS */
 
 
 /** INS initialization. Called at startup.
@@ -175,9 +174,6 @@ void ins_init(void) {
   ins_impl.ltp_initialized  = FALSE;
 #endif
 
-  ins.vf_realign = FALSE;
-  ins.hf_realign = FALSE;
-
   INT32_VECT3_ZERO(ins_impl.ltp_pos);
   INT32_VECT3_ZERO(ins_impl.ltp_speed);
   INT32_VECT3_ZERO(ins_impl.ltp_accel);
@@ -202,27 +198,20 @@ void ins_periodic(void) {
   ins_impl.vn_ltime = get_sys_time_float();//chTimeNow();
   ins_impl.vn_freq =  1.0 / ((float)(ins_impl.vn_ltime - ins_impl.vn_time));
   // check when was last time we had a packet (using frequency)
+  /*
   if (ins_impl.vn_freq < VN_MIN_FREQ) {
     ins_impl.vn_freq = 0.0;
     ins.status = INS_UNINIT;
   }
+  */
 
 
-  if (ins.status == INS_RUNNING) {
+  //if (ins.status == INS_RUNNING) {
     // update internal states for telemetry purposes
       ins_impl.ltp_pos = *stateGetPositionNed_i();
       ins_impl.ltp_speed = *stateGetSpeedNed_i();
       ins_impl.ltp_accel = *stateGetAccelNed_i();
-  }
-
-  if (ins.vf_realign == TRUE) {
-    ins.vf_realign = FALSE;
-    // because we don't want to realign anything...
-  }
-
-  if (ins.hf_realign == TRUE) {
-      ins.hf_realign = FALSE;
-    }
+ // }
 }
 
 /**
@@ -246,14 +235,16 @@ static inline void ins_yawPitchRoll_to_Attitude(struct FloatEulers* vn_attitude)
  *  Reads the global #imu data struct.
  *  Needs to be implemented by each INS algorithm.
  */
-void ins_propagate() {
+void ins_propagate(float dt) {
+  (void) dt;
+
   // Acceleration [m/s^2]
   ACCELS_BFP_OF_REAL(imu.accel, imuf.accel); // for backwards compatibility with fixed point interface
 
   // Rates [rad/s]
   static struct FloatRates body_rate;
   RATES_BFP_OF_REAL(imu.gyro, imuf.gyro ); // for backwards compatibility with fixed point interface
-  FLOAT_RMAT_RATEMULT(body_rate, imuf.body_to_imu_rmat, imuf.gyro); // compute body rates
+  FLOAT_RMAT_RATEMULT(body_rate, imuf.body_to_imu.rmat_f, imuf.gyro); // compute body rates
   stateSetBodyRates_f(&body_rate);   // Set state [rad/s]
 
   // Attitude [deg]
@@ -263,8 +254,11 @@ void ins_propagate() {
   static struct FloatRMat imu_rmat; // convert from quat to rmat
   FLOAT_RMAT_OF_QUAT(imu_rmat, imu_quat);
   static struct FloatRMat ltp_to_body_rmat; // rotate to body frame
-  FLOAT_RMAT_COMP(ltp_to_body_rmat, imu_rmat, imuf.body_to_imu_rmat);
+  static struct FloatRMat* body_to_imu_rmat; // rotate to body frame
+  body_to_imu_rmat = orientationGetRMat_f(&(imuf.body_to_imu));
+  FLOAT_RMAT_COMP(ltp_to_body_rmat, imu_rmat, *body_to_imu_rmat);
   stateSetNedToBodyRMat_f(&ltp_to_body_rmat); // set body states [rad]
+
 
   // NED (LTP) velocity [m/s]
   // North east down (NED), also known as local tangent plane (LTP),
@@ -277,41 +271,90 @@ void ins_propagate() {
   // y = East
   // z = Down
   stateSetSpeedNed_f(&ins_impl.vel_ned); // set state
+  NED_BFP_OF_REAL(gps.ned_vel, ins_impl.vel_ned); //gps vel ned is in cm/s
+  // climb = -gps.ned_vel.z;
 
+  // FIXME: this should rotate from body fram to NED, shouldnt it?
   // NED (LTP) acceleration [m/s^2]
   static struct FloatVect3 accel_meas_ltp;// first we need to rotate linear acceleration from imu-frame to body-frame
-  FLOAT_RMAT_VECT3_TRANSP_MUL(accel_meas_ltp, imuf.body_to_imu_rmat, ins_impl.lin_accel);
+  RMAT_VECT3_TRANSP_MUL(accel_meas_ltp, imuf.body_to_imu.rmat_f, ins_impl.lin_accel);
   static struct NedCoor_f ltp_accel; // assign to NedCoord_f struct
   VECT3_ASSIGN(ltp_accel, accel_meas_ltp.x, accel_meas_ltp.y, accel_meas_ltp.z);
   stateSetAccelNed_f(&ltp_accel); // then set the states
   ins_impl.ltp_accel_f = ltp_accel;
 
   // LLA position [rad, rad, m]
-  //static struct LlaCoor_f lla_pos; // convert from deg to rad, and from double to float
+  // convert from deg to rad, and from double to float
   ins_impl.lla_pos.lat = ((float)ins_impl.pos_lla[0])*DEG_TO_RAD; // ins_impl.pos_lla[0] = lat
   ins_impl.lla_pos.lon = ((float)ins_impl.pos_lla[1])*DEG_TO_RAD; // ins_impl.pos_lla[1] = lon
   ins_impl.lla_pos.alt = ((float)ins_impl.pos_lla[2]); // ins_impl.pos_lla[2] = alt
-  /**
-   * FIXME: function stateSetPositionLla_f doesn't work properly - when used, the calculated fixed point position
-   * is significantly off (by orders of magnitude) - can be shown on GCS, the AC position is estimated in middle of the ocen
-   * try with sample data from Vector Nav
-   * As far as I can tell, the float conversion from LLA to ECEF works fine (double check the numerical precision with matlab), so probably
-   * going from ECEF_f to ECEF_i/NED_i makes the problem
-   */
-  //stateSetPositionLla_f(&ins_impl.lla_pos); // then set the states
+  stateSetPositionLla_f(&ins_impl.lla_pos); // then set the states
 
+  // fill in gps variables
   LLA_BFP_OF_REAL(gps.lla_pos, ins_impl.lla_pos);
-  stateSetPositionLla_i(&gps.lla_pos);
 
   // fill in GPS message variables (ECEF is needed for correct display of AC in GCS map)
-  gps.ecef_pos.x = stateGetPositionEcef_i()->x;
-  gps.ecef_pos.y = stateGetPositionEcef_i()->y;
-  gps.ecef_pos.z = stateGetPositionEcef_i()->z;
+  ecef_of_lla_i(&gps.ecef_pos, &gps.lla_pos);
 
-  //FIXME: ECEF velocity included just for order - it actually shows too high numbers, probably calculation error?
-  gps.ecef_vel.x = stateGetSpeedEcef_i()->x;
-  gps.ecef_vel.y = stateGetSpeedEcef_i()->y;
-  gps.ecef_vel.z = stateGetSpeedEcef_i()->z;
+
+  // ECEF velocity
+  /*
+  struct LtpDef_f def;
+  ltp_def_from_lla_f(&def, &ins_impl.lla_pos);
+  struct EcefCoor_f ecef_vel;
+  ecef_of_ned_point_f(&ecef_vel, &def, &ins_impl.vel_ned);
+  struct EcefCoor_f ecef_vel_cm;
+  ECEF_BFP_OF_REAL(gps.ecef_vel, ecef_vel_cm);
+  //stateSetSpeedEcef_i(&gps.ecef_vel);
+  */
+
+/*
+  struct EcefCoor_i *ecef_vel;
+  ecef_vel =  stateGetSpeedEcef_i();
+
+  gps.ecef_vel.x = (ecef_vel->x)/100.0;
+  gps.ecef_vel.y = (ecef_vel->y);
+  gps.ecef_vel.z = (ecef_vel->z);
+  */
+
+
+  //FIXME: do we need utm?
+
+  // GPS UTM
+  // Computes from (lat, long) in the referenced UTM zone
+  struct LlaCoor_f lla_f;
+  lla_f.lat = ((float) gps.lla_pos.lat) / 1e7;
+  lla_f.lon = ((float) gps.lla_pos.lon) / 1e7;
+  struct UtmCoor_f utm_f;
+  utm_f.zone = NAV_UTM_ZONE0;//nav_utm_zone0;
+  // convert to utm
+  utm_of_lla_f(&utm_f, &lla_f);
+  // copy results of utm conversion
+  gps.utm_pos.east = utm_f.east*100;
+  gps.utm_pos.north = utm_f.north*100;
+  gps.utm_pos.alt = utm_f.alt*1000;
+  gps.utm_pos.zone = NAV_UTM_ZONE0;//nav_utm_zone0;
+
+
+
+  float speed = sqrt(ins_impl.vel_ned.x*ins_impl.vel_ned.x + ins_impl.vel_ned.y*ins_impl.vel_ned.y);
+  gps.gspeed = ((uint16_t)(speed*100));
+
+  /*
+   * In order to correctly display altitude at GCS
+   * we have to equal altitude and HMSL
+   * VN-200 does NOT output Heigh above Mean Sea Level,
+   * just altitude above reference elipsoid (although in
+   * different coordinate systems).
+   *
+   * The actual HMSL may differ significantly (tens of meters)
+   * from Altitude above Elipsoid, so I am not sure if it is OK
+   * for flighs (have to be tested).
+   */
+  gps.hmsl = gps.lla_pos.alt;
+
+  // set course
+  //gps.course = (int32_t)(1e7*(atan2(ins_impl.vel_ned.y,ins_impl.vel_ned.x)));
 
   // set position uncertainty
   ins_set_pacc();
@@ -321,7 +364,7 @@ void ins_propagate() {
 
   // check GPS status
   if (gps.fix == GPS_FIX_3D) {
-    gps.last_fix_time = sys_time.nb_sec;
+    gps.last_msg_time = sys_time.nb_sec;
   }
 
   // read INS status
@@ -366,10 +409,12 @@ static inline void ins_set_pacc(void){
 /** initialize the local origin (ltp_def) from flight plan position */
 void ins_init_origin_from_flightplan(void) {
   struct LlaCoor_i llh_nav0; /* Height above the ellipsoid */
-  llh_nav0.lat = INT32_RAD_OF_DEG(NAV_LAT0);
-  llh_nav0.lon = INT32_RAD_OF_DEG(NAV_LON0);
+  llh_nav0.lat = NAV_LAT0;
+  llh_nav0.lon = NAV_LON0;
   /* NAV_ALT0 = ground alt above msl, NAV_MSL0 = geoid-height (msl) over ellipsoid */
-  llh_nav0.alt = NAV_ALT0; //+ NAV_MSL0;
+  //llh_nav0.alt = NAV_ALT0 + NAV_MSL0;
+  // FIXME: Hack to get correct altitude in the flight plan
+  llh_nav0.alt = NAV_ALT0;
 
   struct EcefCoor_i ecef_nav0;
   ecef_of_lla_i(&ecef_nav0, &llh_nav0);
@@ -377,45 +422,10 @@ void ins_init_origin_from_flightplan(void) {
   ltp_def_from_ecef_i(&ins_impl.ltp_def, &ecef_nav0);
   ins_impl.ltp_def.hmsl = NAV_ALT0;
   stateSetLocalOrigin_i(&ins_impl.ltp_def);
-  stateSetPositionEcef_i(&ecef_nav0);
 }
 
 
-
-/** Update INS state with GPS measurements.
- *  Reads the global #gps data struct.
- *  Needs to be implemented by each INS algorithm.
- */
-void ins_update_gps(void) {}
-
-/** Update INS state with sonar measurements.
- *  Reads the global #sonar data struct.
- *  Needs to be implemented by each INS algorithm.
- */
-void ins_update_sonar() {}
-
-/** Update INS state with barometer measurements.
- *  Reads the global #baro data struct.
- *  Needs to be implemented by each INS algorithm.
- */
-void ins_update_baro() {}
-
-/** INS horizontal realign.
- *  @param pos new horizontal position to set
- *  @param speed new horizontal speed to set
- *  Needs to be implemented by each INS algorithm.
- */
-void ins_realign_h(struct FloatVect2 pos __attribute__ ((unused)),
-                   struct FloatVect2 speed __attribute__ ((unused))) {}
-
-/** INS vertical realign.
- *  @param z new altitude to set
- *  Needs to be implemented by each INS algorithm.
- */
-void ins_realign_v(float z __attribute((unused))) {}
-
-
-/*
+/**
  * Read received packet
  */
 void vn_packet_read_message(void) {
@@ -452,6 +462,13 @@ void vn_packet_read_message(void) {
   // Accel (imu-frame), float, [m/s^-2]
   memcpy(&imuf.accel, &ins_impl.vn_packet.msg_buf[idx], 3*sizeof(float));
   idx += 3*sizeof(float);
+
+  // tow (in nanoseconds), uint64
+  static uint64_t tow = 0;
+  memcpy(&tow, &ins_impl.vn_packet.msg_buf[idx], sizeof(uint64_t));
+  idx += sizeof(uint64_t);
+  tow = tow / 1000000; // nanoseconds to miliseconds
+  gps.tow = (uint32_t) tow;
 
   //num sats, uint8
   gps.num_sv = ins_impl.vn_packet.msg_buf[idx];
@@ -493,7 +510,10 @@ void vn_packet_read_message(void) {
   memcpy(&ins_impl.vel_body, &ins_impl.vn_packet.msg_buf[idx], sizeof(float));
   idx += sizeof(float);
 
-  ins_propagate();
+  //FIXME
+  ins_propagate(0.1);
+
+  ins.status = INS_RUNNING;
 }
 
 

@@ -36,7 +36,10 @@
     <subsystem name="gps"           type="transparent"/>
     <subsystem name="stabilization" type="float_euler"/>
     <subsystem name="ahrs"          type="transparent"/>
-    <subsystem name="ins"           type="transparent"/>
+    <subsystem name="ins"           type="vectornav">
+      <configure name="VN_PORT" value="UART2"/>
+      <configure name="VN_BAUD" value="B921600"/>
+    </subsystem>
 
     <!--define name="KILL_ON_GROUND_DETECT" value="TRUE"/-->
   </firmware>

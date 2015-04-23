@@ -39,13 +39,14 @@
 
 #include "led.h"
 
+
 #define VN_SYNC 0xFA
 #define VN_OUTPUT_GROUP 0x39
 #define VN_GROUP_BYTES 8
 
 #define VN_BUFFER_SIZE 512
 #define VN_HEADER_SIZE 9
-#define VN_PAYLOAD_SIZE 136
+#define VN_PAYLOAD_SIZE 144
 
 #define VN_MIN_FREQ 100.0
 #define DEG_TO_RAD 0.017453292519943//0.0175

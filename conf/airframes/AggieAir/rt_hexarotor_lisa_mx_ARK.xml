@@ -38,7 +38,7 @@
     <subsystem name="ahrs"          type="transparent"/>
     <subsystem name="ins"           type="vectornav_dma">
       <configure name="VN_DMA_PORT" value="UARTD2"/>
-      <configure name="VN_DMA_BAUS" value="B921600"/>
+      <configure name="VN_DMA_BAUD" value="B921600"/>
     </subsystem>
   </firmware>
 

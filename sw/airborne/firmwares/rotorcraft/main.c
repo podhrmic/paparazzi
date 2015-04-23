@@ -223,6 +223,7 @@ STATIC_INLINE void main_periodic(void)
 {
 
   imu_periodic();
+  ins_periodic();
 
   /* run control loops */
   autopilot_periodic();
@@ -326,6 +327,9 @@ STATIC_INLINE void main_event(void)
   }
 
   ImuEvent(on_gyro_event, on_accel_event, on_mag_event);
+
+  //FIXME: temporary hack to get VN working...
+  InsEvent();
 
 #if USE_BARO_BOARD
   BaroEvent();

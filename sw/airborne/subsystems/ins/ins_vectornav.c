@@ -182,7 +182,7 @@ void ins_init(void) {
   FLOAT_VECT3_ZERO(ins_impl.lin_accel);
   FLOAT_VECT3_ZERO(ins_impl.vel_body);
 
-#if DOWNLINK
+#if PERIODIC_TELEMETRY
   register_periodic_telemetry(DefaultPeriodic, "INS", send_ins);
   register_periodic_telemetry(DefaultPeriodic, "INS_Z", send_ins_z);
   register_periodic_telemetry(DefaultPeriodic, "INS_REF", send_ins_ref);

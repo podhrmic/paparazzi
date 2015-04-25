@@ -187,7 +187,11 @@
     <field name="segment_north_2" type="float" unit="m"/>
   </message>
 
-  <!-- ID 23 is free -->
+  <message name="HITL" id="23">
+    <field name="msg_cnt" type="uint32"/>
+    <field name="chk_err" type="uint16"/> 
+    <field name="good_msg" type="uint16"/> 
+  </message>
   <!-- ID 24 is free -->
 
   <message name="SVINFO" id="25">

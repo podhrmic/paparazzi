@@ -29,7 +29,6 @@
 #include <getopt.h>
 
 #include "nps_fdm.h"
-#include "nps_sensors.h"
 #include "nps_atmosphere.h"
 #include "nps_autopilot.h"
 #include "nps_ivy.h"
@@ -109,7 +108,6 @@ int main (int argc, char** argv) {
 
 
 static void nps_main_init(void) {
-
   nps_main.sim_time = 0.;
   nps_main.display_time = 0.;
   struct timeval t;
@@ -117,26 +115,10 @@ static void nps_main_init(void) {
   nps_main.real_initial_time = time_to_double(&t);
   nps_main.scaled_initial_time = time_to_double(&t);
 
-  nps_ivy_init(nps_main.ivy_bus);
+  //nps_ivy_init(nps_main.ivy_bus);
   nps_fdm_init(SIM_DT);
   nps_atmosphere_init();
-  nps_sensors_init(nps_main.sim_time);
   printf("Simulating with dt of %f\n", SIM_DT);
-
-  enum NpsRadioControlType rc_type;
-  char* rc_dev = NULL;
-  if (nps_main.js_dev) {
-    rc_type = JOYSTICK;
-    rc_dev = nps_main.js_dev;
-  }
-  else if (nps_main.spektrum_dev) {
-    rc_type = SPEKTRUM;
-    rc_dev = nps_main.spektrum_dev;
-  }
-  else {
-    rc_type = SCRIPT;
-  }
-  nps_autopilot_init(rc_type, nps_main.rc_script, rc_dev);
 
   if (nps_main.fg_host)
     nps_flightgear_init(nps_main.fg_host, nps_main.fg_port, nps_main.fg_time_offset);
@@ -150,24 +132,15 @@ static void nps_main_init(void) {
 
 
 static void nps_main_run_sim_step(void) {
-  //  printf("sim at %f\n", nps_main.sim_time);
-
   nps_atmosphere_update(SIM_DT);
-
-  nps_autopilot_run_systime_step();
-
+  // TODO: here we put commands...
   nps_fdm_run_step(autopilot.launch, autopilot.commands, NPS_COMMANDS_NB);
-
-  nps_sensors_run_step(nps_main.sim_time);
-
-  nps_autopilot_run_step(nps_main.sim_time);
-
 }
 
 
 static void nps_main_display(void) {
   //  printf("display at %f\n", nps_main.display_time);
-  nps_ivy_display();
+  //nps_ivy_display();
   if (nps_main.fg_host)
     nps_flightgear_send();
 }

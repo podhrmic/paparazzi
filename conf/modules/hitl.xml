@@ -1,0 +1,34 @@
+<!DOCTYPE module SYSTEM "module.dtd">
+<module name="hitl" dir="hitl">
+  <doc>
+    <description>Hardware in the loop (HITL) module, currently sending servo commands back to ground</description>
+  </doc>
+
+  <header>
+    <file name="hitl.h"/>
+  </header>
+  <init     fun="hitl_init()"               />
+  <periodic fun="hitl_periodic()" freq="PERIODIC_FREQUENCY"/>
+
+  <makefile target="ap">
+    <file name="hitl.c"/>
+   <raw>
+#    HITL_PORT_LOWER=$(shell echo $(HITL_PORT) | tr A-Z a-z)
+HITL_PORT ?= UsbS
+ap.srcs += $(SRC_ARCH)/usb_ser_hw.c
+   </raw>
+   <define name="USE_USB_SERIAL"/>
+   <define name="HITL_PORT=$(HITL_PORT)"/>
+   <!--
+    <define name="USE_$(HITL_PORT)"/>
+    <define name="$(HITL_PORT)_BAUD=$(HITL_BAUD)"/>
+    <define name="HITL_PORT=$(HITL_PORT_LOWER)"/>
+    -->
+    <!-- Lowercase value only for RT Paparazzi
+    <define name="XGEAR_DMA_PORT" value="UARTD1" />
+    <define name="XGEAR_DMA_BAUD" value="B3000000" />
+    -->
+  </makefile>
+
+</module>
+

@@ -2,11 +2,16 @@
 
 #include "include/LogAutopilot.h"
 #include "include/VectorNav.h"
+#include "include/FDM.h"
+
+
+const float SIM_DT (1./400.0); // we're running at 400Hz
 
 static LogAutopilot *ap;
 static VectorNav *vn;
 static asio::serial_port *apt;
 static asio::serial_port *vpt;
+static FDM *sm;
 
 void init_ap() {
   try {
@@ -15,7 +20,8 @@ void init_ap() {
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception: " << e.what() << "\n";
+    std::cout << "AP: Exception: " << e.what() << "\n";
+    exit(-1);
   }
   cout << "AP port opened!\n";
 }
@@ -27,7 +33,8 @@ void init_vn() {
   }
   catch (const std::exception& e)
   {
-    std::cout << "Exception: " << e.what() << "\n";
+    std::cout << "VN: Exception: " << e.what() << "\n";
+    exit(-1);
   }
   cout << "VN port opened!\n";
 }
@@ -47,6 +54,9 @@ int main() {
   init_vn();
   VectorNav v(*vpt);
   vn = &v;
+
+  FDM sim;
+  sm = &sim;
 
   // master loop
 while (true) {

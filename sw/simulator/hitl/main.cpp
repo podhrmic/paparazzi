@@ -9,13 +9,6 @@ static asio::serial_port *apt;
 static asio::serial_port *vpt;
 
 void init_ap() {
-  /*
-   * We need to open the port before calling autopilot
-   */
-  asio::io_service io;
-  asio::serial_port port(io);
-  apt = &port;
-
   try {
     apt->open(AP_DEV);
     apt->set_option(asio::serial_port_base::baud_rate(AP_BAUD));
@@ -24,17 +17,10 @@ void init_ap() {
   {
     std::cout << "Exception: " << e.what() << "\n";
   }
-
-  boost::asio::io_service ap_service;
-  LogAutopilot a(ap_service, *apt);
-  ap = &a;
+  cout << "AP port opened!\n";
 }
 
 void init_vn() {
-  asio::io_service io;
-  asio::serial_port port(io);
-  vpt = &port;
-
   try {
     vpt->open("/dev/ttyUSB1");
     vpt->set_option(asio::serial_port_base::baud_rate(921600));
@@ -43,25 +29,50 @@ void init_vn() {
   {
     std::cout << "Exception: " << e.what() << "\n";
   }
-  cout << "port opened!\n";
-
-  boost::asio::io_service vn_service;
-  VectorNav v(vn_service, *vpt);
-  vn = &v;
+  cout << "VN port opened!\n";
 }
 
 
 int main() {
-  //init_vn();
-  //init_ap();
+  asio::io_service io1;
+  asio::serial_port port1(io1);
+  apt = &port1;
+  init_ap();
+  LogAutopilot a(*apt);
+  ap = &a;
 
+  asio::io_service io2;
+  asio::serial_port port2(io2);
+  vpt = &port2;
+  init_vn();
+  VectorNav v(*vpt);
+  vn = &v;
 
+  // master loop
+while (true) {
+  // read command message
+  while(!ap->newDataAvailable()) {
+    ap->workerFunc();
+  }
 
+  //get autopilot data
+  ap->getAutopilotData();
 
+  // process it somehow
 
+  // send it to JSBSim
 
+  // get results
 
-  //apt->close();
-  //vpt->close();
+  // convert for VN
+  vn->setNewData(true);
+
+  // send to AP
+  if (vn->hasNewData()) {
+    vn->workerFunc();
+  }
+}
+  apt->close();
+  vpt->close();
   cout << "Done" << endl;
 }

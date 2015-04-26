@@ -21,7 +21,7 @@ enum MsgStatus {
  * Message headers
  */
 #define HITL_SYNC 0xFA
-#define BUF_SIZE 64 // todo maybe smaller buffer
+#define BUF_SIZE 14 // todo maybe smaller buffer
 #define HITL_DATALENGTH 12 // for quadrotor
 #define CHK_LEN 2
 

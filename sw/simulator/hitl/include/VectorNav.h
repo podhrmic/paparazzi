@@ -34,7 +34,6 @@ using namespace std;
 
 class VectorNav {
 private:
-  asio::io_service& io_service_;
   asio::serial_port& port;
   uint8_t buffer[VN_BUFFER_SIZE] = {0};
   uint8_t work_; // flag
@@ -165,35 +164,47 @@ private:
     buffer[idx] = (uint8_t) (chk & 0xFF);
     idx++;
 
+    //cout << "Going to write " << idx << " bytes\n";
     int len = port.write_some(asio::buffer(buffer, idx));
     cout << "Written " << len << " bytes\n";
   }
 
 public:
-  VectorNav(asio::io_service& io_service, asio::serial_port& port_n)
-    : io_service_(io_service), port(port_n) {
+  VectorNav(asio::serial_port& port_n)
+    : port(port_n) {
     work_ = 1;
     new_data = false;
     data = VectorNavData(); // data to be sent.
-
-    boost::thread autothread(boost::bind(&VectorNav::workerFunc, this));
   }
 
   void workerFunc()
   {
-    std::cout << "VN Thread: Starting to work \n";
-    while (work_) {
-      //if (new_data) {
+    //std::cout << "VN Thread: Starting to work \n";
+    //while (work_) {
+      if (new_data) {
         datalock.lock();
         send_data();
         new_data = false;
         datalock.unlock();
-        std::cout << "VN Thread: Working \n";
+        //std::cout << "VN Thread: Working \n";
       //}
       // eventually we wont need to sleep - we will just wait for a signal from another thread
       // this is just an example
-      msleep(VN_UPDATE_RATE);
+      //msleep(VN_UPDATE_RATE);
     }
+  }
+
+  bool hasNewData() {
+    datalock.lock();
+    bool nd = new_data;
+    datalock.unlock();
+    return nd;
+  }
+
+  void setNewData(bool nd){
+    datalock.lock();
+    new_data = nd;
+    datalock.unlock();
   }
 };
 

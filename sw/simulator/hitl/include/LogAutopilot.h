@@ -29,6 +29,7 @@ using namespace std;
 
 class LogAutopilot {
 private:
+  asio::io_service& io_service_;
   MsgPacket data_packet;
   AutopilotData data;
   asio::serial_port& port;
@@ -145,19 +146,24 @@ private:
     datalock.unlock();
 
     //debug
+    /*
     cout << "CNT: " << data.msg_cnt << ", hdr errors: " << data_packet.hdr_error << ", chck err: "
         << data_packet.chksm_error << ", " <<
         data.actuators[0] << ", " << data.actuators[1] << ", " << data.actuators[2] << ", " << data.actuators[3] << endl;
+    */
   }
 
 public:
-  LogAutopilot(asio::serial_port& port_n) : port(port_n) {
+  LogAutopilot(asio::io_service& io_service, asio::serial_port& port_n)
+    : io_service_(io_service), port(port_n) {
     std::cout << "Binding autopilot \n";
     work_ = 1;
     data_packet = MsgPacket();
     data = AutopilotData();
     new_data = false;
     work_ = 1;
+
+    boost::thread autothread(boost::bind(&LogAutopilot::workerFunc, this));
   }
 
   void workerFunc()
@@ -165,6 +171,7 @@ public:
     std::cout << "AP Thread: Starting to work \n";
     while (work_) {
       read_data();
+      // Sleep not needed - we just wait
       msleep(AUTOPILOT_UPDATE_RATE);
     }
   }

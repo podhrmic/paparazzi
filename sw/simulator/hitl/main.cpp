@@ -1,39 +1,67 @@
 #include <iostream>
 
 #include "include/LogAutopilot.h"
+#include "include/VectorNav.h"
 
 static LogAutopilot *ap;
-static asio::serial_port *pt;
+static VectorNav *vn;
+static asio::serial_port *apt;
+static asio::serial_port *vpt;
 
-void init() {
+void init_ap() {
   /*
    * We need to open the port before calling autopilot
    */
   asio::io_service io;
   asio::serial_port port(io);
-  pt = &port;
+  apt = &port;
 
   try {
-    pt->open(AP_DEV);
-    //port.open(AP_DEV);
-    //port.set_option(asio::serial_port_base::baud_rate(AP_BAUD));
-    pt->set_option(asio::serial_port_base::baud_rate(AP_BAUD));
+    apt->open(AP_DEV);
+    apt->set_option(asio::serial_port_base::baud_rate(AP_BAUD));
   }
   catch (const std::exception& e)
   {
     std::cout << "Exception: " << e.what() << "\n";
   }
 
-  LogAutopilot a(*pt);
+  boost::asio::io_service ap_service;
+  LogAutopilot a(ap_service, *apt);
   ap = &a;
-  ap->workerFunc();
+}
 
+void init_vn() {
+  asio::io_service io;
+  asio::serial_port port(io);
+  vpt = &port;
+
+  try {
+    vpt->open("/dev/ttyUSB1");
+    vpt->set_option(asio::serial_port_base::baud_rate(921600));
+  }
+  catch (const std::exception& e)
+  {
+    std::cout << "Exception: " << e.what() << "\n";
+  }
+  cout << "port opened!\n";
+
+  boost::asio::io_service vn_service;
+  VectorNav v(vn_service, *vpt);
+  vn = &v;
 }
 
 
 int main() {
-  init();
+  //init_vn();
+  //init_ap();
 
-  pt->close();
+
+
+
+
+
+
+  //apt->close();
+  //vpt->close();
   cout << "Done" << endl;
 }

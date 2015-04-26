@@ -509,8 +509,8 @@ void vn_packet_read_message(void) {
 
   //Vel body, float [m/s]
   // The estimated velocity in the body (i.e. imu) frame, given in m/s.
-  memcpy(&ins_impl.vel_body, &ins_impl.vn_packet.msg_buf[idx], sizeof(float));
-  idx += sizeof(float);
+  memcpy(&ins_impl.vel_body, &ins_impl.vn_packet.msg_buf[idx], 3*sizeof(float));
+  idx += 3*sizeof(float);
 
   //FIXME
   ins_propagate(0.1);

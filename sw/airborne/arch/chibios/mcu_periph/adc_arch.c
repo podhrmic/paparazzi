@@ -213,14 +213,14 @@ void adc1callback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
         adc1_sum_tmp[channel] = adc1_sum_tmp[channel];
       }
     }
-    chSysLockFromIsr();
+    chSysLockFromISR();
     for (int channel = 0; channel < ADC_NUM_CHANNELS; channel++) {
       if (adc1_buffers[channel] != NULL) {
         adc1_buffers[channel]->sum = adc1_sum_tmp[channel];
         adc1_buffers[channel]->av_nb_sample = adc1_samples_tmp[channel];
       }
     }
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 #endif
   }
 }
@@ -233,10 +233,10 @@ void adc1callback(ADCDriver *adcp, adcsample_t *buffer, size_t n)
  */
 static void adcerrorcallback(ADCDriver *adcp, adcerror_t err)
 {
-  chSysLockFromIsr();
+  chSysLockFromISR();
   adcp_err = adcp;
   adc_error_flag = err;
-  chSysUnlockFromIsr();
+  chSysUnlockFromISR();
 }
 
 /**

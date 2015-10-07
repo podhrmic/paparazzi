@@ -80,7 +80,7 @@ bool_t sdioConnect (void)
 
 
   sdcStart(&SDCD1, NULL);
-  while (sdcConnect(&SDCD1) != CH_SUCCESS) {
+  while (sdcConnect(&SDCD1) != CH_CFG_SUCCESS) {
     chThdSleepMilliseconds(100);
   }
 

@@ -37,7 +37,7 @@
 static uint8_t  nibbleToHex (uint8_t nibble);
 static void	populateSerialNumberDescriptorData (void);
 static msg_t    thdUsbStorage(void *arg);
-static Thread*	usbStorageThreadPtr=NULL;
+static thread_t*	usbStorageThreadPtr=NULL;
 /* USB mass storage driver */
 static USBMassStorageDriver UMSD1;
 static bool_t isRunning = false;
@@ -212,9 +212,9 @@ static void usbEvent(USBDriver* usbp, usbevent_t event)
   switch (event)
   {
     case USB_EVENT_CONFIGURED:
-      chSysLockFromIsr();
+      chSysLockFromISR();
       msdConfigureHookI(&UMSD1);
-      chSysUnlockFromIsr();
+      chSysUnlockFromISR();
       break;
 
     case USB_EVENT_RESET:
@@ -297,7 +297,7 @@ static msg_t     thdUsbStorage(void *arg)
   // used via libopencm3, ISR are routed on pprz/opencm3 and cannot
   // be used concurrently by chibios api
   // Should be fixed when using chibios-rt branch
-  while (!chThdShouldTerminate() && antiBounce) {
+  while (!chThdShouldTerminateX() && antiBounce) {
     const bool_t usbConnected = palReadPad (GPIOA, GPIOA_OTG_FS_VBUS);
     if (usbConnected)
       antiBounce--;
@@ -315,7 +315,7 @@ static msg_t     thdUsbStorage(void *arg)
 
   /* connect sdcard sdc interface sdio */
   if (sdioConnect () == false)
-    chThdExit (RDY_TIMEOUT);
+    chThdExit (MSG_TIMEOUT);
 
   /* initialize the USB mass storage driver */
   msdInit(&UMSD1);
@@ -341,7 +341,7 @@ static msg_t     thdUsbStorage(void *arg)
   }
 
   /* wait until usb-storage is unmount and usb cable is unplugged*/
-  while (!chThdShouldTerminate() && palReadPad (GPIOA, GPIOA_OTG_FS_VBUS)) {
+  while (!chThdShouldTerminateX() && palReadPad (GPIOA, GPIOA_OTG_FS_VBUS)) {
     chThdSleepMilliseconds(10);
   }
 
@@ -353,7 +353,7 @@ static msg_t     thdUsbStorage(void *arg)
   sdioDisconnect ();
 
   MCU_RESTART();
-  return RDY_OK;
+  return MSG_OK;
 }
 
 bool_t usbStorageIsItRunning (void)

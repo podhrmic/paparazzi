@@ -58,7 +58,7 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   static const char *states[] = {THD_STATE_NAMES};
-  Thread *tp;
+  thread_t *tp;
 
   (void)argv;
   if (argc > 0) {
@@ -77,14 +77,14 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
 }
 
 static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
-  Thread *tp;
+  thread_t *tp;
 
   (void)argv;
   if (argc > 0) {
     chprintf(chp, "Usage: test\r\n");
     return;
   }
-  tp = chThdCreateFromHeap(NULL, TEST_WA_SIZE, chThdGetPriority(),
+  tp = chThdCreateFromHeap(NULL, TEST_WA_SIZE, chThdGetPriorityX(),
                            TestThread, chp);
   if (tp == NULL) {
     chprintf(chp, "out of memory\r\n");
@@ -130,7 +130,7 @@ static msg_t Thread1(void *arg) {
 
 int main(void)
 {
-  Thread *shelltp = NULL;
+  thread_t *shelltp = NULL;
   mcu_init();
 
   /*
@@ -150,7 +150,7 @@ int main(void)
   while (TRUE) {
     if (!shelltp)
       shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
-    else if (chThdTerminated(shelltp)) {
+    else if (chThdTerminatedX(shelltp)) {
       chThdRelease(shelltp);    /* Recovers memory of the previous shell.   */
       shelltp = NULL;           /* Triggers spawning of a new shell.        */
     }

@@ -170,12 +170,12 @@ static void  powerOutageIsr (void)
   SCB_ICSR = ICSR_PENDSVSET;
 }
 
-CH_IRQ_HANDLER(PendSVVector) {
-  CH_IRQ_PROLOGUE();
-  chSysLockFromIsr();
+CH_CFG_IRQ_HANDLER(PendSVVector) {
+  CH_CFG_IRQ_PROLOGUE();
+  chSysLockFromISR();
   chEvtBroadcastI(&powerOutageSource);
-  chSysUnlockFromIsr();
-  CH_IRQ_EPILOGUE();
+  chSysUnlockFromISR();
+  CH_CFG_IRQ_EPILOGUE();
 }
 
 static void systemDeepSleep (void)

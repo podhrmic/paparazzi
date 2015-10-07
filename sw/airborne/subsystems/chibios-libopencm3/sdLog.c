@@ -93,7 +93,7 @@ static size_t logRawLen (const size_t len);
 static msg_t thdSdLog(void *arg) ;
 static SdioError sdLoglaunchThread (void);
 static SdioError sdLogStopThread (void);
-static Thread *sdLogThd = NULL;
+static thread_t *sdLogThd = NULL;
 static SdioError  getNextFIL (FileDes *fd);
 #endif
 
@@ -511,7 +511,7 @@ static msg_t thdSdLog(void *arg)
     {[0 ... SDLOG_NUM_BUFFER-1] = {.buffer = {0}, .size = 0}};
 
   chRegSetThreadName("thdSdLog");
-  while (!chThdShouldTerminate()) {
+  while (!chThdShouldTerminateX()) {
     ChunkBufferRO cbro;
     const int32_t retLen = varLenMsgQueuePopChunk (&messagesQueue, &cbro);
     if (retLen > 0) {

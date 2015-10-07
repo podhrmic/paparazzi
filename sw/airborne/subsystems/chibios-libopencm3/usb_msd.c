@@ -252,9 +252,9 @@ static void msd_handle_end_point_notification(USBDriver *usbp, usbep_t ep) {
   (void)usbp;
   (void)ep;
 
-  chSysLockFromIsr();
+  chSysLockFromISR();
   chBSemSignalI(&((USBMassStorageDriver *)usbp->in_params[ep])->bsem);
-  chSysUnlockFromIsr();
+  chSysUnlockFromISR();
 }
 
 /**
@@ -439,7 +439,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
       }
 
       /* now write the block to the block device */
-      if (blkWrite(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_FAILED) {
+      if (blkWrite(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_CFG_FAILED) {
         /* write failed */
         msd_scsi_set_sense(msdp,
             SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -462,7 +462,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
     i = 0;
 
     /* read the first block from block device */
-    if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_FAILED) {
+    if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[i % 2], 1) == CH_CFG_FAILED) {
       /* read failed */
       msd_scsi_set_sense(msdp,
           SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -482,7 +482,7 @@ bool_t msd_scsi_process_start_read_write_10(USBMassStorageDriver *msdp) {
       if (i < (total - 1)) {
         /* there is at least one more block to be read from device */
         /* so read that whilst the USB transfer takes place */
-        if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[(i + 1) % 2], 1) == CH_FAILED) {
+        if (blkRead(msdp->config->bbdp, rw_block_address++, rw_buf[(i + 1) % 2], 1) == CH_CFG_FAILED) {
           /* read failed */
           msd_scsi_set_sense(msdp,
               SCSI_SENSE_KEY_MEDIUM_ERROR,
@@ -735,7 +735,7 @@ static msg_t mass_storage_thread(void *arg) {
   /* wait for the usb to be initialised */
   msd_wait_for_isr(msdp);
 
-  while (!chThdShouldTerminate()) {
+  while (!chThdShouldTerminateX()) {
     wait_for_isr = FALSE;
 
     /* wait on data depending on the current state */

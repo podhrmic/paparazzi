@@ -36,14 +36,14 @@ void chibios_chSysUnlock (void)
   chSysUnlock ();
 }
 
-void chibios_chSysLockFromIsr (void)
+void chibios_chSysLockFromISR (void)
 {
-    chSysLockFromIsr();
+    chSysLockFromISR();
 }
 
-void chibios_chSysUnlockFromIsr (void)
+void chibios_chSysUnlockFromISR (void)
 {
-    chSysUnlockFromIsr();
+    chSysUnlockFromISR();
 }
 
 void chibios_chSysDisable (void)

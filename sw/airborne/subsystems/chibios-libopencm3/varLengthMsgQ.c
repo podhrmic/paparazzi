@@ -114,7 +114,7 @@ int32_t varLenMsgQueuePush(VarLenMsgQueue* que, const void* msg, const size_t ms
       } else {
         postRet = chMBPostAhead (&que->mb, mpl.msgPtrLen, TIME_IMMEDIATE);
       }
-      if (postRet != RDY_OK) {
+      if (postRet != MSG_OK) {
         retVal = ERROR_MAILBOX_FAIL;
         ringBufferSetWritePointer (&que->circBuf, writeIdx);
       }
@@ -139,8 +139,8 @@ int32_t varLenMsgQueuePopTimeout (VarLenMsgQueue* que, void* msg,
 
   varLenMsgQueueLock (que);
 
-  if ((status = chMBFetch (&que->mb, &mpl.msgPtrLen, time) != RDY_OK)) {
-    if (status == RDY_TIMEOUT)
+  if ((status = chMBFetch (&que->mb, &mpl.msgPtrLen, time) != MSG_OK)) {
+    if (status == MSG_TIMEOUT)
       retVal = ERROR_MAILBOX_TIMEOUT;
     else
       retVal = ERROR_MAILBOX_FAIL;
@@ -274,7 +274,7 @@ int32_t varLenMsgQueueSendChunk (VarLenMsgQueue* que, const ChunkBuffer *cbuf,
     postRet = chMBPostAhead (&que->mb, mpl.msgPtrLen, TIME_IMMEDIATE);
   }
 
-  if (postRet != RDY_OK) {
+  if (postRet != MSG_OK) {
     retVal = ERROR_MAILBOX_FAIL;
     // mark previously buffered message in reserved area as sparse chunk so that it will be
     // ignored
@@ -306,7 +306,7 @@ uint32_t varLenMsgQueuePopChunkTimeout (VarLenMsgQueue* que, ChunkBufferRO *cbro
     cbrw->bptr = NULL;
     return ERROR_ZEROCOPY_NOT_ENABLED;
   }
-  if (chMBFetch (&que->mb, &mpl.msgPtrLen, time) == RDY_OK) {
+  if (chMBFetch (&que->mb, &mpl.msgPtrLen, time) == MSG_OK) {
     cbrw->blen=mpl.len;
     cbrw->bptr = ringBufferGetAddrOfElem(&que->circBuf, mpl.ptr);
     return mpl.len;

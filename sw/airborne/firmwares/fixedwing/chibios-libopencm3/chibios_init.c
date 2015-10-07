@@ -41,18 +41,18 @@
 
 
 #ifndef  SYS_TIME_FREQUENCY
-#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_FREQUENCY
-#elif SYS_TIME_FREQUENCY != CH_FREQUENCY
-#error SYS_TIME_FREQUENCY should be equal to CH_FREQUENCY
-#elif  CH_FREQUENCY < (2 * PERIODIC_FREQUENCY)
-#error CH_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
+#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_FREQUENCY
+#elif SYS_TIME_FREQUENCY != CH_CFG_FREQUENCY
+#error SYS_TIME_FREQUENCY should be equal to CH_CFG_FREQUENCY
+#elif  CH_CFG_FREQUENCY < (2 * PERIODIC_FREQUENCY)
+#error CH_CFG_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
 #endif
 
 static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg);
 #define MAX(x , y)  (((x) > (y)) ? (x) : (y))
 #define ARRAY_LEN(a) (sizeof(a)/sizeof(a[0]))
 
-Thread *pprzThdPtr = NULL;
+thread_t *pprzThdPtr = NULL;
 
 static WORKING_AREA(wa_thd_heartbeat, 2048);
 void chibios_launch_heartbeat (void);
@@ -74,7 +74,7 @@ bool_t chibios_init(void) {
       NORMALPRIO, thd_heartbeat, NULL);
 
   usbStorageStartPolling ();
-  return RDY_OK;
+  return MSG_OK;
 }
 
 static WORKING_AREA(pprzThd, 4096);

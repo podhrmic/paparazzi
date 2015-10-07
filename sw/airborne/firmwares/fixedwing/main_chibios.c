@@ -31,11 +31,11 @@
 #include "mcu_periph/sys_time.h"
 
 #ifndef  SYS_TIME_FREQUENCY
-#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_FREQUENCY
-#elif SYS_TIME_FREQUENCY != CH_FREQUENCY
-#error SYS_TIME_FREQUENCY should be equal to CH_FREQUENCY
-#elif  CH_FREQUENCY < (2 * PERIODIC_FREQUENCY)
-#error CH_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
+#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_FREQUENCY
+#elif SYS_TIME_FREQUENCY != CH_CFG_FREQUENCY
+#error SYS_TIME_FREQUENCY should be equal to CH_CFG_FREQUENCY
+#elif  CH_CFG_FREQUENCY < (2 * PERIODIC_FREQUENCY)
+#error CH_CFG_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
 #endif
 
 #ifdef FBW
@@ -65,7 +65,7 @@ static WORKING_AREA(wa_thd_heartbeat, 2048);
  */
 static msg_t thd_pprz(void *arg);
 static WORKING_AREA(wa_thd_pprz, 4096);
-Thread *pprzThdPtr = NULL;
+thread_t *pprzThdPtr = NULL;
 
 /**
  * Main function
@@ -116,13 +116,13 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
     //chThdSleepMilliseconds (sdOk == TRUE ? 1000 : 200);
     //static uint32_t timestamp = 0;
 
-    Thread *tp = chRegFirstThread();
+    thread_t *tp = chRegFirstThread();
     do {
       tp = chRegNextThread(tp);
     } while (tp != NULL);
     // we sync gps time to rtc every 5 seconds
-    //if (chTimeNow() - timestamp > 5000) {
-    //  timestamp = chTimeNow();
+    //if (chVTGetSystemTime() - timestamp > 5000) {
+    //  timestamp = chVTGetSystemTime();
     //  if (getGpsTimeOfWeek() != 0) {
     //    setRtcFromGps (getGpsWeek(), getGpsTimeOfWeek());
     //  }

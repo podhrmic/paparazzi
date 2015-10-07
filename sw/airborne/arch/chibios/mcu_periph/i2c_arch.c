@@ -81,16 +81,16 @@ static void handle_i2c_thd(struct i2c_periph *p)
 
   // Set report status and errors
   switch (status) {
-    case RDY_OK:
+    case MSG_OK:
       //if the function succeeded
       t->status = I2CTransSuccess;
       break;
-    case RDY_TIMEOUT:
+    case MSG_TIMEOUT:
       //if a timeout occurred before operation end
       // mark as failed
       t->status = I2CTransFailed;
       break;
-    case RDY_RESET:
+    case MSG_RESET:
       //if one or more I2C errors occurred, the errors can
       //be retrieved using @p i2cGetErrors().
       t->status = I2CTransFailed;

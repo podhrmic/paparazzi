@@ -37,13 +37,13 @@
 /*
  * Thread Area Definitions
  */
-#define CH_THREAD_AREA_MAIN_PERIODIC 128
+#define CH_CFG_THREAD_AREA_MAIN_PERIODIC 128
 
 /*
  * Thread Area Initialization
  */
-static WORKING_AREA(wa_thd_main_periodic_05, CH_THREAD_AREA_MAIN_PERIODIC);
-static WORKING_AREA(wa_thd_rx, CH_THREAD_AREA_MAIN_PERIODIC);
+static WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static WORKING_AREA(wa_thd_rx, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
 
 /*
  * Static Thread Definitions
@@ -61,7 +61,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg)
 {
   chRegSetThreadName("thd_blinker");
   (void) arg;
-  systime_t time = chTimeNow();
+  systime_t time = chVTGetSystemTime();
   while (TRUE)
   {
     time += MS2ST(500);

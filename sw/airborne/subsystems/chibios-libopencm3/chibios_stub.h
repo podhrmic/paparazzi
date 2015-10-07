@@ -25,8 +25,8 @@
 
 extern void chibios_chSysLock (void);
 extern void chibios_chSysUnlock (void);
-extern void chibios_chSysLockFromIsr (void);
-extern void chibios_chSysUnlockFromIsr (void);
+extern void chibios_chSysLockFromISR (void);
+extern void chibios_chSysUnlockFromISR (void);
 extern void chibios_chSysDisable (void);
 extern void chibios_chSysEnable (void);
 extern void chibios_chRegSetThreadName (const char* thdName);

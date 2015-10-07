@@ -38,12 +38,12 @@ static inline void main_periodic_05(void);
 /*
  * Thread Area Definitions
  */
-#define CH_THREAD_AREA_MAIN_PERIODIC 128
+#define CH_CFG_THREAD_AREA_MAIN_PERIODIC 128
 
 /*
  * Thread Area Initialization
  */
-static WORKING_AREA(wa_thd_main_periodic_05, CH_THREAD_AREA_MAIN_PERIODIC);
+static WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
 
 /*
  * Static Thread Definitions
@@ -60,7 +60,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_05");
   (void) arg;
-  systime_t time = chTimeNow();
+  systime_t time = chVTGetSystemTime();
   while (TRUE)
   {
     time += MS2ST(500);
@@ -88,8 +88,8 @@ int main(void)
     /* sleep for 0.42s */
     /*
     * sys_time_usleep(uint32_t us)
-    * Use only for up to 2^32/CH_FREQUENCY-1 usec
-    * e.g. if CH_FREQUENCY=10000 use max for 420000 us
+    * Use only for up to 2^32/CH_CFG_FREQUENCY-1 usec
+    * e.g. if CH_CFG_FREQUENCY=10000 use max for 420000 us
     * or 420ms, otherwise overflow happens
 	*/
     sys_time_usleep(420000);

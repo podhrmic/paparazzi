@@ -16,7 +16,7 @@
 #include "jpeg.h"
 
 /**
- * @file modules/computer_vision/cv/encoding/jpeg.c
+ * @file modules/computer_vision/lib/encoding/jpeg.c
  * Encode images with the use of the JPEG encoding
  */
 
@@ -431,6 +431,9 @@ void jpeg_encode_image(struct image_t *in, struct image_t *out, uint32_t quality
 
   if (in->type == IMAGE_YUV422) {
     image_format = FOUR_TWO_TWO;
+  }
+  else if (in->type == IMAGE_GRAYSCALE) {
+      image_format = FOUR_ZERO_ZERO;
   }
 
   JPEG_ENCODER_STRUCTURE JpegStruct;

@@ -37,45 +37,49 @@
 #include "lib/encoding/jpeg.h"
 #include "lib/encoding/rtp.h"
 
-/* default sonar/agl to use in opticflow visual_estimator */
+/* Default sonar/agl to use in opticflow visual_estimator */
 #ifndef OPTICFLOW_AGL_ID
-#define OPTICFLOW_AGL_ID ABI_BROADCAST
+#define OPTICFLOW_AGL_ID ABI_BROADCAST    ///< Default sonar/agl to use in opticflow visual_estimator
 #endif
-PRINT_CONFIG_VAR(OPTICFLOW_AGL_ID);
+PRINT_CONFIG_VAR(OPTICFLOW_AGL_ID)
+
+#ifndef OPTICFLOW_SENDER_ID
+#define OPTICFLOW_SENDER_ID 1
+#endif
 
 /* The video device */
 #ifndef OPTICFLOW_DEVICE
-#define OPTICFLOW_DEVICE /dev/video2
+#define OPTICFLOW_DEVICE /dev/video2      ///< The video device
 #endif
-PRINT_CONFIG_VAR(OPTICFLOW_DEVICE);
+PRINT_CONFIG_VAR(OPTICFLOW_DEVICE)
 
 /* The video device size (width, height) */
 #ifndef OPTICFLOW_DEVICE_SIZE
-#define OPTICFLOW_DEVICE_SIZE 320,240
+#define OPTICFLOW_DEVICE_SIZE 320,240     ///< The video device size (width, height)
 #endif
 #define __SIZE_HELPER(x, y) #x", "#y
 #define _SIZE_HELPER(x) __SIZE_HELPER(x)
-PRINT_CONFIG_MSG("OPTICFLOW_DEVICE_SIZE = " _SIZE_HELPER(OPTICFLOW_DEVICE_SIZE));
+PRINT_CONFIG_MSG("OPTICFLOW_DEVICE_SIZE = " _SIZE_HELPER(OPTICFLOW_DEVICE_SIZE))
 
 /* The video device buffers (the amount of V4L2 buffers) */
 #ifndef OPTICFLOW_DEVICE_BUFFERS
-#define OPTICFLOW_DEVICE_BUFFERS 15
+#define OPTICFLOW_DEVICE_BUFFERS 15       ///< The video device buffers (the amount of V4L2 buffers)
 #endif
-PRINT_CONFIG_VAR(VIEWVIDEO_DEVICE_BUFFERS);
+PRINT_CONFIG_VAR(OPTICFLOW_DEVICE_BUFFERS)
 
 /* The main opticflow variables */
-struct opticflow_t opticflow;                       //< Opticflow calculations
-static struct opticflow_result_t opticflow_result;  //< The opticflow result
-static struct opticflow_state_t opticflow_state;    //< State of the drone to communicate with the opticflow
-static struct v4l2_device *opticflow_dev;           //< The opticflow camera V4L2 device
-static abi_event opticflow_agl_ev;                  //< The altitude ABI event
-static pthread_t opticflow_calc_thread;             //< The optical flow calculation thread
-static bool_t opticflow_got_result;                 //< When we have an optical flow calculation
-static pthread_mutex_t opticflow_mutex;             //< Mutex lock fo thread safety
+struct opticflow_t opticflow;                      ///< Opticflow calculations
+static struct opticflow_result_t opticflow_result; ///< The opticflow result
+static struct opticflow_state_t opticflow_state;   ///< State of the drone to communicate with the opticflow
+static struct v4l2_device *opticflow_dev;          ///< The opticflow camera V4L2 device
+static abi_event opticflow_agl_ev;                 ///< The altitude ABI event
+static pthread_t opticflow_calc_thread;            ///< The optical flow calculation thread
+static bool_t opticflow_got_result;                ///< When we have an optical flow calculation
+static pthread_mutex_t opticflow_mutex;            ///< Mutex lock fo thread safety
 
 /* Static functions */
-static void *opticflow_module_calc(void *data);                   //< The main optical flow calculation thread
-static void opticflow_agl_cb(uint8_t sender_id, float distance);  //< Callback function of the ground altitude
+static void *opticflow_module_calc(void *data);                   ///< The main optical flow calculation thread
+static void opticflow_agl_cb(uint8_t sender_id, float distance);  ///< Callback function of the ground altitude
 
 #if PERIODIC_TELEMETRY
 #include "subsystems/datalink/telemetry.h"
@@ -92,8 +96,8 @@ static void opticflow_telem_send(struct transport_tx *trans, struct link_device 
                                &opticflow_result.tracked_cnt, &opticflow_result.flow_x,
                                &opticflow_result.flow_y, &opticflow_result.flow_der_x,
                                &opticflow_result.flow_der_y, &opticflow_result.vel_x,
-                               &opticflow_result.vel_y,
-                               &opticflow_stab.cmd.phi, &opticflow_stab.cmd.theta);
+                               &opticflow_result.vel_y, &opticflow_result.div_size,
+                               &opticflow_result.surface_roughness, &opticflow_result.divergence);
   pthread_mutex_unlock(&opticflow_mutex);
 }
 #endif
@@ -116,8 +120,8 @@ void opticflow_module_init(void)
   opticflow_got_result = FALSE;
 
 #ifdef OPTICFLOW_SUBDEV
-  PRINT_CONFIG_MSG("[opticflow_module] Configuring a subdevice!");
-  PRINT_CONFIG_VAR(OPTICFLOW_SUBDEV);
+  PRINT_CONFIG_MSG("[opticflow_module] Configuring a subdevice!")
+  PRINT_CONFIG_VAR(OPTICFLOW_SUBDEV)
 
   /* Initialize the V4L2 subdevice (TODO: fix hardcoded path, which and code) */
   if (!v4l2_init_subdev(STRINGIFY(OPTICFLOW_SUBDEV), 0, 1, V4L2_MBUS_FMT_UYVY8_2X8, OPTICFLOW_DEVICE_SIZE)) {
@@ -127,7 +131,7 @@ void opticflow_module_init(void)
 #endif
 
   /* Try to initialize the video device */
-  opticflow_dev = v4l2_init(STRINGIFY(OPTICFLOW_DEVICE), OPTICFLOW_DEVICE_SIZE, OPTICFLOW_DEVICE_BUFFERS);
+  opticflow_dev = v4l2_init(STRINGIFY(OPTICFLOW_DEVICE), OPTICFLOW_DEVICE_SIZE, OPTICFLOW_DEVICE_BUFFERS, V4L2_PIX_FMT_UYVY);
   if (opticflow_dev == NULL) {
     printf("[opticflow_module] Could not initialize the video device\n");
   }
@@ -150,7 +154,21 @@ void opticflow_module_run(void)
 
   // Update the stabilization loops on the current calculation
   if (opticflow_got_result) {
-    stabilization_opticflow_update(&opticflow_result);
+    uint32_t now_ts = get_sys_time_usec();
+    uint8_t quality = opticflow_result.divergence; // FIXME, scale to some quality measure 0-255
+    AbiSendMsgOPTICAL_FLOW(OPTICFLOW_SENDER_ID, now_ts,
+                           opticflow_result.flow_x,
+                           opticflow_result.flow_y,
+                           opticflow_result.flow_der_x,
+                           opticflow_result.flow_der_x,
+                           quality,
+                           opticflow_state.agl);
+    if (opticflow_result.tracked_cnt > 0) {
+      AbiSendMsgVELOCITY_ESTIMATE(OPTICFLOW_SENDER_ID, now_ts,
+                                  opticflow_result.vel_x,
+                                  opticflow_result.vel_y,
+                                  0.0f);
+    }
     opticflow_got_result = FALSE;
   }
   pthread_mutex_unlock(&opticflow_mutex);

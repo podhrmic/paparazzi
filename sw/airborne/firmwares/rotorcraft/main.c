@@ -46,8 +46,12 @@
 #include "subsystems/actuators/motor_mixing.h"
 #endif
 
+#if USE_IMU
 #include "subsystems/imu.h"
+#endif
+#if USE_GPS
 #include "subsystems/gps.h"
+#endif
 
 #if USE_BARO_BOARD
 #include "subsystems/sensors/baro.h"
@@ -105,12 +109,6 @@ INFO_VALUE("it is recommended to configure in your airframe PERIODIC_FREQUENCY t
 #endif
 #endif
 
-static inline void on_gyro_event(void);
-static inline void on_accel_event(void);
-static inline void on_gps_event(void);
-static inline void on_mag_event(void);
-
-
 tid_t main_periodic_tid; ///< id for main_periodic() timer
 tid_t modules_tid;       ///< id for modules_periodic_task() timer
 tid_t failsafe_tid;      ///< id for failsafe_check() timer
@@ -126,10 +124,34 @@ int main(void)
 {
   main_init();
 
+#if LIMIT_EVENT_POLLING
+  /* Limit main loop frequency to 1kHz.
+   * This is a kludge until we can better leverage threads and have real events.
+   * Without this limit the event flags will constantly polled as fast as possible,
+   * resulting on 100% cpu load on boards with an (RT)OS.
+   * On bare metal boards this is not an issue, as you have nothing else running anyway.
+   */
+  uint32_t t_begin = 0;
+  uint32_t t_diff = 0;
+  while (1) {
+    t_begin = get_sys_time_usec();
+
+    handle_periodic_tasks();
+    main_event();
+
+    /* sleep remaining time to limit to 1kHz */
+    t_diff = get_sys_time_usec() - t_begin;
+    if (t_diff < 1000) {
+      sys_time_usleep(1000 - t_diff);
+    }
+  }
+#else
   while (1) {
     handle_periodic_tasks();
     main_event();
   }
+#endif
+
   return 0;
 }
 #endif /* SITL */
@@ -152,7 +174,9 @@ STATIC_INLINE void main_init(void)
 #if USE_BARO_BOARD
   baro_init();
 #endif
+#if USE_IMU
   imu_init();
+#endif
 #if USE_AHRS_ALIGNER
   ahrs_aligner_init();
 #endif
@@ -190,8 +214,10 @@ STATIC_INLINE void main_init(void)
   baro_tid = sys_time_register_timer(1. / BARO_PERIODIC_FREQUENCY, NULL);
 #endif
 
+#if USE_IMU
   // send body_to_imu from here for now
   AbiSendMsgBODY_TO_IMU_QUAT(1, orientationGetQuat_f(&imu.body_to_imu));
+#endif
 }
 
 STATIC_INLINE void handle_periodic_tasks(void)
@@ -224,7 +250,9 @@ STATIC_INLINE void handle_periodic_tasks(void)
 STATIC_INLINE void main_periodic(void)
 {
 
+#if USE_IMU
   imu_periodic();
+#endif
 
   //FIXME: temporary hack, remove me
 #ifdef InsPeriodic
@@ -238,12 +266,12 @@ STATIC_INLINE void main_periodic(void)
   SetActuatorsFromCommands(commands, autopilot_mode);
 
   if (autopilot_in_flight) {
-    RunOnceEvery(PERIODIC_FREQUENCY, { autopilot_flight_time++;
-#if defined DATALINK || defined SITL
-                                       datalink_time++;
-#endif
-                                     });
+    RunOnceEvery(PERIODIC_FREQUENCY, autopilot_flight_time++);
   }
+
+#if defined DATALINK || defined SITL
+  RunOnceEvery(PERIODIC_FREQUENCY, datalink_time++);
+#endif
 
   RunOnceEvery(10, LED_PERIODIC());
 }
@@ -311,7 +339,7 @@ STATIC_INLINE void failsafe_check(void)
 
 STATIC_INLINE void main_event(void)
 {
-  /* event functions for mcu peripherals, like i2c, uart, etc.. */
+  /* event functions for mcu peripherals: i2c, usb_serial.. */
   mcu_event();
 
   DatalinkEvent();
@@ -320,14 +348,21 @@ STATIC_INLINE void main_event(void)
     RadioControlEvent(autopilot_on_rc_frame);
   }
 
-  ImuEvent(on_gyro_event, on_accel_event, on_mag_event);
+#if USE_IMU
+  ImuEvent();
+#endif
+
+#ifdef InsEvent
+  TODO("calling InsEvent, remove me..")
+  InsEvent();
+#endif
 
 #if USE_BARO_BOARD
   BaroEvent();
 #endif
 
 #if USE_GPS
-  GpsEvent(on_gps_event);
+  GpsEvent();
 #endif
 
 #if FAILSAFE_GROUND_DETECT || KILL_ON_GROUND_DETECT
@@ -335,65 +370,4 @@ STATIC_INLINE void main_event(void)
 #endif
 
   modules_event_task();
-
-}
-
-static inline void on_accel_event( void ) {
-  // current timestamp
-  uint32_t now_ts = get_sys_time_usec();
-
-  imu_scale_accel(&imu);
-
-  AbiSendMsgIMU_ACCEL_INT32(1, now_ts, &imu.accel);
-}
-
-static inline void on_gyro_event( void ) {
-  // current timestamp
-  uint32_t now_ts = get_sys_time_usec();
-
-  imu_scale_gyro(&imu);
-
-  AbiSendMsgIMU_GYRO_INT32(1, now_ts, &imu.gyro_prev);
-
-#if USE_AHRS_ALIGNER
-  if (ahrs_aligner.status != AHRS_ALIGNER_LOCKED) {
-    ahrs_aligner_run();
-    return;
-  }
-#endif
-
-#ifdef SITL
-  if (nps_bypass_ahrs) sim_overwrite_ahrs();
-#endif
-
-#ifdef USE_VEHICLE_INTERFACE
-  vi_notify_imu_available();
-#endif
-}
-
-static inline void on_gps_event(void)
-{
-  // current timestamp
-  uint32_t now_ts = get_sys_time_usec();
-
-  AbiSendMsgGPS(1, now_ts, &gps);
-
-#ifdef USE_VEHICLE_INTERFACE
-  if (gps.fix == GPS_FIX_3D) {
-    vi_notify_gps_available();
-  }
-#endif
-}
-
-static inline void on_mag_event(void)
-{
-  imu_scale_mag(&imu);
-  // current timestamp
-  uint32_t now_ts = get_sys_time_usec();
-
-  AbiSendMsgIMU_MAG_INT32(1, now_ts, &imu.mag);
-
-#ifdef USE_VEHICLE_INTERFACE
-  vi_notify_mag_available();
-#endif
 }

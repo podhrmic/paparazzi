@@ -378,6 +378,9 @@ include $(CFG_SHARED)/baro_board.makefile
 endif
 test_baro_board.CFLAGS += $(BARO_BOARD_CFLAGS)
 test_baro_board.srcs += $(BARO_BOARD_SRCS)
+ifeq ($(IMU_INIT),1)
+test_baro_board.srcs += test/test_baro_board_imu.c
+endif
 
 
 #
@@ -413,6 +416,7 @@ test_imu.srcs   += $(COMMON_TEST_SRCS)
 test_imu.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
 test_imu.srcs   += $(COMMON_TELEMETRY_SRCS)
 test_imu.srcs   += mcu_periph/i2c.c $(SRC_ARCH)/mcu_periph/i2c_arch.c
+test_imu.srcs   += state.c
 test_imu.srcs   += test/subsystems/test_imu.c
 test_imu.srcs   += math/pprz_geodetic_int.c math/pprz_geodetic_float.c math/pprz_geodetic_double.c math/pprz_trig_int.c math/pprz_orientation_conversion.c math/pprz_algebra_int.c math/pprz_algebra_float.c math/pprz_algebra_double.c
 

@@ -51,7 +51,7 @@ CFG_SHARED=$(PAPARAZZI_SRC)/conf/firmwares/subsystems/shared
 PERIODIC_FREQUENCY ?= 500
 
 COMMON_TEST_CFLAGS  = -I$(SRC_ARCH) -I$(SRC_BOARD) -DBOARD_CONFIG=$(BOARD_CFG)
-COMMON_TEST_CFLAGS += -DUSE_CHIBIOS_RTOS -DSTM32F407xx
+COMMON_TEST_CFLAGS += -DUSE_CHIBIOS_RTOS
 COMMON_TEST_CFLAGS += -DPERIPHERALS_AUTO_INIT
 COMMON_TEST_SRCS    = mcu.c $(SRC_ARCH)/mcu_arch.c
 ifneq ($(SYS_TIME_LED),none)
@@ -96,6 +96,14 @@ test_sys_gpio.ARCHDIR = $(ARCH)
 test_sys_gpio.CFLAGS += $(COMMON_TEST_CFLAGS) 
 test_sys_gpio.srcs   += $(COMMON_TEST_SRCS)
 test_sys_gpio.srcs   += test/mcu_periph/chibios_test_gpio.c
+
+#
+# test led
+#
+test_led.ARCHDIR = $(ARCH)
+test_led.CFLAGS += $(COMMON_TEST_CFLAGS) 
+test_led.srcs   += $(COMMON_TEST_SRCS)
+test_led.srcs   += test/chibios_test_led.c
 
 #
 # test shell

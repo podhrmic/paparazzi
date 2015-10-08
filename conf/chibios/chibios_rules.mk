@@ -144,9 +144,9 @@ else
 endif
 
 # Generate dependency information
-ASFLAGS  += -MD -MP -MF .dep/$(@F).d
-CFLAGS   += -MD -MP -MF .dep/$(@F).d
-CPPFLAGS += -MD -MP -MF .dep/$(@F).d
+ASFLAGS  += -MD -MP -MF $(BUILDDIR)/.dep/$(@F).d
+CFLAGS   += -MD -MP -MF $(BUILDDIR)/.dep/$(@F).d
+CPPFLAGS += -MD -MP -MF $(BUILDDIR)/.dep/$(@F).d
 
 # Paths where to search for sources
 VPATH     = $(SRCPATHS)
@@ -301,14 +301,13 @@ $(BUILDDIR)/lib$(PROJECT).a: $(OBJS)
 
 clean:
 	@echo Cleaning
-	-rm -fR .dep $(BUILDDIR)
+	-rm -fR $(BUILDDIR)/.dep $(BUILDDIR)
 	@echo
 	@echo Done
 
 #
 # Include the dependency files, should be the last of the makefile
 #
-#-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
 -include $(shell mkdir $(BUILDDIR)/.dep 2>/dev/null) $(wildcard $(BUILDDIR)/.dep/*)
 
 # *** EOF ***

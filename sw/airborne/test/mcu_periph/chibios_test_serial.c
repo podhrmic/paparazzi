@@ -42,14 +42,14 @@
 /*
  * Thread Area Initialization
  */
-static WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
-static WORKING_AREA(wa_thd_rx, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_rx, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
 
 /*
  * Static Thread Definitions
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg);
-static __attribute__((noreturn)) msg_t thd_rx(void *arg);
+static __attribute__((noreturn)) void thd_main_periodic_05(void *arg);
+static __attribute__((noreturn)) void thd_rx(void *arg);
 
 /*
  * Test Thread
@@ -57,7 +57,7 @@ static __attribute__((noreturn)) msg_t thd_rx(void *arg);
  * Replaces main_periodic_05()
  *
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg)
+static __attribute__((noreturn)) void thd_main_periodic_05(void *arg)
 {
   chRegSetThreadName("thd_blinker");
   (void) arg;
@@ -75,7 +75,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg)
 /*
  * Serial RX thread
  */
-__attribute__((noreturn)) msg_t thd_rx(void *arg)
+__attribute__((noreturn)) void thd_rx(void *arg)
 {
   chRegSetThreadName("rx_thread");
   (void) arg;

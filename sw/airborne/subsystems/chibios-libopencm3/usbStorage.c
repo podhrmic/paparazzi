@@ -258,7 +258,7 @@ static USBMassStorageConfig msdConfig =
 };
 
 
-static WORKING_AREA(waThdUsbStorage, 1024);
+static THD_WORKING_AREA(waThdUsbStorage, 1024);
 void usbStorageStartPolling (void)
 {
   populateSerialNumberDescriptorData ();

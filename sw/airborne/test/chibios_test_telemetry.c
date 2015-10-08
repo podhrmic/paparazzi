@@ -43,8 +43,8 @@
 /*
  * Red LEDs blinker thread, times are in milliseconds.
  */
-static WORKING_AREA(waThdBlinker, 128);
-static msg_t ThdBlinker(void *arg) {
+static THD_WORKING_AREA(waThdBlinker, 128);
+static void ThdBlinker(void *arg) {
 
   (void)arg;
   chRegSetThreadName("blinker");
@@ -57,8 +57,8 @@ static msg_t ThdBlinker(void *arg) {
   return 0;
 }
 
-static WORKING_AREA(waThdTx, 1024);
-static msg_t ThdTx(void *arg) {
+static THD_WORKING_AREA(waThdTx, 1024);
+static void ThdTx(void *arg) {
 
   (void)arg;
   chRegSetThreadName("sender");

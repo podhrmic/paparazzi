@@ -110,7 +110,7 @@ static struct SerialInit uart1_mtx = { NULL, NULL };
 #if USE_UART1_RX
 static MUTEX_DECL(uart1_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart1_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart1_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart1_rx");
@@ -120,13 +120,13 @@ static __attribute__((noreturn)) msg_t thd_uart1_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart1_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart1_rx, 1024);
 #endif
 
 #if USE_UART1_TX
 static MUTEX_DECL(uart1_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart1_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart1_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart1_tx");
@@ -135,7 +135,7 @@ static __attribute__((noreturn)) msg_t thd_uart1_tx(void *arg)
     handle_uart_tx(&uart1);
   }
 }
-static WORKING_AREA(wa_thd_uart1_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart1_tx, 1024);
 #endif
 
 void uart1_init(void)
@@ -188,7 +188,7 @@ static struct SerialInit uart2_mtx = { NULL, NULL };
 #if USE_UART2_RX
 static MUTEX_DECL(uart2_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart2_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart2_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart2_rx");
@@ -198,13 +198,13 @@ static __attribute__((noreturn)) msg_t thd_uart2_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart2_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart2_rx, 1024);
 #endif
 
 #if USE_UART2_TX
 static MUTEX_DECL(uart2_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart2_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart2_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart2_tx");
@@ -213,7 +213,7 @@ static __attribute__((noreturn)) msg_t thd_uart2_tx(void *arg)
     handle_uart_tx(&uart2);
   }
 }
-static WORKING_AREA(wa_thd_uart2_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart2_tx, 1024);
 #endif
 
 void uart2_init(void)
@@ -265,7 +265,7 @@ static struct SerialInit uart3_mtx = { NULL, NULL };
 #if USE_UART3_RX
 static MUTEX_DECL(uart3_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart3_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart3_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart3_rx");
@@ -275,13 +275,13 @@ static __attribute__((noreturn)) msg_t thd_uart3_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart3_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart3_rx, 1024);
 #endif
 
 #if USE_UART3_TX
 static MUTEX_DECL(uart3_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart3_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart3_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart3_tx");
@@ -290,7 +290,7 @@ static __attribute__((noreturn)) msg_t thd_uart3_tx(void *arg)
     handle_uart_tx(&uart3);
   }
 }
-static WORKING_AREA(wa_thd_uart3_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart3_tx, 1024);
 #endif
 
 void uart3_init(void)
@@ -342,7 +342,7 @@ static struct SerialInit uart4_mtx = { NULL, NULL };
 #if USE_UART4_RX
 static MUTEX_DECL(uart4_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart4_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart4_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart4_rx");
@@ -352,13 +352,13 @@ static __attribute__((noreturn)) msg_t thd_uart4_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart4_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart4_rx, 1024);
 #endif
 
 #if USE_UART4_TX
 static MUTEX_DECL(uart4_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart4_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart4_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart4_tx");
@@ -367,7 +367,7 @@ static __attribute__((noreturn)) msg_t thd_uart4_tx(void *arg)
     handle_uart_tx(&uart4);
   }
 }
-static WORKING_AREA(wa_thd_uart4_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart4_tx, 1024);
 #endif
 
 void uart4_init(void)
@@ -411,7 +411,7 @@ static struct SerialInit uart5_mtx = { NULL, NULL };
 #if USE_UART5_RX
 static MUTEX_DECL(uart5_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart5_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart5_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart5_rx");
@@ -421,13 +421,13 @@ static __attribute__((noreturn)) msg_t thd_uart5_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart5_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart5_rx, 1024);
 #endif
 
 #if USE_UART5_TX
 static MUTEX_DECL(uart5_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart5_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart5_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart5_tx");
@@ -436,7 +436,7 @@ static __attribute__((noreturn)) msg_t thd_uart5_tx(void *arg)
     handle_uart_tx(&uart5);
   }
 }
-static WORKING_AREA(wa_thd_uart5_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart5_tx, 1024);
 #endif
 
 void uart5_init(void)
@@ -480,7 +480,7 @@ static struct SerialInit uart6_mtx = { NULL, NULL };
 #if USE_UART6_RX
 static MUTEX_DECL(uart6_rx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart6_rx(void *arg)
+static __attribute__((noreturn)) void thd_uart6_rx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart6_rx");
@@ -490,13 +490,13 @@ static __attribute__((noreturn)) msg_t thd_uart6_rx(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_uart6_rx, 1024);
+static THD_WORKING_AREA(wa_thd_uart6_rx, 1024);
 #endif
 
 #if USE_UART6_TX
 static MUTEX_DECL(uart6_tx_mtx);
 
-static __attribute__((noreturn)) msg_t thd_uart6_tx(void *arg)
+static __attribute__((noreturn)) void thd_uart6_tx(void *arg)
 {
   (void) arg;
   chRegSetThreadName("uart6_tx");
@@ -505,7 +505,7 @@ static __attribute__((noreturn)) msg_t thd_uart6_tx(void *arg)
     handle_uart_tx(&uart6);
   }
 }
-static WORKING_AREA(wa_thd_uart6_tx, 1024);
+static THD_WORKING_AREA(wa_thd_uart6_tx, 1024);
 #endif
 
 void uart6_init(void)

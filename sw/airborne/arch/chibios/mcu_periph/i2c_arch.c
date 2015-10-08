@@ -63,7 +63,7 @@ static void handle_i2c_thd(struct i2c_periph *p)
 
   p->status = I2CStartRequested;
   // submit i2c transaction
-  msg_t status = i2cMasterTransmitTimeout(
+  void status = i2cMasterTransmitTimeout(
       (I2CDriver*)p->reg_addr,
       (i2caddr_t)((t->slave_addr)>>1),
       (uint8_t*)t->buf, (size_t)(t->len_w),
@@ -129,8 +129,8 @@ static const I2CConfig i2cfg1 = I2C1_CFG_DEF;
 // Errors
 struct i2c_errors i2c1_errors;
 // Thread
-static __attribute__((noreturn)) msg_t thd_i2c1(void *arg);
-static WORKING_AREA(wa_thd_i2c1, 1024);
+static __attribute__((noreturn)) void thd_i2c1(void *arg);
+static THD_WORKING_AREA(wa_thd_i2c1, 1024);
 
 /*
  * I2C1 init
@@ -151,7 +151,7 @@ void i2c1_hw_init(void)
  * I2C1 thread
  *
  */
-static msg_t thd_i2c1(void *arg)
+static void thd_i2c1(void *arg)
 {
   (void) arg;
   chRegSetThreadName("i2c1");
@@ -169,8 +169,8 @@ static const I2CConfig i2cfg2 = I2C2_CFG_DEF;
 // Errors
 struct i2c_errors i2c2_errors;
 // Thread
-static __attribute__((noreturn)) msg_t thd_i2c2(void *arg);
-static WORKING_AREA(wa_thd_i2c2, 1024);
+static __attribute__((noreturn)) void thd_i2c2(void *arg);
+static THD_WORKING_AREA(wa_thd_i2c2, 1024);
 
 /*
  * I2C2 init
@@ -191,7 +191,7 @@ void i2c2_hw_init(void)
  * I2C2 thread
  *
  */
-static msg_t thd_i2c2(void *arg)
+static void thd_i2c2(void *arg)
 {
   (void) arg;
   chRegSetThreadName("i2c2");
@@ -209,8 +209,8 @@ static const I2CConfig i2cfg3 = I2C3_CFG_DEF;
 // Errors
 struct i2c_errors i2c3_errors;
 // Thread
-static __attribute__((noreturn)) msg_t thd_i2c3(void *arg);
-static WORKING_AREA(wa_thd_i2c3, 1024);
+static __attribute__((noreturn)) void thd_i2c3(void *arg);
+static THD_WORKING_AREA(wa_thd_i2c3, 1024);
 
 /*
  * I2C3 init
@@ -231,7 +231,7 @@ void i2c3_hw_init(void)
  * I2C3 thread
  *
  */
-static msg_t thd_i2c3(void *arg)
+static void thd_i2c3(void *arg)
 {
   (void) arg;
   chRegSetThreadName("i2c3");

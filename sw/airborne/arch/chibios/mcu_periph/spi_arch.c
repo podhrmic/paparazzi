@@ -270,7 +270,7 @@ static void handle_spi_thd(struct spi_periph *p)
  */
 
 #if USE_SPI1
-static __attribute__((noreturn)) msg_t thd_spi1(void *arg)
+static __attribute__((noreturn)) void thd_spi1(void *arg)
 {
   (void) arg;
   chRegSetThreadName("spi1");
@@ -280,7 +280,7 @@ static __attribute__((noreturn)) msg_t thd_spi1(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_spi1, 1024);
+static THD_WORKING_AREA(wa_thd_spi1, 1024);
 
 void spi1_arch_init(void)
 {
@@ -293,7 +293,7 @@ void spi1_arch_init(void)
 #endif
 
 #if USE_SPI2
-static __attribute__((noreturn)) msg_t thd_spi2(void *arg)
+static __attribute__((noreturn)) void thd_spi2(void *arg)
 {
   (void) arg;
   chRegSetThreadName("spi2");
@@ -303,7 +303,7 @@ static __attribute__((noreturn)) msg_t thd_spi2(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_spi2, 1024);
+static THD_WORKING_AREA(wa_thd_spi2, 1024);
 
 void spi2_arch_init(void)
 {
@@ -316,7 +316,7 @@ void spi2_arch_init(void)
 #endif
 
 #if USE_SPI3
-static __attribute__((noreturn)) msg_t thd_spi3(void *arg)
+static __attribute__((noreturn)) void thd_spi3(void *arg)
 {
   (void) arg;
   chRegSetThreadName("spi3");
@@ -326,7 +326,7 @@ static __attribute__((noreturn)) msg_t thd_spi3(void *arg)
   }
 }
 
-static WORKING_AREA(wa_thd_spi3, 1024);
+static THD_WORKING_AREA(wa_thd_spi3, 1024);
 
 void spi3_arch_init(void)
 {

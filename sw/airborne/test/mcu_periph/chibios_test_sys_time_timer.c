@@ -38,16 +38,16 @@
 /*
  * Thread Area Initialization
  */
-static WORKING_AREA(wa_thd_main_periodic_02, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
-static WORKING_AREA(wa_thd_main_periodic_03, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
-static WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_main_periodic_02, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_main_periodic_03, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_main_periodic_05, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
 
 /*
  * Static Thread Definitions
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_02(void *arg);
-static __attribute__((noreturn)) msg_t thd_main_periodic_03(void *arg);
-static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg);
+static __attribute__((noreturn)) void thd_main_periodic_02(void *arg);
+static __attribute__((noreturn)) void thd_main_periodic_03(void *arg);
+static __attribute__((noreturn)) void thd_main_periodic_05(void *arg);
 
 /**
  * Test Thread
@@ -55,7 +55,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg);
  * Replaces main_periodic_02()
  *
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_02(void *arg)
+static __attribute__((noreturn)) void thd_main_periodic_02(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_02");
   (void) arg;
@@ -76,7 +76,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_02(void *arg)
  * Replaces main_periodic_03()
  *
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_03(void *arg)
+static __attribute__((noreturn)) void thd_main_periodic_03(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_03");
   (void) arg;
@@ -97,7 +97,7 @@ static __attribute__((noreturn)) msg_t thd_main_periodic_03(void *arg)
  * Replaces main_periodic_05()
  *
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic_05(void *arg)
+static __attribute__((noreturn)) void thd_main_periodic_05(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_05");
   (void) arg;

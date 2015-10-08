@@ -102,7 +102,7 @@ endif
 # If enabled, this option makes the build process faster by not compiling
 # modules not used in the current configuration.
 ifeq ($(USE_SMART_BUILD),)
-  USE_SMART_BUILD = yes
+  USE_SMART_BUILD = no
 endif
 
 #
@@ -125,9 +125,9 @@ ifeq ($(USE_EXCEPTIONS_STACKSIZE),)
   USE_EXCEPTIONS_STACKSIZE = 0x400
 endif
 
-# Enables the use of FPU on Cortex-M4 (no, softfp, hard).
+# Enables the use of FPU on Cortex-M4.
 ifeq ($(USE_FPU),)
-  USE_FPU = no
+  USE_FPU = yes
 endif
 
 #
@@ -153,13 +153,12 @@ include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 #include $(CHIBIOS)/test/rt/test.mk
+ifeq ($(USE_FATFS), TRUE)
+include $(PAPARAZZI_HOME)/conf/chibios/fatfs.mk
+endif
 
 # Define linker script file here
-ifeq (,$(findstring $(HAS_LUFTBOOT),0 FALSE))
 LDSCRIPT= $(CHIBIOS_ARCH_DIR)/$(CHIBIOS_BOARD_LINKER)
-else
-LDSCRIPT= $(PORTLD)/$(CHIBIOS_BOARD_LINKER)
-endif
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -206,6 +205,9 @@ INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
          $(CHIBIOS)/os/various $(CHIBIOS_BOARD_DIR) $(CHIBIOS_PROJECT_DIR)
 
+# Output directory and files
+BUILDDIR := $(AIRCRAFT_BUILD_DIR)/$(TARGET)
+
 #
 # Project, sources and paths
 ##############################################################################
@@ -238,10 +240,10 @@ AOPT =
 TOPT = -mthumb -DTHUMB
 
 # Define C warning options here
-CWARN = -Wall -Wextra -Wundef -Wstrict-prototypes
+CWARN = -Wall -Wextra -Wstrict-prototypes
 
 # Define C++ warning options here
-CPPWARN = -Wall -Wextra -Wundef
+CPPWARN = -Wall -Wextra
 
 #
 # Compiler settings
@@ -305,16 +307,6 @@ endif
 include $(PAPARAZZI_HOME)/conf/Makefile.stm32-upload
 
 ###############################################################################
-ifeq ($(USE_FPU),yes)
-ifeq ($(HARD_FLOAT),yes)
-  USE_OPT += -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fsingle-precision-constant
-else
-  USE_OPT += -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -fsingle-precision-constant
-endif
-  DDEFS += -DCORTEX_USE_FPU=TRUE
-else
-  DDEFS += -DCORTEX_USE_FPU=FALSE
-endif
 
 #RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
 #include $(RULESPATH)/rules.mk

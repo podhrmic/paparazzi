@@ -54,7 +54,7 @@ static const char FR_LOG_DIR[] = "FLIGHT_RECORDER";
 FileDes flightRecorderLogFile = -1;
 #endif
 
-static WORKING_AREA(waThdBatterySurvey, 4096);
+static THD_WORKING_AREA(waThdBatterySurvey, 4096);
 static void launchBatterySurveyThread (void)
 {
 

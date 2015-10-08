@@ -28,11 +28,12 @@ ifeq ($(USE_LTO),yes)
 endif
 
 # FPU-related options
-ifeq ($(USE_FPU),)
-  USE_FPU = no
+ifeq ($(USE_FPU),yes)
+ifeq ($(HARD_FLOAT),yes)
+  OPT += -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fsingle-precision-constant
+else
+  OPT += -mfloat-abi=softfp -mfpu=fpv4-sp-d16 -fsingle-precision-constant
 endif
-ifneq ($(USE_FPU),no)
-  OPT += -mfloat-abi=$(USE_FPU) -mfpu=fpv4-sp-d16 -fsingle-precision-constant
   DDEFS += -DCORTEX_USE_FPU=TRUE
   DADEFS += -DCORTEX_USE_FPU=TRUE
 else
@@ -55,12 +56,12 @@ else
 endif
 
 # Output directory and files
-ifeq ($(BUILDDIR),)
-  BUILDDIR = build
-endif
-ifeq ($(BUILDDIR),.)
-  BUILDDIR = build
-endif
+#ifeq ($(BUILDDIR),)
+#  BUILDDIR = build
+#endif
+#ifeq ($(BUILDDIR),.)
+#  BUILDDIR = build
+#endif
 OUTFILES = $(BUILDDIR)/$(PROJECT).elf \
            $(BUILDDIR)/$(PROJECT).hex \
            $(BUILDDIR)/$(PROJECT).bin \
@@ -237,6 +238,7 @@ else
 	@$(CC) -c $(ASXFLAGS) $(TOPT) -I. $(IINCDIR) $< -o $@
 endif
 
+#%.elf:
 %.elf: $(OBJS) $(LDSCRIPT)
 ifeq ($(USE_VERBOSE_COMPILE),yes)
 	@echo
@@ -307,6 +309,7 @@ clean:
 #
 # Include the dependency files, should be the last of the makefile
 #
--include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+#-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+-include $(shell mkdir $(BUILDDIR)/.dep 2>/dev/null) $(wildcard $(BUILDDIR)/.dep/*)
 
 # *** EOF ***

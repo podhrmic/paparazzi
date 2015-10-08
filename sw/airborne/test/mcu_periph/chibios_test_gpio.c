@@ -43,17 +43,17 @@ static inline void main_periodic_2(void);
 /*
  * Thread Area Initialization
  */
-static WORKING_AREA(wa_thd_main_periodic, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
+static THD_WORKING_AREA(wa_thd_main_periodic, CH_CFG_THREAD_AREA_MAIN_PERIODIC);
 
 /*
  * Static Thread Definitions
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic(void *arg);
+static __attribute__((noreturn)) void thd_main_periodic(void *arg);
 
 /*
  * Test Thread
  */
-static __attribute__((noreturn)) msg_t thd_main_periodic(void *arg)
+static __attribute__((noreturn)) void thd_main_periodic(void *arg)
 {
   chRegSetThreadName("thd_main_periodic");
   (void) arg;

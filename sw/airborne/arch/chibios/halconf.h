@@ -98,7 +98,7 @@
  * @brief   Enables the ICU subsystem.
  * NOTE: ICU is needed form PPM and Spektrum radio
  * Maybe also for Superbit. Leave default TRUE for now
- * Might have to be changed to 
+ * Might have to be changed to
  * ifdef RADIO_CONTROL_TYPE_PPM then TRUE, otherwise FALSE
  */
 #if !defined(HAL_USE_ICU) || defined(__DOXYGEN__)

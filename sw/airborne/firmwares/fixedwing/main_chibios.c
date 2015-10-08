@@ -31,11 +31,11 @@
 #include "mcu_periph/sys_time.h"
 
 #ifndef  SYS_TIME_FREQUENCY
-#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_FREQUENCY
-#elif SYS_TIME_FREQUENCY != CH_CFG_FREQUENCY
-#error SYS_TIME_FREQUENCY should be equal to CH_CFG_FREQUENCY
-#elif  CH_CFG_FREQUENCY < (2 * PERIODIC_FREQUENCY)
-#error CH_CFG_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
+#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_ST_FREQUENCY
+#elif SYS_TIME_FREQUENCY != CH_CFG_ST_FREQUENCY
+#error SYS_TIME_FREQUENCY should be equal to CH_CFG_ST_FREQUENCY
+#elif  CH_CFG_ST_FREQUENCY < (2 * PERIODIC_FREQUENCY)
+#error CH_CFG_ST_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
 #endif
 
 #ifdef FBW

@@ -350,7 +350,7 @@ SdioError sdLogWriteByte (const FileDes fd, const uint8_t value)
 /* enregistrer les fichiers ouverts de manière à les fermer
    si necessaire
    */
-static WORKING_AREA(waThdSdLog, 1024);
+static THD_WORKING_AREA(waThdSdLog, 1024);
 SdioError sdLoglaunchThread ()
 {
   chThdSleepMilliseconds(100);

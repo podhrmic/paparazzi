@@ -41,11 +41,11 @@
 
 
 #ifndef  SYS_TIME_FREQUENCY
-#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_FREQUENCY
-#elif SYS_TIME_FREQUENCY != CH_CFG_FREQUENCY
-#error SYS_TIME_FREQUENCY should be equal to CH_CFG_FREQUENCY
-#elif  CH_CFG_FREQUENCY < (2 * PERIODIC_FREQUENCY)
-#error CH_CFG_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
+#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_ST_FREQUENCY
+#elif SYS_TIME_FREQUENCY != CH_CFG_ST_FREQUENCY
+#error SYS_TIME_FREQUENCY should be equal to CH_CFG_ST_FREQUENCY
+#elif  CH_CFG_ST_FREQUENCY < (2 * PERIODIC_FREQUENCY)
+#error CH_CFG_ST_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
 #endif
 
 static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg);
@@ -54,7 +54,7 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg);
 
 thread_t *pprzThdPtr = NULL;
 
-static WORKING_AREA(wa_thd_heartbeat, 2048);
+static THD_WORKING_AREA(wa_thd_heartbeat, 2048);
 void chibios_launch_heartbeat (void);
 bool_t sdOk = FALSE;
 
@@ -77,7 +77,7 @@ bool_t chibios_init(void) {
   return MSG_OK;
 }
 
-static WORKING_AREA(pprzThd, 4096);
+static THD_WORKING_AREA(pprzThd, 4096);
 void launch_pprz_thd (int32_t (*thd) (void *arg))
 {
   pprzThdPtr = chThdCreateStatic(pprzThd, sizeof(pprzThd), NORMALPRIO+1, thd, NULL);

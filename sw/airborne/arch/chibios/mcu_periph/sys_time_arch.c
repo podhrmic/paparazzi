@@ -49,8 +49,8 @@ uint8_t cpu_frequency;
 /*
  * Sys_tick handler thread
  */
-static msg_t thd_sys_tick(void *arg);
-static WORKING_AREA(wa_thd_sys_tick, 128);
+static void thd_sys_tick(void *arg);
+static THD_WORKING_AREA(wa_thd_sys_tick, 128);
 static void sys_tick_handler(void);
 
 void sys_time_arch_init(void)
@@ -74,18 +74,18 @@ void sys_time_arch_init(void)
 
 uint32_t get_sys_time_usec(void)
 {
-  return (uint32_t)(chVTGetSystemTime() / CH_CFG_FREQUENCY * 1000000);
+  return (uint32_t)(chVTGetSystemTime() / CH_CFG_ST_FREQUENCY * 1000000);
 }
 
 uint32_t get_sys_time_msec(void)
 {
-  return (uint32_t)(chVTGetSystemTime() / CH_CFG_FREQUENCY * 1000);
+  return (uint32_t)(chVTGetSystemTime() / CH_CFG_ST_FREQUENCY * 1000);
 }
 
 /**
  * sys_time_usleep(uint32_t us)
- * Use only for up to 2^32/CH_CFG_FREQUENCY-1 usec
- * e.g. if CH_CFG_FREQUENCY=10000 use max for 420000 us
+ * Use only for up to 2^32/CH_CFG_ST_FREQUENCY-1 usec
+ * e.g. if CH_CFG_ST_FREQUENCY=10000 use max for 420000 us
  * or 420ms, otherwise overflow happens
  */
 void sys_time_usleep(uint32_t us)
@@ -106,7 +106,7 @@ void sys_time_ssleep(uint8_t s)
 /*
  * Sys_tick thread
  */
-static __attribute__((noreturn)) msg_t thd_sys_tick(void *arg)
+static __attribute__((noreturn)) void thd_sys_tick(void *arg)
 {
   (void) arg;
   chRegSetThreadName("sys_tick_handler");
@@ -121,7 +121,7 @@ static void sys_tick_handler(void)
 {
   /* current time in sys_ticks */
   sys_time.nb_tick = chVTGetSystemTime();
-  uint32_t sec = sys_time.nb_tick / CH_CFG_FREQUENCY;
+  uint32_t sec = sys_time.nb_tick / CH_CFG_ST_FREQUENCY;
 #ifdef SYS_TIME_LED
   if (sec > sys_time.nb_sec) {
     LED_TOGGLE(SYS_TIME_LED);

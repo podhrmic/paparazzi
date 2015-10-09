@@ -52,7 +52,7 @@ static uint32_t timer_rollover_cnt;
 static void icuwidthcb(ICUDriver *icup)
 {
   static uint32_t now;
-  now = (uint32_t)(icuGetWidth(icup) + timer_rollover_cnt);
+  now = (uint32_t)(icuGetWidthX(icup) + timer_rollover_cnt);
   ppm_decode_frame(now);
 }
 
@@ -95,5 +95,5 @@ void ppm_arch_init(void)
   timer_rollover_cnt = 0;
 
   icuStart(&PPM_TIMER, &ppm_icucfg);
-  icuEnable(&PPM_TIMER);
+  icuEnableNotifications(&PPM_TIMER);
 }

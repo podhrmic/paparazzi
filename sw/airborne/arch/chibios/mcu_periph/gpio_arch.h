@@ -37,20 +37,20 @@
  * Setup one or more pins of the given GPIO port as outputs.
  * Shouldn't be used as gpio config is done in HAL
  */
-static inline void gpio_setup_output(GPIO_TypeDef *port __attribute__((unused)),
+static inline void gpio_setup_output(ioportid_t port __attribute__((unused)),
 		uint16_t gpios __attribute__((unused))) {}
 
 /**
  * Setup one or more pins of the given GPIO port as inputs.
  * Shouldn't be used as gpio config is done in HAL
  */
-static inline void gpio_setup_intput(GPIO_TypeDef *port __attribute__((unused)),
+static inline void gpio_setup_intput(ioportid_t port __attribute__((unused)),
 		uint16_t gpios __attribute__((unused))) {}
 
 /**
  * Setup a gpio for analog use.
  */
-extern void gpio_setup_pin_analog(GPIO_TypeDef *port, uint16_t pin);
+extern void gpio_setup_pin_analog(ioportid_t port, uint16_t pin);
 
 
 /**

@@ -37,8 +37,8 @@
 #include "hal.h"
 
 struct SerialInit {
-  Mutex *rx_mtx;
-  Mutex *tx_mtx;
+  mutex_t *rx_mtx;
+  mutex_t *tx_mtx;
 };
 
 /**
@@ -58,7 +58,7 @@ static void handle_uart_rx(struct uart_periph *p)
   if (temp != p->rx_extract_idx) {
     p->rx_insert_idx = temp;  // update insert index
   }
-  chMtxUnlock();
+  chMtxUnlock(init_struct->rx_mtx);
 }
 
 /**
@@ -77,7 +77,7 @@ static void handle_uart_tx(struct uart_periph *p)
     chMtxLock(init_struct->tx_mtx);
     p->tx_extract_idx++;
     p->tx_extract_idx %= UART_TX_BUFFER_SIZE;
-    chMtxUnlock();
+    chMtxUnlock(init_struct->tx_mtx);
   } else {
     chThdSleepMilliseconds(1);
   }
@@ -538,7 +538,7 @@ uint8_t uart_getch(struct uart_periph *p)
   chMtxLock(init_struct->rx_mtx);
   uint8_t ret = p->rx_buf[p->rx_extract_idx];
   p->rx_extract_idx = (p->rx_extract_idx + 1) % UART_RX_BUFFER_SIZE;
-  chMtxUnlock();
+  chMtxUnlock(init_struct->rx_mtx);
   return ret;
 }
 
@@ -554,23 +554,29 @@ void uart_periph_set_baudrate(struct uart_periph *p __attribute__((unused)), uin
 void uart_periph_set_mode(struct uart_periph *p __attribute__((unused)), bool_t tx_enabled __attribute__((unused)),
                           bool_t rx_enabled __attribute__((unused)), bool_t hw_flow_control __attribute__((unused))) {}
 
+void uart_periph_set_bits_stop_parity(struct uart_periph *p __attribute__((unused)),
+                                      uint8_t bits __attribute__((unused)), uint8_t stop __attribute__((unused)), uint8_t __attribute__((unused)) parity)
+{
+  // TBD
+}
+
 /**
 * Uart transmit implementation
 */
-void uart_transmit(struct uart_periph *p, uint8_t data)
+void uart_put_byte(struct uart_periph *p, uint8_t data)
 {
   struct SerialInit *init_struct = (struct SerialInit*)(p->init_struct);
   chMtxLock(init_struct->tx_mtx);
 
   uint16_t temp = (p->tx_insert_idx + 1) % UART_TX_BUFFER_SIZE;
   if (temp == p->tx_extract_idx) {
-    chMtxUnlock();
+    chMtxUnlock(init_struct->tx_mtx);
     return;  // no room
   }
   p->tx_buf[p->tx_insert_idx] = data;
   p->tx_insert_idx = temp;
 
-  chMtxUnlock();
+  chMtxUnlock(init_struct->tx_mtx);
 }
 
 /**
@@ -585,7 +591,7 @@ void uart_transmit_buffer(struct uart_periph *p, uint8_t *data_buffer, uint16_t 
   // TODO properly insert buffer
   int i;
   for (i = 0; i < length; i++) {
-    uart_transmit(p, data_buffer[i]);
+    uart_put_byte(p, data_buffer[i]);
   }
 }
 

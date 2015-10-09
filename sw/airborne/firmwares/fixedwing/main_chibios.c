@@ -57,14 +57,14 @@
 /*
  * Heartbeat thread
  */
-static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg);
-static WORKING_AREA(wa_thd_heartbeat, 2048);
+static void thd_heartbeat(void *arg);
+static THD_WORKING_AREA(wa_thd_heartbeat, 2048);
 
 /*
  * PPRZ thread
  */
-static msg_t thd_pprz(void *arg);
-static WORKING_AREA(wa_thd_pprz, 4096);
+static void thd_pprz(void *arg);
+static THD_WORKING_AREA(wa_thd_pprz, 4096);
 thread_t *pprzThdPtr = NULL;
 
 /**
@@ -100,7 +100,7 @@ int main(void)
 /*
  * Heartbeat thread
  */
-static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
+static void thd_heartbeat(void *arg)
 {
   (void) arg;
   chRegSetThreadName("pprz heartbeat");
@@ -136,7 +136,7 @@ static __attribute__((noreturn)) msg_t thd_heartbeat(void *arg)
  *
  * Call PPRZ periodic and event functions
  */
-static msg_t thd_pprz(void *arg)
+static void thd_pprz(void *arg)
 {
   /*
      To be compatible with rtos architecture, each of this 4 workers should
@@ -146,7 +146,7 @@ static msg_t thd_pprz(void *arg)
   (void) arg;
   chRegSetThreadName("pprz big loop");
 
-  while (!chThdShouldTerminate()) {
+  while (!chThdShouldTerminateX()) {
     Fbw(handle_periodic_tasks);
     Ap(handle_periodic_tasks);
     Fbw(event_task);
@@ -154,5 +154,4 @@ static msg_t thd_pprz(void *arg)
     chThdSleepMilliseconds(1);
   }
 
-  return 0;
 }

@@ -63,7 +63,7 @@ static void handle_i2c_thd(struct i2c_periph *p)
 
   p->status = I2CStartRequested;
   // submit i2c transaction
-  void status = i2cMasterTransmitTimeout(
+  msg_t status = i2cMasterTransmitTimeout(
       (I2CDriver*)p->reg_addr,
       (i2caddr_t)((t->slave_addr)>>1),
       (uint8_t*)t->buf, (size_t)(t->len_w),
@@ -77,7 +77,7 @@ static void handle_i2c_thd(struct i2c_periph *p)
     p->trans_extract_idx = 0;
   }
   p->status = I2CIdle;
-  chMtxUnlock();
+  chMtxUnlock(&((I2CDriver*)p->reg_addr)->mutex);
 
   // Set report status and errors
   switch (status) {
@@ -95,25 +95,25 @@ static void handle_i2c_thd(struct i2c_periph *p)
       //be retrieved using @p i2cGetErrors().
       t->status = I2CTransFailed;
       i2cflags_t errors = i2cGetErrors((I2CDriver*)p->reg_addr);
-      if (errors & I2CD_BUS_ERROR) {
+      if (errors & I2C_BUS_ERROR) {
         p->errors->miss_start_stop_cnt++;
       }
-      if (errors & I2CD_ARBITRATION_LOST) {
+      if (errors & I2C_ARBITRATION_LOST) {
         p->errors->arb_lost_cnt++;
       }
-      if (errors & I2CD_ACK_FAILURE) {
+      if (errors & I2C_ACK_FAILURE) {
         p->errors->ack_fail_cnt++;
       }
-      if (errors & I2CD_OVERRUN) {
+      if (errors & I2C_OVERRUN) {
         p->errors->over_under_cnt++;
       }
-      if (errors & I2CD_PEC_ERROR) {
+      if (errors & I2C_PEC_ERROR) {
         p->errors->pec_recep_cnt++;
       }
-      if (errors & I2CD_TIMEOUT) {
+      if (errors & I2C_TIMEOUT) {
         p->errors->timeout_tlow_cnt++;
       }
-      if (errors & I2CD_SMB_ALERT) {
+      if (errors & I2C_SMB_ALERT) {
         p->errors->smbus_alert_cnt++;
       }
       break;
@@ -298,7 +298,7 @@ bool_t i2c_submit(struct i2c_periph *p, struct i2c_transaction *t)
 
   // TODO use system event to wake up thread
 
-  chMtxUnlock();
+  chMtxUnlock(&((I2CDriver*)p->reg_addr)->mutex);
   // transaction submitted
   return TRUE;
 }

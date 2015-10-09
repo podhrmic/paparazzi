@@ -17,7 +17,8 @@
 #include "ch.h"
 #include "hal.h"
 
-//#include "led.h"
+#include "mcu.h"
+#include "led.h"
 
 /*
  * This is a periodic thread that does absolutely nothing except flashing
@@ -30,11 +31,13 @@ static THD_FUNCTION(Thread1, arg) {
   chRegSetThreadName("blinker");
   while (true) {
 
-    palSetPad(GPIOD, 13);       /* Orange.  */
-    //LED_ON(1);
+    //palSetPad(GPIOD, 13);       /* Orange.  */
+    palSetPad(GPIOB, 12);       /* Orange.  */
+    LED_ON(1);
     chThdSleepMilliseconds(500);
-    palClearPad(GPIOD, 13);     /* Orange.  */
-    //LED_OFF(1);
+    //palClearPad(GPIOD, 13);     /* Orange.  */
+    palClearPad(GPIOB, 12);     /* Orange.  */
+    LED_OFF(1);
     chThdSleepMilliseconds(500);
   }
 }
@@ -51,9 +54,10 @@ int main(void) {
    * - Kernel initialization, the main() function becomes a thread and the
    *   RTOS is active.
    */
-  halInit();
-  chSysInit();
+  //halInit();
+  //chSysInit();
 
+  mcu_init();
   /*
    * Activates the serial driver 2 using the driver default configuration.
    * PA2(TX) and PA3(RX) are routed to USART2.

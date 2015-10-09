@@ -101,8 +101,8 @@ test_sys_gpio.srcs   += test/mcu_periph/chibios_test_gpio.c
 # test led
 #
 test_led.ARCHDIR = $(ARCH)
-#test_led.CFLAGS += $(COMMON_TEST_CFLAGS) 
-#test_led.srcs   += $(COMMON_TEST_SRCS)
+test_led.CFLAGS += $(COMMON_TEST_CFLAGS) 
+test_led.srcs   += $(COMMON_TEST_SRCS)
 test_led.srcs   += test/chibios_test_led.c
 
 #

@@ -18,14 +18,14 @@
 #define _BOARD_H_
 
 /*
- * Setup for STMicroelectronics STM32F4-Discovery board.
+ * Setup for STMicroelectronics STM32F4-Lisa MX.
  */
 
 /*
  * Board identifier.
  */
-#define BOARD_ST_STM32F4_DISCOVERY
-#define BOARD_NAME                  "STMicroelectronics STM32F4-Lia"
+#define BOARD_ST_STM32F4_LISA
+#define BOARD_NAME                  "STMicroelectronics STM32F4-Lisa"
 
 
 /*
@@ -50,29 +50,30 @@
 /*
  * MCU type as defined in the ST header file stm32f4xx.h.
  */
-#define STM32F40_41xxx
+#define STM32F407xx
+
 
 /*
  * I/O ports initial setup, this configuration is established soon after reset
  * in the initialization code.
  * Please refer to the STM32 Reference Manual for details.
  */
-#define PIN_MODE_INPUT(n)           (0U << ((n) * 2))
-#define PIN_MODE_OUTPUT(n)          (1U << ((n) * 2))
-#define PIN_MODE_ALTERNATE(n)       (2U << ((n) * 2))
-#define PIN_MODE_ANALOG(n)          (3U << ((n) * 2))
+#define PIN_MODE_INPUT(n)           (0U << ((n) * 2U))
+#define PIN_MODE_OUTPUT(n)          (1U << ((n) * 2U))
+#define PIN_MODE_ALTERNATE(n)       (2U << ((n) * 2U))
+#define PIN_MODE_ANALOG(n)          (3U << ((n) * 2U))
 #define PIN_ODR_LOW(n)              (0U << (n))
 #define PIN_ODR_HIGH(n)             (1U << (n))
 #define PIN_OTYPE_PUSHPULL(n)       (0U << (n))
 #define PIN_OTYPE_OPENDRAIN(n)      (1U << (n))
-#define PIN_OSPEED_2M(n)            (0U << ((n) * 2))
-#define PIN_OSPEED_25M(n)           (1U << ((n) * 2))
-#define PIN_OSPEED_50M(n)           (2U << ((n) * 2))
-#define PIN_OSPEED_100M(n)          (3U << ((n) * 2))
-#define PIN_PUPDR_FLOATING(n)       (0U << ((n) * 2))
-#define PIN_PUPDR_PULLUP(n)         (1U << ((n) * 2))
-#define PIN_PUPDR_PULLDOWN(n)       (2U << ((n) * 2))
-#define PIN_AFIO_AF(n, v)           ((v##U) << ((n % 8) * 4))
+#define PIN_OSPEED_2M(n)            (0U << ((n) * 2U))
+#define PIN_OSPEED_25M(n)           (1U << ((n) * 2U))
+#define PIN_OSPEED_50M(n)           (2U << ((n) * 2U))
+#define PIN_OSPEED_100M(n)          (3U << ((n) * 2U))
+#define PIN_PUPDR_FLOATING(n)       (0U << ((n) * 2U))
+#define PIN_PUPDR_PULLUP(n)         (1U << ((n) * 2U))
+#define PIN_PUPDR_PULLDOWN(n)       (2U << ((n) * 2U))
+#define PIN_AFIO_AF(n, v)           ((v) << (((n) % 8U) * 4U))
 
 /*
  * Port A setup.
@@ -1050,139 +1051,233 @@
 
 
 /*
- * AHB_CLK for paparazzi sys_time_arch
+ * AHB_CLK
  */
 #define AHB_CLK STM32_HCLK
+
 
 /*
  * LEDs
  */
 /* 1 red, on PA8 */
+#ifndef USE_LED_1
+#define USE_LED_1 1
+#endif
 #define LED_1_GPIO GPIOA
 #define LED_1_GPIO_PIN 8
+#define LED_1_GPIO_ON gpio_clear
+#define LED_1_GPIO_OFF gpio_set
 
 /* 2 green, shared with JTAG_TRST */
+#ifndef USE_LED_2
+#define USE_LED_2 1
+#endif
 #define LED_2_GPIO GPIOB
 #define LED_2_GPIO_PIN 4
+#define LED_2_GPIO_ON gpio_clear
+#define LED_2_GPIO_OFF gpio_set
 
 /* 3 green, shared with ADC12 (ADC_6 on connector ANALOG2) */
+#ifndef USE_LED_3
+#define USE_LED_3 1
+#endif
 #define LED_3_GPIO GPIOC
 #define LED_3_GPIO_PIN 2
+#define LED_3_GPIO_ON gpio_clear
+#define LED_3_GPIO_OFF gpio_set
 
 /* 4 red, shared with ADC15 (ADC_4 on connector ANALOG2) */
+#ifndef USE_LED_4
+#define USE_LED_4 1
+#endif
 #define LED_4_GPIO GPIOC
 #define LED_4_GPIO_PIN 5
+#define LED_4_GPIO_ON gpio_clear
+#define LED_4_GPIO_OFF gpio_set
 
 /* 5 green, on PC15 */
+#ifndef USE_LED_5
+#define USE_LED_5 0
+#endif
 #define LED_5_GPIO GPIOC
 #define LED_5_GPIO_PIN 15
+#define LED_5_GPIO_ON gpio_set
+#define LED_5_GPIO_OFF gpio_clear
 
 /*
  * ADCs
  */
-#define BOARD_ADC_CHANNEL_1 13
-#define BOARD_ADC_CHANNEL_2 10
-#define BOARD_ADC_CHANNEL_3 11
-// we can only use ADC1,2,3; the last channel is for bat monitoring
-#define BOARD_ADC_CHANNEL_4 14
+// AUX 1
+#if USE_ADC_1
+#define AD1_1_CHANNEL ADC_CHANNEL_IN13
+#define ADC_1 AD1_1
+#define ADC_1_GPIO_PORT GPIOC
+#define ADC_1_GPIO_PIN GPIO3
+#endif
 
-/*
- * provide defines that can be used to access the ADC_x in the code or airframe file
- * these directly map to the index number of the 4 adc channels defined above
- * 4th (index 3) is used for bat monitoring by default
- */
-#define ADC_1 0
-#define ADC_2 1
-#define ADC_3 2
+// AUX 2
+#if USE_ADC_2
+#define AD1_2_CHANNEL ADC_CHANNEL_IN10
+#define ADC_2 AD1_2
+#define ADC_2_GPIO_PORT GPIOC
+#define ADC_2_GPIO_PIN GPIO0
+#endif
 
-// allow to define ADC_CHANNEL_VSUPPLY in the airframe file
+// AUX 3
+#if USE_ADC_3
+#define AD1_3_CHANNEL ADC_CHANNEL_IN11
+#define ADC_3 AD1_3
+#define ADC_3_GPIO_PORT GPIOC
+#define ADC_3_GPIO_PIN GPIO1
+#endif
+
+// Internal ADC for battery enabled by default
+#ifndef USE_ADC_4
+#define USE_ADC_4 1
+#endif
+#if USE_ADC_4
+#define AD1_4_CHANNEL ADC_CHANNEL_IN14
+#define ADC_4 AD1_4
+#define ADC_4_GPIO_PORT GPIOC
+#define ADC_4_GPIO_PIN GPIO4
+#endif
+
+
+/* allow to define ADC_CHANNEL_VSUPPLY in the airframe file*/
 #ifndef ADC_CHANNEL_VSUPPLY
-#define ADC_CHANNEL_VSUPPLY 3
+#define ADC_CHANNEL_VSUPPLY ADC_4
 #endif
-
-#ifndef ADC_CHANNEL_TEMP_SENSOR
-#define ADC_CHANNEL_TEMP_SENSOR 4
-#endif
-
-// active ADC
-#define USE_AD1 1
-#define USE_AD1_1 1
-#define USE_AD1_2 1
-#define USE_AD1_3 1
-#define USE_AD1_4 1
 
 #define DefaultVoltageOfAdc(adc) (0.0047*adc)
-
-// Read the electrical characteristics for STM32F105 chip
-#define CpuTempOfAdc(adc) ((1430 - adc)/4.3+25)
 
 /*
  * PWM defines
  */
-#define PWM_FREQUENCY_1MHZ 1000000
-#define PWM_CMD_TO_US(_t) _t
+#ifndef USE_PWM0
+#define USE_PWM0 1
+#endif
+#if USE_PWM0
+#define PWM_SERVO_0 0
+#define PWM_SERVO_0_DRIVER PWMD3
+#define PWM_SERVO_0_CHANNEL 0
+#define PWM_SERVO_0_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_0_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
-#define PWM_SERVO_1 0
+#ifndef USE_PWM1
+#define USE_PWM1 1
+#endif
+#if USE_PWM1
+#define PWM_SERVO_1 1
 #define PWM_SERVO_1_DRIVER PWMD3
-#define PWM_SERVO_1_CHANNEL 0
+#define PWM_SERVO_1_CHANNEL 1
+#define PWM_SERVO_1_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_1_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
-#define PWM_SERVO_2 1
+#ifndef USE_PWM2
+#define USE_PWM2 1
+#endif
+#if USE_PWM2
+#define PWM_SERVO_2 2
 #define PWM_SERVO_2_DRIVER PWMD3
-#define PWM_SERVO_2_CHANNEL 1
+#define PWM_SERVO_2_CHANNEL 2
+#define PWM_SERVO_2_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_2_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
-#define PWM_SERVO_3 2
+#ifndef USE_PWM3
+#define USE_PWM3 1
+#endif
+#if USE_PWM3
+#define PWM_SERVO_3 3
 #define PWM_SERVO_3_DRIVER PWMD3
-#define PWM_SERVO_3_CHANNEL 2
+#define PWM_SERVO_3_CHANNEL 3
+#define PWM_SERVO_3_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_3_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
-#define PWM_SERVO_4 3
-#define PWM_SERVO_4_DRIVER PWMD3
-#define PWM_SERVO_4_CHANNEL 3
+#ifndef USE_PWM4
+#define USE_PWM4 1
+#endif
+#if USE_PWM4
+#define PWM_SERVO_4 4
+#define PWM_SERVO_4_DRIVER PWMD5
+#define PWM_SERVO_4_CHANNEL 0
+#define PWM_SERVO_4_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_4_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
-#define PWM_SERVO_5 4
+#ifndef USE_PWM5
+#define USE_PWM5 1
+#endif
+#if USE_PWM5
+#define PWM_SERVO_5 5
 #define PWM_SERVO_5_DRIVER PWMD5
-#define PWM_SERVO_5_CHANNEL 0
-
-#define PWM_SERVO_6 5
-#define PWM_SERVO_6_DRIVER PWMD5
-#define PWM_SERVO_6_CHANNEL 1
+#define PWM_SERVO_5_CHANNEL 1
+#define PWM_SERVO_5_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+#else
+#define PWM_SERVO_5_ACTIVE PWM_OUTPUT_DISABLED
+#endif
 
 
 #if USE_SERVOS_7AND8
   #if USE_I2C1
     #error "You cannot USE_SERVOS_7AND8 and USE_I2C1 at the same time"
   #else /* !USE_I2C1 */
-    #define PWM_SERVO_7 6
+    #ifndef USE_PWM6
+    #define USE_PWM6 1
+    #endif
+    #if USE_PWM6
+    #define PWM_SERVO_6 6
+    #define PWM_SERVO_6_DRIVER PWMD4
+    #define PWM_SERVO_6_CHANNEL 0
+    #define PWM_SERVO_6_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+    #else
+    #define PWM_SERVO_6_ACTIVE PWM_OUTPUT_DISABLED
+    #endif
+
+    #ifndef USE_PWM7
+    #define USE_PWM7 1
+    #endif
+    #if USE_PWM7
+    #define PWM_SERVO_7 7
     #define PWM_SERVO_7_DRIVER PWMD4
-    #define PWM_SERVO_7_CHANNEL 0
+    #define PWM_SERVO_7_CHANNEL 1
+    #define PWM_SERVO_7_ACTIVE PWM_OUTPUT_ACTIVE_HIGH
+    #else
+    #define PWM_SERVO_7_ACTIVE PWM_OUTPUT_DISABLED
+    #endif
 
-    #define PWM_SERVO_8 7
-    #define PWM_SERVO_8_DRIVER PWMD4
-    #define PWM_SERVO_8_CHANNEL 1
-
-    #define ACTUATORS_PWM_NB 8
+    //#define ACTUATORS_PWM_NB 8
     #define PWM_CONF_TIM3 1
     #define PWM_CONF_TIM4 1
     #define PWM_CONF_TIM5 1
     #define PWM_CONF3_DEF {  \
-               PWM_FREQUENCY_1MHZ, \
-               PWM_FREQUENCY_1MHZ/SERVO_HZ, \
-               pwmpcb,  \
+               PWM_FREQUENCY, \
+               PWM_FREQUENCY/TIM3_SERVO_HZ, \
+               NULL,  \
                {        \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL}  \
+                   {PWM_SERVO_0_ACTIVE, NULL},  \
+                   {PWM_SERVO_1_ACTIVE, NULL},  \
+                   {PWM_SERVO_2_ACTIVE, NULL},  \
+                   {PWM_SERVO_3_ACTIVE, NULL}  \
                },       \
                0,       \
                0        \
                }
     #define PWM_CONF4_DEF {  \
-               PWM_FREQUENCY_1MHZ, \
-               PWM_FREQUENCY_1MHZ/SERVO_HZ, \
-               pwmpcb,  \
+               PWM_FREQUENCY, \
+               PWM_FREQUENCY/TIM4_SERVO_HZ, \
+               NULL,  \
                {        \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
+                   {PWM_SERVO_6_ACTIVE, NULL},  \
+                   {PWM_SERVO_7_ACTIVE, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL}  \
                },       \
@@ -1190,12 +1285,12 @@
                0        \
                }
     #define PWM_CONF5_DEF {  \
-               PWM_FREQUENCY_1MHZ, \
-               PWM_FREQUENCY_1MHZ/SERVO_HZ, \
-               pwmpcb,  \
+               PWM_FREQUENCY, \
+               PWM_FREQUENCY/TIM5_SERVO_HZ, \
+               NULL,  \
                {        \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
+                   {PWM_SERVO_4_ACTIVE, NULL},  \
+                   {PWM_SERVO_5_ACTIVE, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL}  \
                },       \
@@ -1204,29 +1299,29 @@
                }
   #endif /* USE_I2C1 */ 
 #else /* !USE_SERVOS_7AND8 */
-  #define ACTUATORS_PWM_NB 6
+  //#define ACTUATORS_PWM_NB 6
   #define PWM_CONF_TIM3 1
   #define PWM_CONF_TIM5 1
     #define PWM_CONF3_DEF {  \
-               PWM_FREQUENCY_1MHZ, \
-               PWM_FREQUENCY_1MHZ/SERVO_HZ, \
-               pwmpcb,  \
+               PWM_FREQUENCY, \
+               PWM_FREQUENCY/TIM3_SERVO_HZ, \
+               NULL,  \
                {        \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL}  \
+                   {PWM_SERVO_0_ACTIVE, NULL},  \
+                   {PWM_SERVO_1_ACTIVE, NULL},  \
+                   {PWM_SERVO_2_ACTIVE, NULL},  \
+                   {PWM_SERVO_3_ACTIVE, NULL}  \
                },       \
                0,       \
                0        \
                }
     #define PWM_CONF5_DEF {  \
-               PWM_FREQUENCY_1MHZ, \
-               PWM_FREQUENCY_1MHZ/SERVO_HZ, \
-               pwmpcb,  \
+               PWM_FREQUENCY, \
+               PWM_FREQUENCY/TIM5_SERVO_HZ, \
+               NULL,  \
                {        \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
-                   {PWM_OUTPUT_ACTIVE_HIGH, NULL},  \
+                   {PWM_SERVO_4_ACTIVE, NULL},  \
+                   {PWM_SERVO_5_ACTIVE, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL},  \
                    {PWM_OUTPUT_DISABLED, NULL}  \
                },       \
@@ -1245,9 +1340,9 @@
 #define PPM_TIMER ICUD1
 
 /**
- * I2C2 defines
+ * I2C defines
  */
-#define I2C1_CLOCK_SPEED 300000
+#define I2C1_CLOCK_SPEED 400000
 #define I2C1_CFG_DEF {       \
            OPMODE_I2C,        \
            I2C1_CLOCK_SPEED,  \
@@ -1263,20 +1358,30 @@
 
 /**
  * SPI Config
- *
- * Just defines which make sense for Lia board
  */
-#define SPI_SELECT_SLAVE1_PORT GPIOA
-#define SPI_SELECT_SLAVE1_PIN      4
+#define SPI1_GPIO_AF GPIO_AF5
+#define SPI1_GPIO_PORT_MISO GPIOA
+#define SPI1_GPIO_MISO GPIO6
+#define SPI1_GPIO_PORT_MOSI GPIOA
+#define SPI1_GPIO_MOSI GPIO7
+#define SPI1_GPIO_PORT_SCK GPIOA
+#define SPI1_GPIO_SCK GPIO5
 
-#define SPI_SELECT_SLAVE2_PORT GPIOB
-#define SPI_SELECT_SLAVE2_PIN     12
-
+// SLAVE0 on SPI connector
+#define SPI_SELECT_SLAVE0_PORT GPIOB
+#define SPI_SELECT_SLAVE0_PIN 9
+// SLAVE1 on AUX1
+#define SPI_SELECT_SLAVE1_PORT GPIOB
+#define SPI_SELECT_SLAVE1_PIN 1
+// SLAVE2 on AUX2
+#define SPI_SELECT_SLAVE2_PORT GPIOC
+#define SPI_SELECT_SLAVE2_PIN 5
+// SLAVE3 on AUX3
 #define SPI_SELECT_SLAVE3_PORT GPIOC
-#define SPI_SELECT_SLAVE3_PIN     13
-
-#define SPI_SELECT_SLAVE4_PORT GPIOC
-#define SPI_SELECT_SLAVE4_PIN     12
+#define SPI_SELECT_SLAVE3_PIN 4
+// SLAVE4 on AUX4
+#define SPI_SELECT_SLAVE4_PORT GPIOB
+#define SPI_SELECT_SLAVE4_PIN 5
 
 /**
  * Baro
@@ -1308,4 +1413,3 @@ extern "C" {
 #endif /* _FROM_ASM_ */
 
 #endif /* _BOARD_H_ */
-

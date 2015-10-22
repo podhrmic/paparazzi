@@ -250,7 +250,7 @@ static void handle_spi_thd(struct spi_periph *p)
     p->trans_extract_idx = 0;
   }
   p->status = SPIIdle;
-  chMtxUnlock();
+  chMtxUnlock(&((SPIDriver*)p->reg_addr)->mutex);
 
   // Report the transaction as success
   t->status = SPITransSuccess;
@@ -378,7 +378,7 @@ bool_t spi_submit(struct spi_periph *p, struct spi_transaction *t)
 
   // TODO use system event to wake up thread
 
-  chMtxUnlock();
+  chMtxUnlock(&((SPIDriver*)p->reg_addr)->mutex);
   // transaction submitted
   return TRUE;
 }

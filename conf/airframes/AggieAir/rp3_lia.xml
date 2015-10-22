@@ -38,8 +38,7 @@ RP3 Lisa MX
 
     <define name="AGR_CLIMB" />
     
-    <!-- so it compiles -->
-    <define name="USE_I2C2"/>
+    <configure name="RTOS_DEBUG" value="0"/>
   </firmware>
 
   <modules>

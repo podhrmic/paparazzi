@@ -39,10 +39,27 @@ CHIBIOS_ARCH_DIR = $(PAPARAZZI_SRC)/sw/airborne/arch/chibios
 # Launch with "make Q=''" to get full command display
 Q=@
 
+# Debugging options
+RTOS_DEBUG ?= 0
+
+ifeq (,$(findstring $(RTOS_DEBUG),0 FALSE))
+$(info DEBUGGING ON)
+$(TARGET).CFLAGS += \
+  -DCH_DBG_STATISTICS=TRUE \
+	-DCH_DBG_SYSTEM_STATE_CHECK=TRUE \
+	-DCH_DBG_ENABLE_CHECKS=TRUE \
+	-DCH_DBG_ENABLE_ASSERTS=TRUE \
+	-DCH_DBG_ENABLE_TRACE=TRUE \
+	-DCH_DBG_ENABLE_STACK_CHECK=TRUE \
+	-DCH_DBG_FILL_THREADS=TRUE \
+	-DCH_DBG_THREADS_PROFILING=TRUE
+else
+$(info DEBUGGING OFF)
+endif
+
 #
 # General rules
 #
-
 $(TARGET).srcsnd = $(notdir $($(TARGET).srcs))
 $(TARGET).objso	= $($(TARGET).srcs:%.c=$(OBJDIR)/%.o)
 $(TARGET).objs	= $($(TARGET).objso:%.S=$(OBJDIR)/%.o)

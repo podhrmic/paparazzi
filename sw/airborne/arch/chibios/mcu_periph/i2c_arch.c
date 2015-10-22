@@ -41,6 +41,10 @@
 
 #include "led.h"
 
+#if USE_I2C1 || USE_I2C2 || USE_I2C3
+
+static void handle_i2c_thd(struct i2c_periph *p);
+
 // Timeout for I2C transaction
 static const systime_t tmo = US2ST(1000000/PERIODIC_FREQUENCY);
 
@@ -121,6 +125,7 @@ static void handle_i2c_thd(struct i2c_periph *p)
       break;
   }
 }
+#endif /* USE_I2C1 || USE_I2C2 || USE_I2C3 */
 
 #if USE_I2C1
 // I2C1 config
@@ -277,6 +282,7 @@ void i2c_setbitrate(struct i2c_periph *p __attribute__((unused)), int bitrate __
  */
 bool_t i2c_submit(struct i2c_periph *p, struct i2c_transaction *t)
 {
+#if USE_I2C1 || USE_I2C2 || USE_I2C3
   // mutex lock
   chMtxLock(&((I2CDriver*)p->reg_addr)->mutex);
 
@@ -301,6 +307,12 @@ bool_t i2c_submit(struct i2c_periph *p, struct i2c_transaction *t)
   chMtxUnlock(&((I2CDriver*)p->reg_addr)->mutex);
   // transaction submitted
   return TRUE;
+#else
+  // if no I2C peripheral is used fill in with dummy function
+  (void)p;
+  (void)t;
+  return FALSE;
+#endif /* USE_I2C1 || USE_I2C2 || USE_I2C3 */
 }
 
 /**

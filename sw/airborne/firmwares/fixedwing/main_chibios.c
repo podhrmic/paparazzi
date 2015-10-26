@@ -23,11 +23,13 @@
  * @file firmwares/fixedwing/main_chibios.c
  */
 
-//#include "firmwares/fixedwing/chibios-libopencm3/chibios_init.h"
-//#include "chibios_stub.h"
-//#include "subsystems/chibios-libopencm3/chibios_sdlog.h"
-//#include "sdLog.h"
+/*
+ * Chibios includes
+ */
+#include "ch.h"
+#include "hal.h"
 
+#include "led.h"
 #include "mcu_periph/sys_time.h"
 
 #ifndef  SYS_TIME_FREQUENCY
@@ -52,7 +54,25 @@
 #define Ap(f)
 #endif
 
-#include "led.h"
+
+/*
+ * Telemetry defines
+ */
+#if PERIODIC_TELEMETRY
+#include "subsystems/datalink/telemetry.h"
+
+static void send_chibios_info(struct transport_tx *trans, struct link_device *dev)
+{
+  static uint16_t time_now = 0;
+  time_now = chVTGetSystemTime()/CH_CFG_ST_FREQUENCY;
+
+  pprz_msg_send_CHIBIOS_INFO(trans, dev, AC_ID,
+                    &core_free_memory,
+                    &time_now,
+                    &thread_counter,
+                    &cpu_frequency);
+}
+#endif
 
 /*
  * Heartbeat thread
@@ -100,6 +120,7 @@ int main(void)
 /*
  * Heartbeat thread
  */
+/*
 static void thd_heartbeat(void *arg)
 {
   (void) arg;
@@ -130,6 +151,49 @@ static void thd_heartbeat(void *arg)
 
   }
 }
+*/
+/**
+ * HeartBeat & System Info
+ *
+ * Blinks LED and logs the cpu usage and other system info
+ */
+static void thd_heartbeat(void *arg)
+{
+  chRegSetThreadName("pprz_heartbeat");
+  (void) arg;
+  systime_t time = chVTGetSystemTime();
+  static uint32_t last_idle_counter = 0;
+  static uint32_t last_nb_sec = 0;
+
+  while (TRUE)
+  {
+    time += S2ST(1);
+    core_free_memory = chCoreGetStatusX();
+    thread_counter = 0;
+
+    thread_t *tp;
+    tp = chRegFirstThread();
+    do
+    {
+      thread_counter++;
+      if (tp ==chSysGetIdleThreadX())
+      {
+        // only if CH_DBG_THREADS_PROFILING == TRUE
+        idle_counter =  (uint32_t)tp->p_time;
+      }
+      tp = chRegNextThread(tp);
+    }
+    while (tp != NULL);
+
+    cpu_counter = (idle_counter-last_idle_counter)/(sys_time.nb_sec-last_nb_sec);
+    cpu_frequency = (1 - (float)cpu_counter/CH_CFG_ST_FREQUENCY)*100;
+
+    last_idle_counter = idle_counter;
+    last_nb_sec = sys_time.nb_sec;
+
+    chThdSleepUntil(time);
+  }
+}
 
 /*
  * PPRZ thread
@@ -145,6 +209,10 @@ static void thd_pprz(void *arg)
      */
   (void) arg;
   chRegSetThreadName("pprz big loop");
+
+#if PERIODIC_TELEMETRY
+  register_periodic_telemetry(DefaultPeriodic, "CHIBIOS_INFO", send_chibios_info);
+#endif
 
   while (!chThdShouldTerminateX()) {
     Fbw(handle_periodic_tasks);

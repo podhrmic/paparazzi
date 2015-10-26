@@ -196,7 +196,12 @@
     <field name="YprU3" 	type="float" 	unit="deg"/>
   </message>
 
-  <!--24 is free -->
+  <message name="CHIBIOS_INFO" id="24">
+    <field name="core_free_memory" type="uint32" unit="bytes"/>
+    <field name="sys_time" type="uint16" unit="s"/>
+    <field name="threads" type="uint8"/>
+    <field name="cpu_load" type="uint8" unit="%"/>
+  </message>
 
   <message name="SVINFO" id="25">
     <field name="chn" type="uint8"/>

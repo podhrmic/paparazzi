@@ -57,12 +57,10 @@ static __attribute__((noreturn)) void thd_main_periodic(void *arg)
 {
   chRegSetThreadName("thd_main_periodic");
   (void) arg;
-  systime_t time = chVTGetSystemTime();
   while (TRUE)
   {
-    time += MS2ST(500);
     main_periodic();
-    chThdSleepUntil(time);
+    sys_time_msleep(500);
   }
 }
 
@@ -71,13 +69,17 @@ static __attribute__((noreturn)) void thd_main_periodic(void *arg)
  */
 static inline void main_periodic(void)
 {
-  gpio_toggle(GPIOA,8);
+#ifdef SYS_TIME_LED
+    LED_TOGGLE(SYS_TIME_LED);
+#endif
 }
 
 
 static inline void main_periodic_2(void)
 {
-  gpio_toggle(GPIOB,4);
+#ifdef LED_GREEN
+    LED_TOGGLE(LED_GREEN);
+#endif
 }
 
 

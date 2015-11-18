@@ -27,9 +27,17 @@
       <define name="SERVO_HZ" value="400"/>
     </subsystem>
 
-    <subsystem name="telemetry"     type="transparent"/>
+      <subsystem name="telemetry"     type="transparent">
+        <configure name="MODEM_PORT" value="UART3"/>
+        <configure name="MODEM_BAUD" value="B57600"/>
+      </subsystem>
+      
     <subsystem name="stabilization" type="float_euler"/>
-    <subsystem name="ins" type="vectornav"/>
+    
+      <subsystem name="ins"           type="vectornav">
+        <configure name="VN_PORT" value="UART2"/>
+        <configure name="VN_BAUD" value="B921600"/>
+      </subsystem>
   </firmware>
 
 

@@ -29,15 +29,10 @@ static THD_FUNCTION(Thread1, arg) {
 
   (void)arg;
   chRegSetThreadName("blinker");
-  while (true) {
-
-    //palSetPad(GPIOD, 13);       /* Orange.  */
-    palSetPad(GPIOB, 12);       /* Orange.  */
-    LED_ON(1);
-    chThdSleepMilliseconds(500);
-    //palClearPad(GPIOD, 13);     /* Orange.  */
-    palClearPad(GPIOB, 12);     /* Orange.  */
-    LED_OFF(1);
+  while (TRUE) {
+#ifdef LED_GREEN
+    LED_TOGGLE(LED_GREEN);
+#endif
     chThdSleepMilliseconds(500);
   }
 }
@@ -46,25 +41,7 @@ static THD_FUNCTION(Thread1, arg) {
  * Application entry point.
  */
 int main(void) {
-
-  /*
-   * System initializations.
-   * - HAL initialization, this also initializes the configured device drivers
-   *   and performs the board-specific initializations.
-   * - Kernel initialization, the main() function becomes a thread and the
-   *   RTOS is active.
-   */
-  //halInit();
-  //chSysInit();
-
   mcu_init();
-  /*
-   * Activates the serial driver 2 using the driver default configuration.
-   * PA2(TX) and PA3(RX) are routed to USART2.
-   */
-  //sdStart(&SD2, NULL);
-  //palSetPadMode(GPIOA, 2, PAL_MODE_ALTERNATE(7));
-  //palSetPadMode(GPIOA, 3, PAL_MODE_ALTERNATE(7));
 
   /*
    * Creates the example thread.
@@ -75,9 +52,7 @@ int main(void) {
    * Normal main() thread activity, in this demo it does nothing except
    * sleeping in a loop and check the button state.
    */
-  while (true) {
-    //if (palReadPad(GPIOA, GPIOA_BUTTON))
-    //  TestThread(&SD2);
+  while (TRUE) {
     chThdSleepMilliseconds(500);
   }
 

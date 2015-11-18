@@ -49,9 +49,11 @@ uint8_t cpu_frequency;
 /*
  * Sys_tick handler thread
  */
+/*
 static void thd_sys_tick(void *arg);
 static THD_WORKING_AREA(wa_thd_sys_tick, 128);
 static void sys_tick_handler(void);
+*/
 
 void sys_time_arch_init(void)
 {
@@ -67,8 +69,8 @@ void sys_time_arch_init(void)
   sys_time.resolution_cpu_ticks = (uint32_t)(sys_time.resolution * sys_time.cpu_ticks_per_sec + 0.5);
 
   // Create thread (PRIO should be higher than AP threads
-  chThdCreateStatic(wa_thd_sys_tick, sizeof(wa_thd_sys_tick),
-      NORMALPRIO+3, thd_sys_tick, NULL);
+  //chThdCreateStatic(wa_thd_sys_tick, sizeof(wa_thd_sys_tick),
+  //    NORMALPRIO+3, thd_sys_tick, NULL);
 
 }
 
@@ -106,6 +108,7 @@ void sys_time_ssleep(uint8_t s)
 /*
  * Sys_tick thread
  */
+/*
 static __attribute__((noreturn)) void thd_sys_tick(void *arg)
 {
   (void) arg;
@@ -119,7 +122,7 @@ static __attribute__((noreturn)) void thd_sys_tick(void *arg)
 
 static void sys_tick_handler(void)
 {
-  /* current time in sys_ticks */
+  // current time in sys_ticks
   sys_time.nb_tick = chVTGetSystemTime();
   uint32_t sec = sys_time.nb_tick / CH_CFG_ST_FREQUENCY;
 #ifdef SYS_TIME_LED
@@ -130,17 +133,18 @@ static void sys_tick_handler(void)
   sys_time.nb_sec = sec;
   sys_time.nb_sec_rem = sys_time.nb_tick - sys_time_ticks_of_sec(sys_time.nb_sec);
 
-  /* advance virtual timers */
+  // advance virtual timers
   for (unsigned int i = 0; i < SYS_TIME_NB_TIMER; i++) {
     if (sys_time.timer[i].in_use &&
         sys_time.nb_tick >= sys_time.timer[i].end_time) {
       sys_time.timer[i].end_time += sys_time.timer[i].duration;
       sys_time.timer[i].elapsed = TRUE;
-      /* call registered callbacks, WARNING: they will be executed in the sys_time thread! */
+      // call registered callbacks, WARNING: they will be executed in the sys_time thread!
       if (sys_time.timer[i].cb) {
         sys_time.timer[i].cb(i);
       }
     }
   }
 }
+*/
 

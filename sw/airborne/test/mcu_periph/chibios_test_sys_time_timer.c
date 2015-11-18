@@ -29,6 +29,7 @@
 /* paparazzi includes */
 #include "mcu.h"
 #include "led.h"
+#include "mcu_periph/sys_time.h"
 
 /*
  * Thread Area Definitions
@@ -59,14 +60,11 @@ static __attribute__((noreturn)) void thd_main_periodic_02(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_02");
   (void) arg;
-  systime_t time = chVTGetSystemTime();
-  while (TRUE)
-  {
-    time += MS2ST(200);
+  while (TRUE) {
 #ifdef LED_GREEN
-      LED_TOGGLE(LED_GREEN);
+    LED_TOGGLE(LED_GREEN);
 #endif
-    chThdSleepUntil(time);
+    sys_time_usleep(100000);
   }
 }
 
@@ -80,14 +78,11 @@ static __attribute__((noreturn)) void thd_main_periodic_03(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_03");
   (void) arg;
-  systime_t time = chVTGetSystemTime();
-  while (TRUE)
-  {
-    time += MS2ST(300);
+  while (TRUE) {
 #ifdef SYS_TIME_LED
-      LED_TOGGLE(SYS_TIME_LED);
+    LED_TOGGLE(SYS_TIME_LED);
 #endif
-    chThdSleepUntil(time);
+    sys_time_msleep(500);
   }
 }
 
@@ -101,19 +96,16 @@ static __attribute__((noreturn)) void thd_main_periodic_05(void *arg)
 {
   chRegSetThreadName("thd_main_periodic_05");
   (void) arg;
-  systime_t time = chVTGetSystemTime();
-  while (TRUE)
-  {
-    time += MS2ST(500);
+  while (TRUE) {
 #ifdef LED_RED
-      LED_TOGGLE(LED_RED);
+    LED_TOGGLE(LED_RED);
 #endif
-    chThdSleepUntil(time);
+    sys_time_ssleep(1);
   }
 }
 
-
-int main(void) {
+int main(void)
+{
 
   /* Paparazzi initialization.
    * Calls ChibiOS system initializations internally:
@@ -128,12 +120,14 @@ int main(void) {
   /*
    * Init threads
    */
-  chThdCreateStatic(wa_thd_main_periodic_02, sizeof(wa_thd_main_periodic_02), NORMALPRIO, thd_main_periodic_02, NULL);
-  chThdCreateStatic(wa_thd_main_periodic_03, sizeof(wa_thd_main_periodic_03), NORMALPRIO, thd_main_periodic_03, NULL);
-  chThdCreateStatic(wa_thd_main_periodic_05, sizeof(wa_thd_main_periodic_05), NORMALPRIO, thd_main_periodic_05, NULL);
+  chThdCreateStatic(wa_thd_main_periodic_02, sizeof(wa_thd_main_periodic_02),
+      NORMALPRIO, thd_main_periodic_02, NULL);
+  chThdCreateStatic(wa_thd_main_periodic_03, sizeof(wa_thd_main_periodic_03),
+      NORMALPRIO, thd_main_periodic_03, NULL);
+  chThdCreateStatic(wa_thd_main_periodic_05, sizeof(wa_thd_main_periodic_05),
+      NORMALPRIO, thd_main_periodic_05, NULL);
 
-
-  while(TRUE) {
+  while (TRUE) {
     chThdSleepMilliseconds(500);
   }
 

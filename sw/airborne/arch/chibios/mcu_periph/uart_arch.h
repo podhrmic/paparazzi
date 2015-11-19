@@ -35,6 +35,8 @@
 #ifndef CHIBIOS_UART_ARCH_H
 #define CHIBIOS_UART_ARCH_H
 
+#include "ch.h"
+#include "hal.h"
 #include "mcu_periph/uart.h"
 
 #define B1200    1200

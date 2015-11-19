@@ -178,9 +178,21 @@ include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/rt/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
-#include $(CHIBIOS)/test/rt/test.mk
+include $(CHIBIOS)/test/rt/test.mk
 ifeq ($(USE_FATFS), TRUE)
 include $(PAPARAZZI_HOME)/conf/chibios/fatfs.mk
+endif
+
+# Add extra test sources if necessary
+ifeq (,$(findstring $(RTOS_TEST),0 FALSE))
+$(info TEST EXTRA ON)
+TESTSRC += \
+       $(CHIBIOS)/os/various/evtimer.c \
+       $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
+       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
+       $(CHIBIOS)/os/various/shell.c
+TESTINC += \
+       $(CHIBIOS)/os/hal/lib/streams $(CHIBIOS)/os/various
 endif
 
 # Define linker script file here

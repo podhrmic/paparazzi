@@ -114,11 +114,12 @@ test_led.srcs   += test/chibios_test_led.c
 # functionality such as is in Pixhawk
 #
 test_shell.ARCHDIR = $(ARCH)
-test_shell.CFLAGS += $(COMMON_TEST_CFLAGS) $(LED_DEFINES)
+test_shell.CFLAGS += $(COMMON_TEST_CFLAGS) $(LED_DEFINES) -DUSE_UART3
 test_shell.srcs   += $(COMMON_TEST_SRCS)
 test_shell.srcs += mcu_periph/uart.c
 test_shell.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c
 test_shell.srcs += test/chibios_test_shell.c
+RTOS_TEST = 1
 
 #
 # test serial ports

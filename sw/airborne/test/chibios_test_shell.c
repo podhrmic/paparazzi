@@ -27,20 +27,22 @@
 #include "ch.h"
 #include "hal.h"
 #include "test.h"
-#include "evtimer.h"
-#include "shell.h"
+
 #include "chprintf.h"
+#include "shell.h"
 
 /* paparazzi includes */
 #include "mcu.h"
 #include "led.h"
 
+
+
 /*===========================================================================*/
-/* Command line related.         ChibiOS specific                            */
+/* Command line related.                                                     */
 /*===========================================================================*/
 
-#define SHELL_WA_SIZE   THD_WA_SIZE(2048)
-#define TEST_WA_SIZE    THD_WA_SIZE(256)
+#define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(2048)
+#define TEST_WA_SIZE    THD_WORKING_AREA_SIZE(256)
 
 static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   size_t n, size;
@@ -51,13 +53,13 @@ static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
     return;
   }
   n = chHeapStatus(NULL, &size);
-  chprintf(chp, "core free memory : %u bytes\r\n", chCoreStatus());
+  chprintf(chp, "core free memory : %u bytes\r\n", chCoreGetStatusX());
   chprintf(chp, "heap fragments   : %u\r\n", n);
   chprintf(chp, "heap free total  : %u bytes\r\n", size);
 }
 
 static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
-  static const char *states[] = {THD_STATE_NAMES};
+  static const char *states[] = {CH_STATE_NAMES};
   thread_t *tp;
 
   (void)argv;
@@ -68,10 +70,10 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
   chprintf(chp, "    addr    stack prio refs     state time\r\n");
   tp = chRegFirstThread();
   do {
-    chprintf(chp, "%.8lx %.8lx %4lu %4lu %9s %lu\r\n",
+    chprintf(chp, "%08lx %08lx %4lu %4lu %9s\r\n",
             (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
             (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
-            states[tp->p_state], (uint32_t)tp->p_time);
+            states[tp->p_state]);
     tp = chRegNextThread(tp);
   } while (tp != NULL);
 }
@@ -93,6 +95,8 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
   chThdWait(tp);
 }
 
+
+
 static const ShellCommand commands[] = {
   {"mem", cmd_mem},
   {"threads", cmd_threads},
@@ -105,25 +109,25 @@ static const ShellConfig shell_cfg1 = {
   commands
 };
 
+
 /*===========================================================================*/
 /* General  code								                             */
 /*===========================================================================*/
 
 /*
- * Red LEDs blinker thread, times are in milliseconds.
+ * Red LED blinker thread, times are in milliseconds.
  */
 static THD_WORKING_AREA(waThread1, 128);
-static void Thread1(void *arg) {
+static THD_FUNCTION(Thread1, arg) {
 
   (void)arg;
   chRegSetThreadName("blinker");
-  while (TRUE) {
+  while (true) {
 #ifdef SYS_TIME_LED
       LED_TOGGLE(SYS_TIME_LED);
 #endif
-      chThdSleepMilliseconds(500);
+    chThdSleepMilliseconds(500);
   }
-  return 0;
 }
 
 

@@ -125,7 +125,7 @@ RTOS_TEST = 1
 # test serial ports
 #
 test_serial.ARCHDIR = $(ARCH)
-test_serial.CFLAGS += $(COMMON_TEST_CFLAGS) $(LED_DEFINES)
+test_serial.CFLAGS += $(COMMON_TEST_CFLAGS) $(LED_DEFINES) -DUSE_UART3 -DSERIAL_PORT=uart3
 test_serial.srcs   += $(COMMON_TEST_SRCS)
 test_serial.srcs += mcu_periph/uart.c
 test_serial.srcs += $(SRC_ARCH)/mcu_periph/uart_arch.c

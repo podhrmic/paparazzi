@@ -139,6 +139,15 @@ void uart_periph_set_bits_stop_parity(struct uart_periph* p __attribute__((unuse
                                       uint8_t parity __attribute__((unused)));
 
 /**
+ * Get byte from serial port
+ * @param p
+ * @return
+ */
+uint8_t uart_getch(struct uart_periph *p) {
+  return sdGet((SerialDriver *)p->reg_addr);
+}
+
+/**
  * Set baudrate (from the serialConfig)
  * @note Baudrate is set in sdStart, no need for implementation
  */
@@ -155,7 +164,7 @@ void uart_periph_set_mode(struct uart_periph *p __attribute__((unused)), bool_t 
 */
 void uart_put_byte(struct uart_periph *p, uint8_t data)
 {
-  sdWrite((SerialDriver *)p->reg_addr, &data, sizeof(data));
+  sdPut((SerialDriver *)p->reg_addr, data);
 }
 
 /**

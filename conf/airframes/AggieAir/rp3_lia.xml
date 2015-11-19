@@ -46,8 +46,8 @@ RP3 Lisa MX
     <target name="test_sys_time_usleep" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_sys_gpio" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_led" board="lisa_mx_2.0_chibios"/>    <!-- passed -->
-    <target name="test_shell" board="lisa_mx_2.0_chibios"/> <!-- passed -->
-    <target name="test_serial" board="lisa_mx_2.0_chibios"/> <!-- passed mostly, serial drivers have issues though-->
+    <target name="test_shell" board="lisa_mx_2.0_chibios"/>
+    <target name="test_serial" board="lisa_mx_2.0_chibios"/>
     <target name="test_telemetry" board="lisa_mx_2.0_chibios"/>
   </firmware>
 

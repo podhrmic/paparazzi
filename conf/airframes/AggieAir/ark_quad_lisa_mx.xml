@@ -40,6 +40,16 @@
       </subsystem>
   </firmware>
 
+  
+  <firmware name="test_progs">
+    <target name="test_sys_time_timer" board="lisa_mx_2.1"/> <!-- passed -->
+    <target name="test_sys_time_usleep" board="lisa_mx_2.1"/> <!-- passed -->
+    <target name="test_sys_gpio" board="lisa_mx_2.1"/> <!-- doesn't compile -->
+    <target name="test_led" board="lisa_mx_2.1"/> <!-- doesn't compile -->
+    <target name="test_shell" board="lisa_mx_2.1"/> <!-- doesn't compile -->
+    <target name="test_serial" board="lisa_mx_2.1"/> <!-- doesn't compile -->
+    <target name="test_telemetry" board="lisa_mx_2.1"/> <!-- passed -->
+  </firmware>
 
   <modules>
   </modules>

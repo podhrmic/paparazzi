@@ -28,7 +28,7 @@
  *
  * Periodically sends ALIVE telemetry messages.
  */
-
+#define DATALINK_C
 
 /* ChibiOS includes */
 #include "ch.h"
@@ -54,7 +54,6 @@ static void ThdBlinker(void *arg) {
 #endif
     chThdSleepMilliseconds(500);
   }
-  return 0;
 }
 
 static THD_WORKING_AREA(waThdTx, 1024);
@@ -64,9 +63,11 @@ static void ThdTx(void *arg) {
   chRegSetThreadName("sender");
   while (TRUE) {
     DOWNLINK_SEND_ALIVE(DefaultChannel, DefaultDevice, 16, MD5SUM);
+#ifdef LED_GREEN
+    LED_TOGGLE(LED_GREEN);
+#endif
     chThdSleepMilliseconds(100);
   }
-  return 0;
 }
 
 

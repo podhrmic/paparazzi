@@ -66,7 +66,7 @@ static void ThdTx(void *arg) {
 #ifdef LED_GREEN
     LED_TOGGLE(LED_GREEN);
 #endif
-    chThdSleepMilliseconds(100);
+    chThdSleepMilliseconds(500);
   }
 }
 

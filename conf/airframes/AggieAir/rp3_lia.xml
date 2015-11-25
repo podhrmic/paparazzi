@@ -51,6 +51,7 @@ RP3 Lisa MX
     <target name="test_telemetry" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_actuators_pwm_sin" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_adc" board="lisa_mx_2.0_chibios"/> <!-- passed -->
+    <target name="test_i2c" board="lisa_mx_2.0_chibios"/>
   </firmware>
 
   <modules>

@@ -5,7 +5,6 @@
  * Michal Podhradsky (michal.podhradsky@aggiemail.usu.edu)
  * Calvin Coopmans (c.r.coopmans@ieee.org)
  *
- * Copyright (C) 2015 Gautier Hattenberger, Alexandre Bustico
  *
  * This file is part of paparazzi.
  *
@@ -36,54 +35,103 @@
 
 #include BOARD_CONFIG
 
-#include "ch.h"
 #include "hal.h"
 
 #include "led.h"
 
-#if USE_I2C1 || USE_I2C2 || USE_I2C3
+#ifdef USE_I2C1
+PRINT_CONFIG_VAR(I2C1_CLOCK_SPEED)
+static const I2CConfig i2cfg1 = I2C1_CFG_DEF;
+struct i2c_errors i2c1_errors;
+void i2c1_hw_init(void) {
+  i2cStart(&I2CD1, &i2cfg1);
+  i2c1.reg_addr = &I2CD1;
+  i2c1.init_struct = NULL;
+  i2c1.errors = &i2c1_errors;
+}
+#endif /* USE_I2C1 */
 
-static void handle_i2c_thd(struct i2c_periph *p);
+#ifdef USE_I2C2
+PRINT_CONFIG_VAR(I2C2_CLOCK_SPEED)
+static const I2CConfig i2cfg2 = I2C2_CFG_DEF;
+struct i2c_errors i2c2_errors;
+void i2c2_hw_init(void) {
+  i2cStart(&I2CD2, &i2cfg2);
+  i2c2.reg_addr = &I2CD2;
+  i2c2.init_struct = NULL;
+  i2c2.errors = &i2c2_errors;
+}
+#endif /* USE_I2C2 */
 
-// Timeout for I2C transaction
-static const systime_t tmo = US2ST(1000000/PERIODIC_FREQUENCY);
+#if defined USE_I2C3
+PRINT_CONFIG_VAR(I2C3_CLOCK_SPEED)
+static const I2CConfig i2cfg3 = I2C3_CFG_DEF;
+struct i2c_errors i2c3_errors;
+void i2c3_hw_init(void) {
+  i2cStart(&I2CD3, &i2cfg3);
+  i2c3.reg_addr = &I2CD3;
+  i2c3.init_struct = NULL;
+  i2c3.errors = &i2c3_errors;
+}
+#endif /* USE_I2C3 */
+
 
 /**
- * main thread function
+ * i2c_event() function
  *
- *  @param[in] p pointer to an i2c peripheral
+ * Empty, for paparazzi compatibility only
  */
-static void handle_i2c_thd(struct i2c_periph *p)
-{
-  if (p->trans_insert_idx == p->trans_extract_idx) {
-    p->status = I2CIdle;
-    // no transaction pending
-    chThdSleepMilliseconds(1);
-    return;
-  }
+void i2c_event(void){}
 
-  // Get next transation in queue
-  struct i2c_transaction *t = p->trans[p->trans_extract_idx];
+/**
+ * i2c_setbitrate() function
+ *
+ * Empty, for paparazzi compatibility only. Bitrate is already
+ * set in i2cX_hw_init()
+ */
+void i2c_setbitrate(struct i2c_periph* p __attribute__((unused)), int bitrate __attribute__((unused))){}
 
-  p->status = I2CStartRequested;
-  // submit i2c transaction
-  msg_t status = i2cMasterTransmitTimeout(
-      (I2CDriver*)p->reg_addr,
-      (i2caddr_t)((t->slave_addr)>>1),
-      (uint8_t*)t->buf, (size_t)(t->len_w),
-      (uint8_t*)t->buf, (size_t)(t->len_r),
-      tmo);
+/**
+ * i2c_submit() function
+ *
+ * Provides interface between high-level paparazzi i2c functions
+ * (such as i2c_transmit(), i2c_transcieve()) and ChibiOS i2c
+ * transmit function i2cMasterTransmitTimeout()
+ *
+ * Note that we are using the same buffer for transmit and recevive. It is
+ * OK because in i2c transaction is Tx always before Rx.
+ *
+ * I2C calls are synchronous, timeout is set to 1/PERIODIC_FREQUENCY seconds
+ * TODO: Note that on STM32F1xx such as Lia board I2C bus can easily hang in
+ * an interrupt (see issue #531). Use I2C bus with care and caution.
+ *
+ * @param[in] p pointer to a @p i2c_periph struct
+ * @param[in] t pointer to a @p i2c_transaction struct
+ */
+bool_t i2c_submit(struct i2c_periph* p, struct i2c_transaction* t){
+#if USE_I2C1 || USE_I2C2 || USE_I2C3
+  static msg_t status = MSG_OK;
+  static systime_t tmo = US2ST(1000000/PERIODIC_FREQUENCY);
 
-  chMtxLock(&((I2CDriver*)p->reg_addr)->mutex);
-  // end of transaction, handle fifo
-  p->trans_extract_idx++;
-  if (p->trans_extract_idx >= I2C_TRANSACTION_QUEUE_LEN) {
-    p->trans_extract_idx = 0;
-  }
-  p->status = I2CIdle;
-  chMtxUnlock(&((I2CDriver*)p->reg_addr)->mutex);
+  i2cAcquireBus((I2CDriver*)p->reg_addr);
 
-  // Set report status and errors
+  volatile uint8_t state = ((I2CDriver*)p->reg_addr)->state;
+    if ( state !=  I2C_READY) {
+      t->status = I2CTransFailed;
+      t->buf[0] = 0; // to show zero value on return
+      i2cReleaseBus((I2CDriver*)p->reg_addr);
+      return TRUE;
+    }
+
+  status = i2cMasterTransmitTimeout(
+        (I2CDriver*)p->reg_addr,
+        (i2caddr_t)((t->slave_addr)>>1),
+        (uint8_t*)t->buf, (size_t)(t->len_w),
+        (uint8_t*)t->buf, (size_t)(t->len_r),
+        tmo);
+
+  i2cReleaseBus((I2CDriver*)p->reg_addr);
+
   switch (status) {
     case MSG_OK:
       //if the function succeeded
@@ -91,14 +139,15 @@ static void handle_i2c_thd(struct i2c_periph *p)
       break;
     case MSG_TIMEOUT:
       //if a timeout occurred before operation end
-      // mark as failed
-      t->status = I2CTransFailed;
+      //TBD
+      t->status = I2CTransSuccess;
       break;
     case MSG_RESET:
       //if one or more I2C errors occurred, the errors can
       //be retrieved using @p i2cGetErrors().
       t->status = I2CTransFailed;
-      i2cflags_t errors = i2cGetErrors((I2CDriver*)p->reg_addr);
+      static i2cflags_t errors = 0;
+      errors = i2cGetErrors((I2CDriver*)p->reg_addr);
       if (errors & I2C_BUS_ERROR) {
         p->errors->miss_start_stop_cnt++;
       }
@@ -124,195 +173,12 @@ static void handle_i2c_thd(struct i2c_periph *p)
     default:
       break;
   }
-}
-#endif /* USE_I2C1 || USE_I2C2 || USE_I2C3 */
-
-#if USE_I2C1
-// I2C1 config
-PRINT_CONFIG_VAR(I2C1_CLOCK_SPEED)
-static const I2CConfig i2cfg1 = I2C1_CFG_DEF;
-// Errors
-struct i2c_errors i2c1_errors;
-// Thread
-static __attribute__((noreturn)) void thd_i2c1(void *arg);
-static THD_WORKING_AREA(wa_thd_i2c1, 1024);
-
-/*
- * I2C1 init
- */
-void i2c1_hw_init(void)
-{
-  i2cStart(&I2CD1, &i2cfg1);
-  i2c1.reg_addr = &I2CD1;
-  i2c1.init_struct = NULL;
-  i2c1.errors = &i2c1_errors;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_i2c1, sizeof(wa_thd_i2c1),
-      NORMALPRIO+2, thd_i2c1, NULL);
-}
-
-/*
- * I2C1 thread
- *
- */
-static void thd_i2c1(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("i2c1");
-
-  while (TRUE) {
-    handle_i2c_thd(&i2c1);
-  }
-}
-#endif /* USE_I2C1 */
-
-#if USE_I2C2
-// I2C2 config
-PRINT_CONFIG_VAR(I2C2_CLOCK_SPEED)
-static const I2CConfig i2cfg2 = I2C2_CFG_DEF;
-// Errors
-struct i2c_errors i2c2_errors;
-// Thread
-static __attribute__((noreturn)) void thd_i2c2(void *arg);
-static THD_WORKING_AREA(wa_thd_i2c2, 1024);
-
-/*
- * I2C2 init
- */
-void i2c2_hw_init(void)
-{
-  i2cStart(&I2CD2, &i2cfg2);
-  i2c2.reg_addr = &I2CD2;
-  i2c2.init_struct = NULL;
-  i2c2.errors = &i2c2_errors;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_i2c2, sizeof(wa_thd_i2c2),
-      NORMALPRIO+2, thd_i2c2, NULL);
-}
-
-/*
- * I2C2 thread
- *
- */
-static void thd_i2c2(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("i2c2");
-
-  while (TRUE) {
-    handle_i2c_thd(&i2c2);
-  }
-}
-#endif /* USE_I2C2 */
-
-#if USE_I2C3
-// I2C3 config
-PRINT_CONFIG_VAR(I2C3_CLOCK_SPEED)
-static const I2CConfig i2cfg3 = I2C3_CFG_DEF;
-// Errors
-struct i2c_errors i2c3_errors;
-// Thread
-static __attribute__((noreturn)) void thd_i2c3(void *arg);
-static THD_WORKING_AREA(wa_thd_i2c3, 1024);
-
-/*
- * I2C3 init
- */
-void i2c3_hw_init(void)
-{
-  i2cStart(&I2CD3, &i2cfg3);
-  i2c3.reg_addr = &I2CD3;
-  i2c3.init_struct = NULL;
-  i2c3.errors = &i2c3_errors;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_i2c3, sizeof(wa_thd_i2c3),
-      NORMALPRIO+2, thd_i2c3, NULL);
-}
-
-/*
- * I2C3 thread
- *
- */
-static void thd_i2c3(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("i2c3");
-
-  while (TRUE) {
-    handle_i2c_thd(&i2c3);
-  }
-}
-#endif /* USE_I2C3 */
-
-
-/**
- * i2c_event() function
- *
- * Empty, for paparazzi compatibility only
- */
-void i2c_event(void) {}
-
-/**
- * i2c_setbitrate() function
- *
- * Empty, for paparazzi compatibility only. Bitrate is already
- * set in i2cX_hw_init()
- */
-void i2c_setbitrate(struct i2c_periph *p __attribute__((unused)), int bitrate __attribute__((unused))) {}
-
-/**
- * i2c_submit() function
- *
- * Provides interface between high-level paparazzi i2c functions
- * (such as i2c_transmit(), i2c_transcieve()) and ChibiOS i2c
- * transmit function i2cMasterTransmitTimeout()
- *
- * Note that we are using the same buffer for transmit and recevive. It is
- * OK because in i2c transaction is Tx always before Rx.
- *
- * I2C calls are synchronous, timeout is set to 1/PERIODIC_FREQUENCY seconds
- * TODO: Note that on STM32F1xx such as Lia board I2C bus can easily hang in
- * an interrupt (see issue #531). Use I2C bus with care and caution.
- *
- * @param[in] p pointer to a @p i2c_periph struct
- * @param[in] t pointer to a @p i2c_transaction struct
- */
-bool_t i2c_submit(struct i2c_periph *p, struct i2c_transaction *t)
-{
-#if USE_I2C1 || USE_I2C2 || USE_I2C3
-  // mutex lock
-  chMtxLock(&((I2CDriver*)p->reg_addr)->mutex);
-
-  uint8_t temp;
-  temp = p->trans_insert_idx + 1;
-  if (temp >= I2C_TRANSACTION_QUEUE_LEN) { temp = 0; }
-  if (temp == p->trans_extract_idx) {
-    // queue full
-    p->errors->queue_full_cnt++;
-    t->status = I2CTransFailed;
-    return FALSE;
-  }
-
-  t->status = I2CTransPending;
-
-  /* put transacation in queue */
-  p->trans[p->trans_insert_idx] = t;
-  p->trans_insert_idx = temp;
-
-  // TODO use system event to wake up thread
-
-  chMtxUnlock(&((I2CDriver*)p->reg_addr)->mutex);
-  // transaction submitted
   return TRUE;
 #else
-  // if no I2C peripheral is used fill in with dummy function
-  (void)p;
-  (void)t;
+  (void) p;
+  (void) t;
   return FALSE;
-#endif /* USE_I2C1 || USE_I2C2 || USE_I2C3 */
+#endif
 }
 
 /**
@@ -320,7 +186,6 @@ bool_t i2c_submit(struct i2c_periph *p, struct i2c_transaction *t)
  *
  * Empty, for paparazzi compatibility only
  */
-bool_t i2c_idle(struct i2c_periph *p __attribute__((unused)))
-{
+bool_t i2c_idle(struct i2c_periph* p __attribute__((unused))){
   return FALSE;
 }

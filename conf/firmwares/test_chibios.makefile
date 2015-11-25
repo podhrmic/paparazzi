@@ -170,3 +170,15 @@ test_adc.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
 test_adc.srcs   += $(COMMON_TELEMETRY_SRCS)
 test_adc.srcs   += $(SRC_ARCH)/mcu_periph/adc_arch.c
 test_adc.srcs   += test/mcu_periph/chibios_test_adc.c
+
+# test_i2c
+#
+# i2c test with AD7997 ADC converter
+test_i2c.ARCHDIR = $(ARCH)
+test_i2c.CFLAGS += $(COMMON_TEST_CFLAGS) -DUSE_I2C2 -DAD7997_I2C_DEV=i2c2
+test_i2c.srcs   += $(COMMON_TEST_SRCS)
+test_i2c.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
+test_i2c.srcs   += $(COMMON_TELEMETRY_SRCS)
+test_i2c.srcs   += mcu_periph/i2c.c
+test_i2c.srcs   += $(SRC_ARCH)/mcu_periph/i2c_arch.c
+test_i2c.srcs   += test/mcu_periph/chibios_test_i2c.c

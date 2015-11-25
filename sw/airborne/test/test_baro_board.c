@@ -92,6 +92,7 @@ int main(void)
       main_periodic_task();
     }
     if (sys_time_check_and_ack_timer(baro_tid)) {
+    	LED_TOGGLE(2);
       baro_periodic();
     }
     main_event_task();
@@ -123,7 +124,7 @@ static inline void main_init(void)
 static inline void main_periodic_task(void)
 {
   LED_PERIODIC();
-  RunOnceEvery(256, {DOWNLINK_SEND_ALIVE(DefaultChannel, DefaultDevice, 16, MD5SUM);});
+  RunOnceEvery(500, {DOWNLINK_SEND_ALIVE(DefaultChannel, DefaultDevice, 16, MD5SUM);});
   test_baro_board_imu_periodic_task();
 }
 
@@ -132,4 +133,5 @@ static inline void main_event_task(void)
   mcu_event();
   test_baro_board_imu_event_task();
   BaroEvent();
+  //baro_event();
 }

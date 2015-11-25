@@ -136,7 +136,9 @@ void uart5_init(void)
 void uart_periph_set_bits_stop_parity(struct uart_periph* p __attribute__((unused)),
                                       uint8_t bits __attribute__((unused)),
                                       uint8_t stop __attribute__((unused)),
-                                      uint8_t parity __attribute__((unused)));
+                                      uint8_t parity __attribute__((unused))){}
+
+
 
 /**
  * Get byte from serial port

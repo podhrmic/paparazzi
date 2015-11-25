@@ -96,7 +96,7 @@ static inline void main_periodic_task(void)
   uint16_t values[NB_ADC];
   uint8_t i;
   for (i = 0; i < NB_ADC; i++) {
-    values[i] = buf_adc[i].sum / ADC_NB_SAMPLES;
+	  values[i] = buf_adc[i].sum / buf_adc[i].av_nb_sample;
   }
 
   uint8_t id = 42;

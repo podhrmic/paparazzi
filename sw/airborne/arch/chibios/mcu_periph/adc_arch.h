@@ -34,6 +34,8 @@
 #define ADC_ARCH_H
 
 #include "hal.h"
+#include "std.h"
+
 
 #include BOARD_CONFIG
 
@@ -89,6 +91,7 @@ enum adc1_channels {
 #endif
   NB_ADC1_CHANNELS
 };
+
 
 #define ADC_NUM_CHANNELS (NB_ADC1_CHANNELS)
 

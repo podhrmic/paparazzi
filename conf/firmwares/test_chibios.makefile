@@ -60,7 +60,8 @@ ifneq ($(SYS_TIME_LED),none)
   COMMON_TEST_CFLAGS += -DSYS_TIME_LED=$(SYS_TIME_LED)
 endif
 COMMON_TEST_CFLAGS += -DPERIODIC_FREQUENCY=$(PERIODIC_FREQUENCY)
-COMMON_TEST_SRCS   += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c
+COMMON_TEST_SRCS   += mcu_periph/sys_time.c $(SRC_ARCH)/mcu_periph/sys_time_arch.c 
+COMMON_TEST_SRCS += $(SRC_ARCH)/mcu_periph/gpio_arch.c
 
 COMMON_TEST_CFLAGS += -DUSE_LED
 
@@ -144,3 +145,28 @@ test_telemetry.srcs   += $(COMMON_TEST_SRCS)
 test_telemetry.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
 test_telemetry.srcs   += $(COMMON_TELEMETRY_SRCS)
 test_telemetry.srcs   += test/chibios_test_telemetry.c
+
+#
+# test PWM actuators by simply moving each one from 1ms to 2ms
+#
+test_actuators_pwm_sin.ARCHDIR = $(ARCH)
+test_actuators_pwm_sin.CFLAGS += $(COMMON_TEST_CFLAGS)
+test_actuators_pwm_sin.srcs   += $(COMMON_TEST_SRCS)
+test_actuators_pwm_sin.srcs   += test/chibios_test_actuators_pwm_sin.c
+test_actuators_pwm_sin.srcs   += $(SRC_ARCH)/subsystems/actuators/actuators_pwm_arch.c
+
+#
+# test_adc
+#
+# configuration
+#   SYS_TIME_LED
+#   MODEM_PORT
+#   MODEM_BAUD
+#
+test_adc.ARCHDIR = $(ARCH)
+test_adc.CFLAGS += $(COMMON_TEST_CFLAGS) -DUSE_ADC
+test_adc.srcs   += $(COMMON_TEST_SRCS)
+test_adc.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
+test_adc.srcs   += $(COMMON_TELEMETRY_SRCS)
+test_adc.srcs   += $(SRC_ARCH)/mcu_periph/adc_arch.c
+test_adc.srcs   += test/mcu_periph/chibios_test_adc.c

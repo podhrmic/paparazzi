@@ -1142,13 +1142,26 @@
 #define ADC_4_GPIO_PIN GPIO4
 #endif
 
+// Internal Temperature sensor enabled by default
+#ifndef USE_ADC_5
+#define USE_ADC_5 1
+#define USE_ADC_SENSOR 1
+#endif
+#if USE_ADC_5
+#define AD1_5_CHANNEL ADC_CHANNEL_SENSOR
+#define ADC_5 AD1_5
+#define ADC_5_GPIO_PORT GPIOC
+#define ADC_5_GPIO_PIN GPIO4
+#endif
+
+
 
 /* allow to define ADC_CHANNEL_VSUPPLY in the airframe file*/
 #ifndef ADC_CHANNEL_VSUPPLY
 #define ADC_CHANNEL_VSUPPLY ADC_4
 #endif
 
-#define DefaultVoltageOfAdc(adc) (0.0047*adc)
+#define DefaultVoltageOfAdc(adc) (0.004489*adc)
 
 /*
  * PWM defines

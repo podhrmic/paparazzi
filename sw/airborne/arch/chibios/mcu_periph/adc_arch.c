@@ -314,8 +314,9 @@ void adc_init(void)
 
   adcgrpcfg.cr2 = ADC_CR2_TSVREFE;
 #elif defined(__STM32F4xx_H)
+  PRINT_CONFIG_MSG("Info: STM32F4 defined");
   uint32_t smpr1, smpr2;
-  adc_sample_time_on_all_channels(&smpr1, &smpr2, ADC_SAMPLE_56);
+  adc_sample_time_on_all_channels(&smpr1, &smpr2, ADC_SAMPLE_480);
 
   adcgrpcfg.cr2 = ADC_CR2_SWSTART;
 #endif
@@ -333,5 +334,8 @@ void adc_init(void)
 
   // Start ADC in continious conversion mode
   adcStart(&ADCD1, NULL);
+#if USE_ADC_SENSOR
+  adcSTM32EnableTSVREFE();
+#endif
   adcStartConversion(&ADCD1, &adcgrpcfg, adc_samples, ADC_BUF_DEPTH);
 }

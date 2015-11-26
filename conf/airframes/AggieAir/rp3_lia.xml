@@ -51,7 +51,12 @@ RP3 Lisa MX
     <target name="test_telemetry" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_actuators_pwm_sin" board="lisa_mx_2.0_chibios"/> <!-- passed -->
     <target name="test_adc" board="lisa_mx_2.0_chibios"/> <!-- passed -->
-    <target name="test_i2c" board="lisa_mx_2.0_chibios"/>
+    <target name="test_i2c" board="lisa_mx_2.0_chibios"/> <!-- passed -->
+    <target name="test_baro_board" board="lisa_mx_2.0_chibios"/> <!-- passed, waiting for better baro -->
+    <target name="test_imu" board="lisa_mx_2.0_chibios"> <!-- not working yet -->
+      <configure name="PERIODIC_FREQUENCY" value="512"/>
+      <subsystem name="imu" type="lisa_mx_v2.1"/>
+    </target>
   </firmware>
 
   <modules>

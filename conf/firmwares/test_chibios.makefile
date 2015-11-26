@@ -182,3 +182,45 @@ test_i2c.srcs   += $(COMMON_TELEMETRY_SRCS)
 test_i2c.srcs   += mcu_periph/i2c.c
 test_i2c.srcs   += $(SRC_ARCH)/mcu_periph/i2c_arch.c
 test_i2c.srcs   += test/mcu_periph/chibios_test_i2c.c
+
+#
+# test_baro_board : reads barometers and sends values over telemetry
+#
+# configuration
+#   SYS_TIME_LED
+#   MODEM_PORT
+#   MODEM_BAUD
+#
+test_baro_board.ARCHDIR = $(ARCH)
+test_baro_board.CFLAGS += $(COMMON_TEST_CFLAGS)
+test_baro_board.srcs   += $(COMMON_TEST_SRCS)
+test_baro_board.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
+test_baro_board.srcs   += $(COMMON_TELEMETRY_SRCS)
+test_baro_board.srcs += test/chibios_test_baro_board.c
+test_baro_board.srcs += mcu_periph/i2c.c $(SRC_ARCH)/mcu_periph/i2c_arch.c
+ifeq ($(TARGET),test_baro_board)
+include $(CFG_SHARED)/baro_board.makefile
+endif
+test_baro_board.CFLAGS += $(BARO_BOARD_CFLAGS)
+test_baro_board.srcs += $(BARO_BOARD_SRCS)
+
+#
+# test_imu
+#
+# add imu subsystem to test_imu target!
+#
+# configuration
+#   SYS_TIME_LED
+#   MODEM_PORT
+#   MODEM_BAUD
+#
+test_imu.ARCHDIR = $(ARCH)
+test_imu.CFLAGS += $(COMMON_TEST_CFLAGS)
+test_imu.srcs   += $(COMMON_TEST_SRCS)
+test_imu.CFLAGS += $(COMMON_TELEMETRY_CFLAGS)
+test_imu.srcs   += $(COMMON_TELEMETRY_SRCS)
+#test_imu.srcs   += mcu_periph/i2c.c $(SRC_ARCH)/mcu_periph/i2c_arch.c
+test_imu.srcs   += state.c
+test_imu.srcs   += test/subsystems/chibios_test_imu.c
+test_imu.srcs   += math/pprz_geodetic_int.c math/pprz_geodetic_float.c math/pprz_geodetic_double.c math/pprz_trig_int.c math/pprz_orientation_conversion.c math/pprz_algebra_int.c math/pprz_algebra_float.c math/pprz_algebra_double.c
+

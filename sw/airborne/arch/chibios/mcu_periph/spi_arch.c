@@ -38,6 +38,21 @@
 #if USE_SPI0
 #error "ChibiOS architectures don't have SPI0"
 #endif
+#if USE_SPI1
+void spi1_arch_init(void) {
+  spi1.reg_addr = &SPID1;
+}
+#endif
+#if USE_SPI2
+void spi2_arch_init(void) {
+  spi2.reg_addr = &SPID2;
+}
+#endif
+#if USE_SPI3
+void spi3_arch_init(void) {
+  spi3.reg_addr = &SPID3;
+}
+#endif
 
 /**
  * Resolve slave port
@@ -47,9 +62,8 @@
  *
  * @param[in] slave index number of a slave
  */
-static inline ioportid_t spi_resolve_slave_port(uint8_t slave)
-{
-  switch (slave) {
+static inline ioportid_t spi_resolve_slave_port(uint8_t slave) {
+  switch(slave) {
 #if USE_SPI_SLAVE0
     case 0:
       return SPI_SELECT_SLAVE0_PORT;
@@ -94,9 +108,8 @@ static inline ioportid_t spi_resolve_slave_port(uint8_t slave)
  *
  * @param[in] slave index number of a slave
  */
-static inline uint16_t spi_resolve_slave_pin(uint8_t slave)
-{
-  switch (slave) {
+static inline uint16_t spi_resolve_slave_pin(uint8_t slave) {
+  switch(slave) {
 #if USE_SPI_SLAVE0
     case 0:
       return SPI_SELECT_SLAVE0_PIN;
@@ -145,8 +158,7 @@ static inline uint16_t spi_resolve_slave_pin(uint8_t slave)
  *
  * @param[in] t pointer to a @p spi_transaction struct
  */
-static inline uint16_t spi_resolve_CR1(struct spi_transaction *t)
-{
+static inline uint16_t spi_resolve_CR1(struct spi_transaction* t){
   uint16_t CR1 = 0;
 #if defined(__STM32F10x_H) || defined(__STM32F4xx_H)
   if (t->dss == SPIDss16bit) {
@@ -193,151 +205,6 @@ static inline uint16_t spi_resolve_CR1(struct spi_transaction *t)
   return CR1;
 }
 
-/**
- * main thread function
- *
- *  @param[in] p pointer to an i2c peripheral
- */
-static void handle_spi_thd(struct spi_periph *p)
-{
-  if ((p->trans_insert_idx == p->trans_extract_idx) || p->suspend) {
-    p->status = SPIIdle;
-    // no transaction pending
-    chThdSleepMilliseconds(1);
-    return;
-  }
-
-  // Get next transation in queue
-  struct spi_transaction *t = p->trans[p->trans_extract_idx];
-
-  p->status = SPIRunning;
-
-  SPIConfig spi_cfg = {
-    NULL, // no callback
-    spi_resolve_slave_port(t->slave_idx),
-    spi_resolve_slave_pin(t->slave_idx),
-    spi_resolve_CR1(t)
-  };
-
-  // find max transaction length
-  static size_t t_length;
-  if (t->input_length >= t->output_length) {
-    t_length = (size_t)t->input_length;
-  } else {
-    t_length = (size_t)t->output_length;
-  }
-
-  // Configure SPI bus with the current slave select pin
-  spiStart((SPIDriver *)p->reg_addr, &spi_cfg);
-  spiSelect((SPIDriver *)p->reg_addr);
-
-  // Run the callback after selecting the slave
-  // FIXME warning: done in spi thread
-  if (t->before_cb != 0) {
-    t->before_cb(t);
-  }
-
-  // Start synchronous data transfer
-  spiExchange((SPIDriver *)p->reg_addr, t_length, (uint8_t*)t->output_buf, (uint8_t*)t->input_buf);
-
-  // Unselect the slave
-  spiUnselect((SPIDriver *)p->reg_addr);
-
-  chMtxLock(&((SPIDriver*)p->reg_addr)->mutex);
-  // end of transaction, handle fifo
-  p->trans_extract_idx++;
-  if (p->trans_extract_idx >= SPI_TRANSACTION_QUEUE_LEN) {
-    p->trans_extract_idx = 0;
-  }
-  p->status = SPIIdle;
-  chMtxUnlock(&((SPIDriver*)p->reg_addr)->mutex);
-
-  // Report the transaction as success
-  t->status = SPITransSuccess;
-
-  /*
-   * Run the callback after deselecting the slave
-   * to avoid recursion and/or concurency over the bus
-   */
-  // FIXME warning: done in spi thread
-  if (t->after_cb != 0) {
-    t->after_cb(t);
-  }
-}
-
-/**
- * Configure SPI peripherals
- */
-
-#if USE_SPI1
-static __attribute__((noreturn)) void thd_spi1(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("spi1");
-
-  while (TRUE) {
-    handle_spi_thd(&spi1);
-  }
-}
-
-static THD_WORKING_AREA(wa_thd_spi1, 1024);
-
-void spi1_arch_init(void)
-{
-  spi1.reg_addr = &SPID1;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_spi1, sizeof(wa_thd_spi1),
-      NORMALPRIO+2, thd_spi1, NULL);
-}
-#endif
-
-#if USE_SPI2
-static __attribute__((noreturn)) void thd_spi2(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("spi2");
-
-  while (TRUE) {
-    handle_spi_thd(&spi2);
-  }
-}
-
-static THD_WORKING_AREA(wa_thd_spi2, 1024);
-
-void spi2_arch_init(void)
-{
-  spi2.reg_addr = &SPID2;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_spi2, sizeof(wa_thd_spi2),
-      NORMALPRIO+2, thd_spi2, NULL);
-}
-#endif
-
-#if USE_SPI3
-static __attribute__((noreturn)) void thd_spi3(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("spi3");
-
-  while (TRUE) {
-    handle_spi_thd(&spi3);
-  }
-}
-
-static THD_WORKING_AREA(wa_thd_spi3, 1024);
-
-void spi3_arch_init(void)
-{
-  spi3.reg_addr = &SPID3;
-
-  // Create thread
-  chThdCreateStatic(wa_thd_spi3, sizeof(wa_thd_spi3),
-      NORMALPRIO+2, thd_spi3, NULL);
-}
-#endif
-
 
 /**
  * Submit SPI transaction
@@ -356,30 +223,55 @@ void spi3_arch_init(void)
  * @param[in] p pointer to a @p spi_periph struct
  * @param[in] t pointer to a @p spi_transaction struct
  */
-bool_t spi_submit(struct spi_periph *p, struct spi_transaction *t)
+bool_t spi_submit(struct spi_periph* p, struct spi_transaction* t)
 {
-  // mutex lock
-  chMtxLock(&((SPIDriver*)p->reg_addr)->mutex);
+  SPIConfig spi_cfg = {
+    NULL, // no callback
+    spi_resolve_slave_port(t->slave_idx),
+    spi_resolve_slave_pin(t->slave_idx),
+    spi_resolve_CR1(t)
+  };
 
-  uint8_t idx;
-  idx = p->trans_insert_idx + 1;
-  if (idx >= SPI_TRANSACTION_QUEUE_LEN) { idx = 0; }
-  if ((idx == p->trans_extract_idx) || ((t->input_length == 0) && (t->output_length == 0))) {
-    t->status = SPITransFailed;
-    return FALSE; /* queue full or input_length and output_length both 0 */
-    // TODO can't tell why it failed here if it does
+  // find max transaction length
+  static size_t t_length;
+  if (t->input_length >= t->output_length) {
+    t_length = (size_t)t->input_length;
+  }
+  else {
+    t_length = (size_t)t->output_length;
   }
 
-  t->status = SPITransPending;
+  // Acquire exclusive access to the SPI bus
+  spiAcquireBus((SPIDriver*)p->reg_addr);
 
-  /* put transacation in queue */
-  p->trans[p->trans_insert_idx] = t;
-  p->trans_insert_idx = idx;
+  // Configure SPI bus with the current slave select pin
+  spiStart((SPIDriver*)p->reg_addr, &spi_cfg);
+  spiSelect((SPIDriver*)p->reg_addr);
 
-  // TODO use system event to wake up thread
+  // Run the callback after selecting the slave
+  if (t->before_cb != 0) {
+    t->before_cb(t);
+  }
 
-  chMtxUnlock(&((SPIDriver*)p->reg_addr)->mutex);
-  // transaction submitted
+  // Start synchronous data transfer
+  spiExchange((SPIDriver *)p->reg_addr, t_length, (uint8_t*)t->output_buf, (uint8_t*)t->input_buf);
+
+  // Unselect the slave
+  spiUnselect((SPIDriver*)p->reg_addr);
+
+  // Release the exclusive access to the bus
+  spiReleaseBus((SPIDriver*)p->reg_addr);
+
+  // Report the transaction as success
+  t->status = SPITransSuccess;
+
+  /*
+   * Run the callback after deselecting the slave
+   * to avoid recursion and/or concurency over the bus
+   */
+  if (t->after_cb != 0) {
+    t->after_cb(t);
+  }
   return TRUE;
 }
 
@@ -388,99 +280,24 @@ bool_t spi_submit(struct spi_periph *p, struct spi_transaction *t)
 /**
  * spi_slave_select() function
  *
+ * Empty, for paparazzi compatibility only
  */
-void spi_slave_select(uint8_t slave)
-{
-  switch (slave) {
-#if USE_SPI_SLAVE0
-    case 0:
-      gpio_clear(SPI_SELECT_SLAVE0_PORT, SPI_SELECT_SLAVE0_PIN);
-      break;
-#endif // USE_SPI_SLAVE0
-#if USE_SPI_SLAVE1
-    case 1:
-      gpio_clear(SPI_SELECT_SLAVE1_PORT, SPI_SELECT_SLAVE1_PIN);
-      break;
-#endif //USE_SPI_SLAVE1
-#if USE_SPI_SLAVE2
-    case 2:
-      gpio_clear(SPI_SELECT_SLAVE2_PORT, SPI_SELECT_SLAVE2_PIN);
-      break;
-#endif //USE_SPI_SLAVE2
-#if USE_SPI_SLAVE3
-    case 3:
-      gpio_clear(SPI_SELECT_SLAVE3_PORT, SPI_SELECT_SLAVE3_PIN);
-      break;
-#endif //USE_SPI_SLAVE3
-#if USE_SPI_SLAVE4
-    case 4:
-      gpio_clear(SPI_SELECT_SLAVE4_PORT, SPI_SELECT_SLAVE4_PIN);
-      break;
-#endif //USE_SPI_SLAVE4
-#if USE_SPI_SLAVE5
-    case 5:
-      gpio_clear(SPI_SELECT_SLAVE5_PORT, SPI_SELECT_SLAVE5_PIN);
-      break;
-#endif //USE_SPI_SLAVE5
-    default:
-      break;
-  }
-}
+void spi_slave_select(uint8_t slave __attribute__((unused))) {}
 
 /**
  * spi_slave_unselect() function
  *
+ * Empty, for paparazzi compatibility only
  */
-void spi_slave_unselect(uint8_t slave)
-{
-  switch (slave) {
-#if USE_SPI_SLAVE0
-    case 0:
-      gpio_set(SPI_SELECT_SLAVE0_PORT, SPI_SELECT_SLAVE0_PIN);
-      break;
-#endif // USE_SPI_SLAVE0
-#if USE_SPI_SLAVE1
-    case 1:
-      gpio_set(SPI_SELECT_SLAVE1_PORT, SPI_SELECT_SLAVE1_PIN);
-      break;
-#endif //USE_SPI_SLAVE1
-#if USE_SPI_SLAVE2
-    case 2:
-      gpio_set(SPI_SELECT_SLAVE2_PORT, SPI_SELECT_SLAVE2_PIN);
-      break;
-#endif //USE_SPI_SLAVE2
-#if USE_SPI_SLAVE3
-    case 3:
-      gpio_set(SPI_SELECT_SLAVE3_PORT, SPI_SELECT_SLAVE3_PIN);
-      break;
-#endif //USE_SPI_SLAVE3
-#if USE_SPI_SLAVE4
-    case 4:
-      gpio_set(SPI_SELECT_SLAVE4_PORT, SPI_SELECT_SLAVE4_PIN);
-      break;
-#endif //USE_SPI_SLAVE4
-#if USE_SPI_SLAVE5
-    case 5:
-      gpio_set(SPI_SELECT_SLAVE5_PORT, SPI_SELECT_SLAVE5_PIN);
-      break;
-#endif //USE_SPI_SLAVE5
-    default:
-      break;
-  }
-}
+void spi_slave_unselect(uint8_t slave __attribute__((unused))) {}
 
 /**
  * spi_lock() function
  *
  * Empty, for paparazzi compatibility only
  */
-bool_t spi_lock(struct spi_periph *p, uint8_t slave)
-{
-  if (slave < 254 && p->suspend == 0) {
-    p->suspend = slave + 1; // 0 is reserved for unlock state
-    return TRUE;
-  }
-  return FALSE;
+bool_t spi_lock(struct spi_periph* p __attribute__((unused)), uint8_t slave __attribute__((unused))) {
+  return TRUE;
 }
 
 /**
@@ -488,14 +305,8 @@ bool_t spi_lock(struct spi_periph *p, uint8_t slave)
  *
  * Empty, for paparazzi compatibility only
  */
-bool_t spi_resume(struct spi_periph *p, uint8_t slave)
-{
-  if (p->suspend == slave + 1) {
-    // restart fifo
-    p->suspend = 0;
-    return TRUE;
-  }
-  return FALSE;
+bool_t spi_resume(struct spi_periph* p __attribute__((unused)), uint8_t slave __attribute__((unused))) {
+  return TRUE;
 }
 
 /**
@@ -503,36 +314,4 @@ bool_t spi_resume(struct spi_periph *p, uint8_t slave)
  *
  * Empty, for paparazzi compatibility only
  */
-void spi_init_slaves(void)
-{
-#if USE_SPI_SLAVE0
-  gpio_setup_output(SPI_SELECT_SLAVE0_PORT, SPI_SELECT_SLAVE0_PIN);
-  spi_slave_unselect(0);
-#endif
-
-#if USE_SPI_SLAVE1
-  gpio_setup_output(SPI_SELECT_SLAVE1_PORT, SPI_SELECT_SLAVE1_PIN);
-  spi_slave_unselect(1);
-#endif
-
-#if USE_SPI_SLAVE2
-  gpio_setup_output(SPI_SELECT_SLAVE2_PORT, SPI_SELECT_SLAVE2_PIN);
-  spi_slave_unselect(2);
-#endif
-
-#if USE_SPI_SLAVE3
-  gpio_setup_output(SPI_SELECT_SLAVE3_PORT, SPI_SELECT_SLAVE3_PIN);
-  spi_slave_unselect(3);
-#endif
-
-#if USE_SPI_SLAVE4
-  gpio_setup_output(SPI_SELECT_SLAVE4_PORT, SPI_SELECT_SLAVE4_PIN);
-  spi_slave_unselect(4);
-#endif
-
-#if USE_SPI_SLAVE5
-  gpio_setup_output(SPI_SELECT_SLAVE5_PORT, SPI_SELECT_SLAVE5_PIN);
-  spi_slave_unselect(5);
-#endif
-}
-
+void spi_init_slaves(void) {}

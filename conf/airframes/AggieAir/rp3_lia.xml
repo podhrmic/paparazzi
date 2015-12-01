@@ -10,9 +10,9 @@ RP3 Lisa MX
     <define name="CONTROL_FREQUENCY" value="100"/>
     <configure name="PERIODIC_FREQUENCY" value="100"/>
 
-    <!--target name="ap" board="lisa_mx_2.0"-->
+    <target name="ap" board="lisa_mx_2.0">
     <!--target name="ap" board="lisa_mx_rt"-->
-    <target name="ap" board="lisa_mx_2.0_chibios">
+    <!--target name="ap" board="lisa_mx_2.0_chibios"-->
       <subsystem name="radio_control" type="sbus">
         <configure name="SBUS_PORT" value="UART5"/>
       </subsystem>
@@ -38,7 +38,7 @@ RP3 Lisa MX
 
     <define name="AGR_CLIMB" />
     
-    <configure name="RTOS_DEBUG" value="1"/>
+<!--    <configure name="RTOS_DEBUG" value="1"/>-->
   </firmware>
   
   <firmware name="test_chibios">
@@ -62,6 +62,10 @@ RP3 Lisa MX
   <modules>
     <load name="nav_line.xml"/>
     <load name="sys_mon.xml"/>
+    <load name="xgear.xml">
+      <configure name="XGEAR_PORT" value="UART1"/>
+      <configure name="XGEAR_BAUD" value="B921600"/>
+    </load>
   </modules>
 
   <!-- commands section -->
@@ -193,7 +197,10 @@ RP3 Lisa MX
     <define name="PITCH_MAX_SETPOINT" value="0.35" unit="rad"/>
     <define name="PITCH_MIN_SETPOINT" value="-0.2" unit="rad"/>
     <define name="PITCH_PGAIN" value="12900."/>
-    <define name="PITCH_DGAIN" value="1.5"/>
+    <!-- Flight config:
+        <define name="PITCH_DGAIN" value="1.5"/>
+    -->
+    <define name="PITCH_DGAIN" value="51.5"/>
     <define name="ELEVATOR_OF_ROLL" value="1250"/>
     <define name="ROLL_ATTITUDE_GAIN" value="9000"/>
     <define name="ROLL_RATE_GAIN" value="1600"/>
@@ -237,7 +244,7 @@ RP3 Lisa MX
 
   <section name="SIMULATOR" prefix="NPS_">
     <define name="JSBSIM_LAUNCHSPEED" value="25"/>
-    <define name="JSBSIM_MODEL" value="easystar" type="string"/>
+    <define name="JSBSIM_MODEL" value="minion_enterprise" type="string"/>
     <define name="SENSORS_PARAMS" value="nps_sensors_params_invariant.h" type="string"/>
     <define name="JS_AXIS_THROTTLE" value="0"/>
     <define name="JS_AXIS_THROTTLE_REVERSED" value="1"/>

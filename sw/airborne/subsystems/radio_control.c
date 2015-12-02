@@ -29,6 +29,11 @@
 
 struct RadioControl radio_control;
 
+#if USE_CHIBIOS_RTOS
+  event_source_t eventRadioFrame;
+  event_source_t eventRadioData;
+#endif
+
 void radio_control_init(void)
 {
   uint8_t i;

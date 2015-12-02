@@ -122,7 +122,8 @@ endif
 # Main
 #
 ifeq ($(RTOS), chibios)
- ns_srcs += $(SRC_FIRMWARE)/main_chibios.c
+ ns_srcs += $(SRC_FIRMWARE)/main_chibios.c $(SRC_FIRMWARE)/main_threads.c
+ ns_CFLAGS += -DUSE_CHIBIOS_RTOS
 else
  ns_srcs += $(SRC_FIRMWARE)/main.c
 endif

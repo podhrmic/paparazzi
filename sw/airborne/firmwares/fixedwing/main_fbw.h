@@ -44,5 +44,6 @@ void init_fbw(void);
 void handle_periodic_tasks_fbw(void);
 void periodic_task_fbw(void);
 void event_task_fbw(void);
+void handle_rc_frame(void);
 
 #endif

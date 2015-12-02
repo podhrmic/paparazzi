@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 AggieAir, A Remote Sensing Unmanned Aerial System for Scientific Applications
+ * Copyright (C) 2015 AggieAir, A Remote Sensing Unmanned Aerial System for Scientific Applications
  * Utah State University, http://aggieair.usu.edu/
  *
  * Michal Podhradsky (michal.podhradsky@aggiemail.usu.edu)
@@ -24,40 +24,44 @@
  * Boston, MA 02111-1307, USA.
  */
 /**
- * @file arch/chibios/mcu_periph/sys_time_arch.h
- * Implementation of system time functions for ChibiOS arch
+ * @file main_threads.h
+ * Thread definitions for ChibiOS/RT Paparazzi fixedwing
  *
- * Mostly empty functions for Paparazzi compatibility,
- * since ChibiOS uses different system time functions.
+ *
+ * @author {Michal Podhradsky, Calvin Coopmans}
  */
-#ifndef SYS_TIME_ARCH_H
-#define SYS_TIME_ARCH_H
+#ifndef MAIN_THREADS_H
+#define MAIN_THREADS_H
 
-#include "mcu_periph/sys_time.h"
-
-/*
- * Chibios includes
- */
+/* ChibiOS includes */
 #include "ch.h"
 
 /*
- * Extra defines for ChibiOS CPU monitoring
+ * Thread Area Definitions
  */
-extern uint32_t core_free_memory;
-extern uint8_t thread_counter;
-extern uint32_t cpu_counter;
-extern uint32_t idle_counter;
-extern uint8_t cpu_frequency;
+#define CH_THREAD_AREA_HEARTBEAT 128
+#define CH_THREAD_AREA_FAILSAFE 256
+#define CH_THREAD_AREA_ELECTRICAL 256
+#define CH_THREAD_AREA_RADIO_CONTROL 256
+#define CH_THREAD_AREA_RADIO_EVENT 512
+
+#define CH_THREAD_AREA_DOWNLINK_TX 1024
+#define CH_THREAD_AREA_DOWNLINK_RX 1024
 
 /*
- * Mutex guard
+ * Thread declarations
  */
-extern mutex_t mtx_sys_time;
+void thd_heartbeat(void *arg);
+void thd_radio_control(void *arg);
+void thd_electrical(void *arg);
 
-extern uint32_t get_sys_time_usec(void);
-extern uint32_t get_sys_time_msec(void);
-extern void sys_time_usleep(uint32_t us);
-extern void sys_time_msleep(uint16_t ms);
-extern void sys_time_ssleep(uint8_t s);
+#if PERIODIC_TELEMETRY
+void thd_telemetry_tx(void *arg);
+void thd_telemetry_rx(void *arg);
+#endif
 
-#endif /* SYS_TIME_ARCH_H */
+extern void spawn_threads(void);
+
+
+
+#endif /* MAIN_THREADS_H */

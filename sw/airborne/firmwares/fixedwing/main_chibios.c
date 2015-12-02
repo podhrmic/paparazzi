@@ -1,5 +1,10 @@
 /*
- * Copyright (C) 2013-2015 Gautier Hattenberger, Alexandre Bustico
+ * Copyright (C) 2015 AggieAir, A Remote Sensing Unmanned Aerial System for Scientific Applications
+ * Utah State University, http://aggieair.usu.edu/
+ *
+ * Michal Podhradsky (michal.podhradsky@aggiemail.usu.edu)
+ * Calvin Coopmans (c.r.coopmans@ieee.org)
+ *
  *
  * This file is part of paparazzi.
  *
@@ -18,208 +23,70 @@
  * the Free Software Foundation, 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
 /**
- * @file firmwares/fixedwing/main_chibios.c
+ * @file main_chibios.c
+ * Main file for ChibiOS/RT Paparazzi fixedwing
+ *
+ * Includes both Paparazzi and ChibiOS files, threads are static.
+ *
+ * @author {Michal Podhradsky, Calvin Coopmans}
  */
-
-/*
- * Chibios includes
- */
-#include "ch.h"
-#include "hal.h"
-
-#include "led.h"
-#include "mcu_periph/sys_time.h"
-
-#ifndef  SYS_TIME_FREQUENCY
-#error SYS_TIME_FREQUENCY should be defined in Makefile.chibios or airframe.xml and be equal to CH_CFG_ST_FREQUENCY
-#elif SYS_TIME_FREQUENCY != CH_CFG_ST_FREQUENCY
-#error SYS_TIME_FREQUENCY should be equal to CH_CFG_ST_FREQUENCY
-#elif  CH_CFG_ST_FREQUENCY < (2 * PERIODIC_FREQUENCY)
-#error CH_CFG_ST_FREQUENCY and SYS_TIME_FREQUENCY should be >= 2 x PERIODIC_FREQUENCY
-#endif
-
-#ifdef FBW
-#include "firmwares/fixedwing/main_fbw.h"
-#define Fbw(f) f ## _fbw()
-#else
-#define Fbw(f)
-#endif
-
-#ifdef AP
-#include "firmwares/fixedwing/main_ap.h"
-#define Ap(f) f ## _ap()
-#else
-#define Ap(f)
-#endif
+#include "firmwares/fixedwing/main_chibios.h"
+#include "firmwares/fixedwing/main_threads.h"
 
 
-/*
- * Telemetry defines
- */
+
+
+/********** PERIODIC MESSAGES ************************************************/
 #if PERIODIC_TELEMETRY
-#include "subsystems/datalink/telemetry.h"
-
 static void send_chibios_info(struct transport_tx *trans, struct link_device *dev)
 {
   static uint16_t time_now = 0;
   time_now = chVTGetSystemTime()/CH_CFG_ST_FREQUENCY;
+
+  // Mutex guard
+  chMtxLock(&mtx_sys_time);
 
   pprz_msg_send_CHIBIOS_INFO(trans, dev, AC_ID,
                     &core_free_memory,
                     &time_now,
                     &thread_counter,
                     &cpu_frequency);
+
+  // Mutex guard
+  chMtxUnlock(&mtx_sys_time);
 }
 #endif
 
-/*
- * Heartbeat thread
- */
-static void thd_heartbeat(void *arg);
-static THD_WORKING_AREA(wa_thd_heartbeat, 2048);
-
-/*
- * PPRZ thread
- */
-static void thd_pprz(void *arg);
-static THD_WORKING_AREA(wa_thd_pprz, 4096);
-thread_t *pprzThdPtr = NULL;
 
 /**
- * Main function
+ * Main loop
+ *
+ * Initializes system (both chibios and paparazzi),
+ * then turns into main thread - main_periodic()
  */
 int main(void)
 {
-  // Init
-  Fbw(init);
-  Ap(init);
+  init_fbw();
 
-  // ????
-  PWR->CSR &= ~PWR_CSR_BRE;
-  DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP;
-
-  // Create threads
-  chThdCreateStatic(wa_thd_heartbeat, sizeof(wa_thd_heartbeat),
-      NORMALPRIO, thd_heartbeat, NULL);
-
-  chThdSleepMilliseconds(100);
-
-  pprzThdPtr = chThdCreateStatic(wa_thd_pprz, sizeof(wa_thd_pprz),
-      NORMALPRIO+1, thd_pprz, NULL);
-
-  // Main loop, do nothing
-  while (TRUE) {
-    chThdSleepMilliseconds(1000);
-  }
-  return 0;
-}
-
-
-/*
- * Heartbeat thread
- */
-/*
-static void thd_heartbeat(void *arg)
-{
-  (void) arg;
-  chRegSetThreadName("pprz heartbeat");
-
-  //chThdSleepSeconds (SDLOG_START_DELAY);
-  //if (usbStorageIsItRunning ())
-  //  chThdSleepSeconds (20000); // stuck here for hours
-  //else
-  //  sdOk = chibios_logInit();
-
-  while (TRUE) {
-    //palTogglePad (GPIOC, GPIOC_LED3);
-    //chThdSleepMilliseconds (sdOk == TRUE ? 1000 : 200);
-    //static uint32_t timestamp = 0;
-
-    thread_t *tp = chRegFirstThread();
-    do {
-      tp = chRegNextThread(tp);
-    } while (tp != NULL);
-    // we sync gps time to rtc every 5 seconds
-    //if (chVTGetSystemTime() - timestamp > 5000) {
-    //  timestamp = chVTGetSystemTime();
-    //  if (getGpsTimeOfWeek() != 0) {
-    //    setRtcFromGps (getGpsWeek(), getGpsTimeOfWeek());
-    //  }
-    //}
-
-  }
-}
-*/
-/**
- * HeartBeat & System Info
- *
- * Blinks LED and logs the cpu usage and other system info
- */
-static void thd_heartbeat(void *arg)
-{
-  chRegSetThreadName("pprz_heartbeat");
-  (void) arg;
-  systime_t time = chVTGetSystemTime();
-  static uint32_t last_idle_counter = 0;
-  static uint32_t last_nb_sec = 0;
-
-  while (TRUE)
-  {
-    time += S2ST(1);
-    core_free_memory = chCoreGetStatusX();
-    thread_counter = 0;
-
-    thread_t *tp;
-    tp = chRegFirstThread();
-    do
-    {
-      thread_counter++;
-      if (tp ==chSysGetIdleThreadX())
-      {
-        // only if CH_DBG_THREADS_PROFILING == TRUE
-        idle_counter =  (uint32_t)tp->p_time;
-      }
-      tp = chRegNextThread(tp);
-    }
-    while (tp != NULL);
-
-    cpu_counter = (idle_counter-last_idle_counter)/(sys_time.nb_sec-last_nb_sec);
-    cpu_frequency = (1 - (float)cpu_counter/CH_CFG_ST_FREQUENCY)*100;
-
-    last_idle_counter = idle_counter;
-    last_nb_sec = sys_time.nb_sec;
-
-    chThdSleepUntil(time);
-  }
-}
-
-/*
- * PPRZ thread
- *
- * Call PPRZ periodic and event functions
- */
-static void thd_pprz(void *arg)
-{
-  /*
-     To be compatible with rtos architecture, each of this 4 workers should
-     be implemented in differents threads, each of them waiting for job to be done:
-     periodic task should sleep, and event task should wait for event
-     */
-  (void) arg;
-  chRegSetThreadName("pprz big loop");
+#if DOWNLINK
+  downlink_init();
+#endif
 
 #if PERIODIC_TELEMETRY
   register_periodic_telemetry(DefaultPeriodic, "CHIBIOS_INFO", send_chibios_info);
 #endif
 
-  while (!chThdShouldTerminateX()) {
-    Fbw(handle_periodic_tasks);
-    Ap(handle_periodic_tasks);
-    Fbw(event_task);
-    Ap(event_task);
-    chThdSleepMilliseconds(1);
+  /*
+   * Creates threads
+   */
+  spawn_threads();
+
+  while (TRUE)
+  {
+    sys_time_ssleep(1);
   }
 
+  return TRUE;
 }
+

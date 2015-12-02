@@ -174,7 +174,7 @@ static inline void set_failsafe_mode(void)
 
 
 #ifdef RADIO_CONTROL
-static inline void handle_rc_frame(void)
+void handle_rc_frame(void)
 {
   fbw_mode = FBW_MODE_OF_PPRZ(radio_control.values[RADIO_MODE]);
   if (fbw_mode == FBW_MODE_MANUAL) {
@@ -317,12 +317,12 @@ void periodic_task_fbw(void)
 #if OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP_IRREVERSIBLE
 #warning WARNING DANGER: OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP_IRREVERSIBLE defined. If you ever temporarly lost RC while in manual, you will failsafe forever even if RC is restored
     commands[COMMAND_FORCECRASH] = 9600;
-#endif
+#endif /* OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP_IRREVERSIBLE */
 #else
     fbw_mode = FBW_MODE_AUTO;
-#endif
+#endif /* OUTBACK_CHALLENGE_DANGEROUS_RULE_RC_LOST_NO_AP */
   }
-#endif
+#endif /* RADIO_CONTROL */
 
 #ifdef INTER_MCU
   inter_mcu_periodic_task();

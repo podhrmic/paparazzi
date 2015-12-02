@@ -116,7 +116,7 @@ void thd_radio_control(void *arg)
 {
   chRegSetThreadName("radio_control");
   (void) arg;
-  radio_control_init();
+  //radio_control_init();
   systime_t time = chVTGetSystemTime();
   while (TRUE)
   {
@@ -170,7 +170,7 @@ void thd_radio_event(void *arg)
 }
 
 
-#if PERIODIC_TELEMETRY
+//#if PERIODIC_TELEMETRY
 /**
  * Telemetry TX thread
  */
@@ -198,12 +198,12 @@ void thd_telemetry_rx(void *arg)
   chRegSetThreadName("telemetry_rx");
   (void) arg;
   event_listener_t elTelemetryRx;
-  eventflags_t flags;
+  //eventflags_t flags;
   chEvtRegisterMask((event_source_t *)chnGetEventSource((SerialDriver*)DOWNLINK_DEVICE.reg_addr), &elTelemetryRx, EVENT_MASK(1));
   while (TRUE)
   {
     chEvtWaitOneTimeout(EVENT_MASK(1), S2ST(1));
-    flags = chEvtGetAndClearFlags(&elTelemetryRx);
+    //flags = chEvtGetAndClearFlags(&elTelemetryRx);
     // TODO: fix according to the EVENTs guide: http://chibios-book.readthedocs.org/en/latest/14_events/
     /*
     ch_uart_receive_downlink(DOWNLINK_PORT, flags, parse_pprz, &pprz_tp);
@@ -217,16 +217,16 @@ void thd_telemetry_rx(void *arg)
     */
   }
 }
-#endif /* PERIODIC_TELEMETRY */
+//#endif /* PERIODIC_TELEMETRY */
 
 void spawn_threads(void) {
     chThdCreateStatic(wa_thd_heartbeat, sizeof(wa_thd_heartbeat), LOWPRIO, thd_heartbeat, NULL);
-    chThdCreateStatic(wa_thd_radio_control, sizeof(wa_thd_radio_control), NORMALPRIO, thd_radio_control, NULL);
     chThdCreateStatic(wa_thd_radio_event, sizeof(wa_thd_radio_event), NORMALPRIO, thd_radio_event, NULL);
+    chThdCreateStatic(wa_thd_radio_control, sizeof(wa_thd_radio_control), NORMALPRIO, thd_radio_control, NULL);
     chThdCreateStatic(wa_thd_electrical, sizeof(wa_thd_electrical), LOWPRIO, thd_electrical, NULL);
 
-#if PERIODIC_TELEMETRY
+//#if PERIODIC_TELEMETRY
   chThdCreateStatic(wa_thd_telemetry_tx, sizeof(wa_thd_telemetry_tx),LOWPRIO, thd_telemetry_tx, NULL);
   chThdCreateStatic(wa_thd_telemetry_rx, sizeof(wa_thd_telemetry_rx),LOWPRIO, thd_telemetry_rx, NULL);
-#endif /* PERIODIC_TELEMETRY */
+//#endif /* PERIODIC_TELEMETRY */
 }

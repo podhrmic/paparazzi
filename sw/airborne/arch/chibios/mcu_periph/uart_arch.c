@@ -201,6 +201,7 @@ void uart_receive_buffer(struct uart_periph *p, eventflags_t flags, void *on_rec
       p->fe_err++;
     }
   }
+
   if (flags & CHN_INPUT_AVAILABLE) {
     msg_t charbuf;
     do {
@@ -212,4 +213,5 @@ void uart_receive_buffer(struct uart_periph *p, eventflags_t flags, void *on_rec
       }
     } while (charbuf != Q_TIMEOUT);
   }
+
 }

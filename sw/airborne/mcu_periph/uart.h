@@ -92,6 +92,11 @@ extern bool_t uart_check_free_space(struct uart_periph *p, uint8_t len);
 extern uint8_t uart_getch(struct uart_periph *p);
 extern void uart_transmit_buffer(struct uart_periph *p, uint8_t *data_buffer, uint16_t length);
 
+#if USE_CHIBIOS_RTOS
+/// Unfortunately has to be declared here, if declared in uart_arch.h compiler complains about uart_periph struct
+extern void uart_receive_buffer(struct uart_periph* p, eventflags_t flags, void *on_receive_callback);
+#endif
+
 /**
  * Check UART for available chars in receive buffer.
  * @return number of chars in the buffer

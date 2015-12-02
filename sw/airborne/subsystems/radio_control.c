@@ -45,7 +45,14 @@ void radio_control_init(void)
   radio_control.radio_ok_cpt = 0;
   radio_control.frame_rate = 0;
   radio_control.frame_cpt = 0;
+
+#if USE_CHIBIOS_RTOS
+  chEvtObjectInit(&eventRadioFrame);
+  chEvtObjectInit(&eventRadioData);
+#endif /* USE_CHIBIOS_RTOS */
+
   radio_control_impl_init();
+
 }
 
 void radio_control_periodic_task(void)

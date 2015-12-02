@@ -55,10 +55,10 @@ void thd_heartbeat(void *arg);
 void thd_radio_control(void *arg);
 void thd_electrical(void *arg);
 
-#if PERIODIC_TELEMETRY
+//#if PERIODIC_TELEMETRY
 void thd_telemetry_tx(void *arg);
 void thd_telemetry_rx(void *arg);
-#endif
+//#endif
 
 extern void spawn_threads(void);
 

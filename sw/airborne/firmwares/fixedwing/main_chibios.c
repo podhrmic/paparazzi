@@ -38,7 +38,7 @@
 
 
 /********** PERIODIC MESSAGES ************************************************/
-#if PERIODIC_TELEMETRY
+//#if PERIODIC_TELEMETRY
 static void send_chibios_info(struct transport_tx *trans, struct link_device *dev)
 {
   static uint16_t time_now = 0;
@@ -56,7 +56,7 @@ static void send_chibios_info(struct transport_tx *trans, struct link_device *de
   // Mutex guard
   chMtxUnlock(&mtx_sys_time);
 }
-#endif
+//#endif
 
 
 /**
@@ -69,13 +69,13 @@ int main(void)
 {
   init_fbw();
 
-#if DOWNLINK
+//#if DOWNLINK
   downlink_init();
-#endif
+//#endif
 
-#if PERIODIC_TELEMETRY
+//#if PERIODIC_TELEMETRY
   register_periodic_telemetry(DefaultPeriodic, "CHIBIOS_INFO", send_chibios_info);
-#endif
+//#endif
 
   /*
    * Creates threads

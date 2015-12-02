@@ -159,12 +159,8 @@ void thd_radio_event(void *arg)
     rc_flags = chEvtGetAndClearFlags(&elRadioEvt);
     if (rc_flags & EVT_RADIO_FRAME)
     {
-      //if (autopilot_rc)
-      //{
-        //RadioControlEvent(autopilot_on_rc_frame);
         RadioControlEvent(handle_rc_frame);
         chEvtBroadcastFlags(&eventRadioData, EVT_RADIO_DATA);
-      //}
     }
   }
 }

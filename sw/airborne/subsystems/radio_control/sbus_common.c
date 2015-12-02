@@ -221,11 +221,12 @@ void thd_sbus_rx(void* arg) {
   while (TRUE) {
     sbus_parse(uart_getch(dev));
     if (sbus.frame_available) {
-      palTogglePad(GPIOC, 15);
       chEvtBroadcastFlags(&eventRadioFrame, EVT_RADIO_FRAME);
     }
   }
-  */
+*/
+
+  // Proper event based implementation
   event_listener_t elSBUSdata;
   eventflags_t flags;
   chEvtRegisterMask((event_source_t *)chnGetEventSource((SerialDriver*)dev->reg_addr), &elSBUSdata, EVENT_MASK(1));

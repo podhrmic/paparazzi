@@ -25,8 +25,8 @@
 
 #define BOARD_LISA_MX
 
-/* Lisa/M has a 12MHz external clock and 168MHz internal. */
-#define EXT_CLK 12000000
+/* Lisa/M has a 25MHz external clock and 168MHz internal. */
+#define EXT_CLK 25000000
 #define AHB_CLK 168000000
 
 /*
@@ -54,6 +54,7 @@
 #define LED_2_AFIO_REMAP ((void)0)
 
 /* green, shared with ADC12 (ADC_6 on connector ANALOG2) */
+/*
 #ifndef USE_LED_3
 #define USE_LED_3 1
 #endif
@@ -62,8 +63,10 @@
 #define LED_3_GPIO_ON gpio_clear
 #define LED_3_GPIO_OFF gpio_set
 #define LED_3_AFIO_REMAP ((void)0)
+*/
 
 /* red, shared with ADC15 (ADC_4 on connector ANALOG2) */
+/*
 #ifndef USE_LED_4
 #define USE_LED_4 1
 #endif
@@ -72,8 +75,10 @@
 #define LED_4_GPIO_ON gpio_clear
 #define LED_4_GPIO_OFF gpio_set
 #define LED_4_AFIO_REMAP ((void)0)
+*/
 
 /* green, on PC15 */
+/*
 #ifndef USE_LED_5
 #define USE_LED_5 1
 #endif
@@ -82,50 +87,59 @@
 #define LED_5_GPIO_ON gpio_clear
 #define LED_5_GPIO_OFF gpio_set
 #define LED_5_AFIO_REMAP ((void)0)
+*/
 
 /*
  * LEDs not populated by default
  */
 /* PC3, ADC13 on ADC_1 */
+/*
 #define LED_6_GPIO GPIOC
 #define LED_6_GPIO_PIN GPIO3
 #define LED_6_GPIO_ON gpio_clear
 #define LED_6_GPIO_OFF gpio_set
 #define LED_6_AFIO_REMAP ((void)0)
+*/
 
 /* PC0, ADC10 on ADC_2 */
+/*
 #define LED_7_GPIO GPIOC
 #define LED_7_GPIO_PIN GPIO0
 #define LED_7_GPIO_ON gpio_clear
 #define LED_7_GPIO_OFF gpio_set
 #define LED_7_AFIO_REMAP ((void)0)
+*/
 
 /* PC1, ADC11 on ADC_3 */
+/*
 #define LED_8_GPIO GPIOC
 #define LED_8_GPIO_PIN GPIO1
 #define LED_8_GPIO_ON gpio_clear
 #define LED_8_GPIO_OFF gpio_set
 #define LED_8_AFIO_REMAP ((void)0)
-
+*/
 
 /*
  * not actual LEDS, used as GPIOs
  */
 
 /* PB1, DRDY on EXT SPI connector*/
+/*
 #define LED_BODY_GPIO GPIOB
 #define LED_BODY_GPIO_PIN GPIO1
 #define LED_BODY_GPIO_ON gpio_set
 #define LED_BODY_GPIO_OFF gpio_clear
 #define LED_BODY_AFIO_REMAP ((void)0)
+*/
 
 /* PC12, on GPIO connector*/
+/*
 #define LED_12_GPIO GPIOC
 #define LED_12_GPIO_PIN GPIO12
 #define LED_12_GPIO_ON gpio_clear
 #define LED_12_GPIO_OFF gpio_set
 #define LED_12_AFIO_REMAP ((void)0)
-
+*/
 
 /* Default actuators driver */
 #define DEFAULT_ACTUATORS "subsystems/actuators/actuators_pwm.h"
@@ -142,38 +156,24 @@
 #define UART1_GPIO_TX GPIO9
 
 #define UART2_GPIO_AF GPIO_AF7
-#define UART2_GPIO_PORT_RX GPIOA
-#define UART2_GPIO_RX GPIO3
-#define UART2_GPIO_PORT_TX GPIOA
-#define UART2_GPIO_TX GPIO2
+#define UART2_GPIO_PORT_RX GPIOD
+#define UART2_GPIO_RX GPIO6
+#define UART2_GPIO_PORT_TX GPIOD
+#define UART2_GPIO_TX GPIO5
 
-#if REMAP_UART3 // For UART4 we need to remap UART 3
 #define UART3_GPIO_AF GPIO_AF7
-#define UART3_GPIO_PORT_RX GPIOB
-#define UART3_GPIO_RX GPIO11
-#define UART3_GPIO_PORT_TX GPIOB
-#define UART3_GPIO_TX GPIO10
+#define UART3_GPIO_PORT_RX GPIOD
+#define UART3_GPIO_RX GPIO9
+#define UART3_GPIO_PORT_TX GPIOD
+#define UART3_GPIO_TX GPIO8
 
-#define UART4_GPIO_AF GPIO_AF8
-#define UART4_GPIO_PORT_RX GPIOC
-#define UART4_GPIO_RX GPIO11
-#define UART4_GPIO_PORT_TX GPIOC
-#define UART4_GPIO_TX GPIO10
-
-#else
-#define UART3_GPIO_AF GPIO_AF7
-#define UART3_GPIO_PORT_RX GPIOC
-#define UART3_GPIO_RX GPIO11
-#define UART3_GPIO_PORT_TX GPIOC
-#define UART3_GPIO_TX GPIO10
-#endif
-
-
+/*
 #define UART5_GPIO_AF GPIO_AF8
 #define UART5_GPIO_PORT_RX GPIOD
 #define UART5_GPIO_RX GPIO2
 #define UART5_GPIO_PORT_TX GPIOC
 #define UART5_GPIO_TX GPIO12
+*/
 
 #define UART6_GPIO_AF GPIO_AF8
 #define UART6_GPIO_PORT_RX GPIOC
@@ -189,7 +189,7 @@
  * version specific header files. */
 /* #define SPEKTRUM_BIND_PIN GPIO0 */
 /* #define SPEKTRUM_BIND_PIN_PORT GPIOB */
-
+/*
 #define SPEKTRUM_UART1_RCC RCC_USART1
 #define SPEKTRUM_UART1_BANK GPIOA
 #define SPEKTRUM_UART1_PIN GPIO10
@@ -205,6 +205,7 @@
 #define SPEKTRUM_UART5_IRQ NVIC_UART5_IRQ
 #define SPEKTRUM_UART5_ISR uart5_isr
 #define SPEKTRUM_UART5_DEV UART5
+*/
 
 /* PPM
  *
@@ -254,6 +255,7 @@
 #endif // PPM_CONFIG
 
 /* SPI */
+/*
 #define SPI1_GPIO_AF GPIO_AF5
 #define SPI1_GPIO_PORT_MISO GPIOA
 #define SPI1_GPIO_MISO GPIO6
@@ -261,6 +263,7 @@
 #define SPI1_GPIO_MOSI GPIO7
 #define SPI1_GPIO_PORT_SCK GPIOA
 #define SPI1_GPIO_SCK GPIO5
+*/
 
 #define SPI2_GPIO_AF GPIO_AF5
 #define SPI2_GPIO_PORT_MISO GPIOB
@@ -279,8 +282,8 @@
 #define SPI_SELECT_SLAVE2_PORT GPIOB
 #define SPI_SELECT_SLAVE2_PIN GPIO12
 
-#define SPI_SELECT_SLAVE3_PORT GPIOC
-#define SPI_SELECT_SLAVE3_PIN GPIO13
+#define SPI_SELECT_SLAVE3_PORT GPIOE
+#define SPI_SELECT_SLAVE3_PIN GPIO3
 
 #define SPI_SELECT_SLAVE4_PORT GPIOC
 #define SPI_SELECT_SLAVE4_PIN GPIO12
@@ -414,7 +417,7 @@
 #define PWM_SERVO_1 0
 #define PWM_SERVO_1_TIMER TIM3
 #define PWM_SERVO_1_GPIO GPIOC
-#define PWM_SERVO_1_PIN GPIO6
+#define PWM_SERVO_1_PIN GPIO13
 #define PWM_SERVO_1_AF GPIO_AF2
 #define PWM_SERVO_1_OC TIM_OC1
 #define PWM_SERVO_1_OC_BIT (1<<0)
@@ -426,7 +429,7 @@
 #define PWM_SERVO_2 1
 #define PWM_SERVO_2_TIMER TIM3
 #define PWM_SERVO_2_GPIO GPIOC
-#define PWM_SERVO_2_PIN GPIO7
+#define PWM_SERVO_2_PIN GPIO14
 #define PWM_SERVO_2_AF GPIO_AF2
 #define PWM_SERVO_2_OC TIM_OC2
 #define PWM_SERVO_2_OC_BIT (1<<1)
@@ -438,7 +441,7 @@
 #define PWM_SERVO_3 2
 #define PWM_SERVO_3_TIMER TIM3
 #define PWM_SERVO_3_GPIO GPIOC
-#define PWM_SERVO_3_PIN GPIO8
+#define PWM_SERVO_3_PIN GPIO15
 #define PWM_SERVO_3_AF GPIO_AF2
 #define PWM_SERVO_3_OC TIM_OC3
 #define PWM_SERVO_3_OC_BIT (1<<2)
@@ -450,7 +453,7 @@
 #define PWM_SERVO_4 3
 #define PWM_SERVO_4_TIMER TIM3
 #define PWM_SERVO_4_GPIO GPIOC
-#define PWM_SERVO_4_PIN GPIO9
+#define PWM_SERVO_4_PIN GPIO4
 #define PWM_SERVO_4_AF GPIO_AF2
 #define PWM_SERVO_4_OC TIM_OC4
 #define PWM_SERVO_4_OC_BIT (1<<3)

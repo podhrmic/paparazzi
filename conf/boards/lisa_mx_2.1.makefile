@@ -30,26 +30,28 @@ DFU_PRODUCT = Lisa/Lia
 endif
 
 
+
+
 #
 # default LED configuration
 #
-RADIO_CONTROL_LED  ?= 4
+RADIO_CONTROL_LED  ?= none
 BARO_LED           ?= none
-AHRS_ALIGNER_LED   ?= 2
-GPS_LED            ?= 3
-SYS_TIME_LED       ?= 1
+AHRS_ALIGNER_LED   ?= none
+GPS_LED            ?= none
+SYS_TIME_LED       ?= none
 
 
 #
 # default uart configuration
 #
 RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT   ?= UART1
-RADIO_CONTROL_SPEKTRUM_SECONDARY_PORT ?= UART5
+RADIO_CONTROL_SPEKTRUM_SECONDARY_PORT ?= UART6
 
-MODEM_PORT ?= UART2
+MODEM_PORT ?= UART1
 MODEM_BAUD ?= B57600
 
-GPS_PORT ?= UART3
+GPS_PORT ?= UART2
 GPS_BAUD ?= B38400
 
 #

@@ -52,6 +52,7 @@
 
 struct Ms5611_Spi bb_ms5611;
 
+#define DEBUG 1
 
 void baro_init(void)
 {

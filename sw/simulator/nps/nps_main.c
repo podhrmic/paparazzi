@@ -66,6 +66,11 @@ static gboolean nps_main_periodic(gpointer data __attribute__((unused)));
 
 int pauseSignal = 0;
 
+gpointer current_data = NULL;
+GMutex data_mutex;
+GCond data_cond;
+GError    *error = NULL;
+
 void tstp_hdl(int n __attribute__((unused)))
 {
   if (pauseSignal) {
@@ -89,6 +94,24 @@ double time_to_double(struct timeval *t)
   return ((double)t->tv_sec + (double)(t->tv_usec * 1e-6));
 }
 
+static gpointer thread_func( gpointer data )
+{
+  gint64 end_time;
+  int cnt = 0;
+
+    while( TRUE )
+    {
+      g_mutex_lock (&data_mutex);
+      end_time = g_get_monotonic_time () + 1 * G_TIME_SPAN_SECOND;
+      g_cond_wait_until (&data_cond, &data_mutex, end_time);
+      printf("Counting %d\n",cnt);
+      cnt++;
+      g_mutex_unlock (&data_mutex);
+    }
+
+    return( NULL );
+}
+
 int main(int argc, char **argv)
 {
 
@@ -106,6 +129,11 @@ int main(int argc, char **argv)
   signal(SIGCONT, cont_hdl);
   signal(SIGTSTP, tstp_hdl);
   printf("Time factor is %f. (Press Ctrl-Z to change)\n", nps_main.host_time_factor);
+
+
+  //GThread *th = g_thread_create(thread_func, (gpointer)NULL, FALSE, &error );
+  GThread *th = g_thread_new ("counter",thread_func, current_data);
+
 
   GMainLoop *ml =  g_main_loop_new(NULL, FALSE);
   g_timeout_add(HOST_TIMEOUT_MS, nps_main_periodic, NULL);

@@ -20,7 +20,7 @@ RP3 Lisa MX
       <module name="radio_control" type="ppm"/>
     </target>
 
-    <module name="control"/>
+    <module name="control_generated"/>
     <module name="navigation"/>
 
     <module name="telemetry"   type="transparent">

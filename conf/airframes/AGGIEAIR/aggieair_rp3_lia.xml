@@ -23,10 +23,13 @@ RP3 Lisa MX
     <module name="control"/>
     <module name="navigation"/>
 
+    <!--
     <module name="telemetry"   type="transparent">
       <configure name="MODEM_PORT"        value="UART3"/>
       <configure name="MODEM_BAUD"        value="B57600"/>
     </module>
+    -->
+    <module name="telemetry"   type="transparent_usb"/>
 
     <module name="ins"       type="vectornav">
       <configure name="VN_PORT" value="UART2"/>

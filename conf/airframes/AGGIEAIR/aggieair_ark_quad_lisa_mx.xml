@@ -27,9 +27,12 @@
       <define name="SERVO_HZ" value="400"/>
     </module>
 
-    <module name="telemetry"     type="transparent"/>
+    <module name="telemetry"     type="transparent_usb"/>
     <module name="stabilization" type="float_euler"/>
-    <module name="ins" type="vectornav"/>
+    <module name="ins"       type="vectornav">
+      <configure name="VN_PORT" value="UART2"/>
+      <configure name="VN_BAUD" value="B921600"/>
+    </module>
     <define name="GEOFENCE_DATALINK_LOST_TIME" value="45"/>
   </firmware>
 

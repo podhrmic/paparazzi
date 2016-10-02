@@ -80,7 +80,10 @@ static void send_vn_info(struct transport_tx *trans, struct link_device *dev)
                                &ins_vn.err,
                                &ins_vn.ypr_u.phi,
                                &ins_vn.ypr_u.theta,
-                               &ins_vn.ypr_u.psi);
+                               &ins_vn.ypr_u.psi,
+                               &ins_vn.attitude.phi,
+                               &ins_vn.attitude.theta,
+                               &ins_vn.attitude.psi);
 
   // update counter
   last_cnt = ins_vn.vn_packet.counter;

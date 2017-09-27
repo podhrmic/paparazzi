@@ -1,5 +1,5 @@
 /*
-This is header
+This is a header
 uint8_t private_key[32] = { randomly generated 32 bytes }
 uint8_t private_key[32] = { randomly generated 32 bytes }
 */
@@ -9,5 +9,5 @@ uint8_t {{ key.name }}[{{key.length}}] = { {{key.bytes}} };
 {% endfor %}
 
 /*
-after header
+after the header
 */

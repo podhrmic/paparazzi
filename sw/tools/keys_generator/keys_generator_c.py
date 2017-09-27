@@ -1,7 +1,9 @@
-#!/usr/bin/env python
+  #!/usr/bin/env python
 
 '''
-parse a PPRZ protocol XML file and generate appropriate implementation
+Generate a random public-private keypairs
+ - one keypair for Ground Control Station
+ - pne keypair for UAV
 
 Copyright (C) 2017 David Cerny <david.cerny@senman.cz>
 For the Paparazzi UAV and PPRZLINK projects
@@ -11,40 +13,20 @@ For the Paparazzi UAV and PPRZLINK projects
 
 '''
 import sys, textwrap, os
-
-# keys_uav.h
-#
-# ve kterem bude
-#
-# uint8_t private_key[32] = { nahodne vygenerovanych 32 bytu }
-# uint8_t public_key[32] = { nahodne vygenerovanych 32 bytu }
-#
-# a keys_gcs.h
-#
-# ve kterem bude:
-#
-# uint8_t private_key[32] = { nahodne vygenerovanych 32 bytu }
-# uint8_t public_key[32] = { nahodne vygenerovanych 32 bytu }
-#
-# Chtel bych specifikovat to kde se ten soubor vygeneruje jako command line argument pro ten python program, napr:
-# generate_keys.py ../../var/keys
-
 generatedFilenames = ["keys_uav.h", "keys_gcs.h"]
-
-
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
     import os.path
     import random
+    from random import SystemRandom
     import jinja2
 
-    parser = ArgumentParser(description="This tool generate keys_uav with random bytes.")
+    parser = ArgumentParser(description="This tool generate keys_uav/keys_gcs with random bytes.")
     parser.add_argument("output_directory",  default='./output/', help="output path: i.e. ./output/") # ending slash is important
     args = parser.parse_args()
-
+    cryptogen = SystemRandom()
     r = lambda: ', '.join('0x{0:X}'.format(k) for k in [random.randint(0, 255) for _ in xrange(32)])
-
 
     data={}
     for fileName in generatedFilenames:
@@ -68,12 +50,9 @@ if __name__ == "__main__":
     templateEnv = jinja2.Environment(loader=templateLoader)
 
     for fileName in generatedFilenames:
-
         print 'Generating:', fileName
-
         template = templateEnv.get_template(fileName + '_template')
         outputText = template.render(keys=data[fileName])
-
         directory = os.path.join(args.output_directory, '')
 
         if not os.path.exists(directory):
@@ -82,15 +61,3 @@ if __name__ == "__main__":
         file = open(os.path.join(directory, fileName), 'w')
         file.write(outputText)
         file.close()
-
-
-
-    # uint8_t private_key[32] = { nahodne vygenerovanych 32 bytu }
-         # uint8_t public_key[32] = { nahodne vygenerovanych 32 bytu }
-    #
-    #
-    #
-    #     file.write('whatever')
-    #     file.close()
-    #
-    # # gen_messages(args)

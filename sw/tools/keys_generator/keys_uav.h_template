@@ -1,22 +1,13 @@
 /*
-
 This is header
-uint8_t private_key[32] = { nahodne vygenerovanych 32 bytu }
-uint8_t private_key[32] = { nahodne vygenerovanych 32 bytu }
-
+uint8_t private_key[32] = { randomly generated 32 bytes }
+uint8_t private_key[32] = { randomly generated 32 bytes }
 */
-
-
 
 {% for key in keys %}
 uint8_t {{ key.name }}[{{key.length}}] = { {{key.bytes}} };
 {% endfor %}
 
-
-
 /*
-
 after header
-
-
 */

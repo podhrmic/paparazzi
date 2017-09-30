@@ -27,6 +27,9 @@
 #include "subsystems/datalink/datalink.h"
 #include "mcu_periph/sys_time.h"
 
+
+INFO("USING SECURE PPRZLINK - compatible only with Rustlink");
+
 struct spprz_transport spprz_tp;
 
 void spprz_dl_init(void)
@@ -40,3 +43,7 @@ void spprz_dl_event(void)
   DlCheckAndParse(&DOWNLINK_DEVICE.device, &spprz_tp.trans_tx, dl_buffer, &dl_msg_available);
 }
 
+// At 160Hz dt = 6.25ms
+void spprz_dl_periodic(void) {
+  spprz_scheduling_periodic(&DOWNLINK_DEVICE.device, &spprz_tp);
+}

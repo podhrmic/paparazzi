@@ -45,5 +45,8 @@ extern void spprz_dl_init(void);
 /** Datalink Event */
 extern void spprz_dl_event(void);
 
+/** Sending messages from the queue */
+extern void spprz_dl_periodic(void);
+
 #endif /* SPPRZ_DL_H */
 

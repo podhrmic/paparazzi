@@ -28,3 +28,6 @@
 [submodule "sw/ext/TRICAL"]
 	path = sw/ext/TRICAL
 	url = https://github.com/sfwa/TRICAL.git
+[submodule "sw/ext/rustlink"]
+	path = sw/ext/rustlink
+	url = https://github.com/paparazzi/rustlink.git

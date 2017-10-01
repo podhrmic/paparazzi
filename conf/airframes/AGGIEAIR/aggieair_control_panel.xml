@@ -136,6 +136,21 @@
      </program>
    </session>
 
+   <session name="Secure HITL USB-serial@57600">
+     <program name="Server">
+      <arg flag="" constant="-no_md5_check"/>
+     </program>
+     <program name="GCS"/>
+     <program name="Messages"/>
+     <program name="Simulator">
+      <arg flag="-a" constant="@AIRCRAFT"/>
+      <arg flag="-f" constant="127.0.0.1"/>
+      <arg flag="-b" constant="127.255.255.255"/>
+      <arg flag="--fg_fdm" constant=""/>
+      <arg flag="-t" constant="hitl"/>
+     </program>
+   </session>
+
    <session name="HITL USB-serial@115200">
      <program name="Data Link">
        <arg flag="-d" constant="/dev/ttyUSB0"/>

@@ -14,6 +14,7 @@ Aggie Air ARK
       </module>
       <configure name="HAS_LUFTBOOT" value="1"/>
       <configure name="FLASH_MODE" value="DFU"/>
+      <configure name="RTOS_DEBUG" value="0 "/>
     </target>
 
     <!-- NOTE: if you want to use extra_dl module for HITL
@@ -63,6 +64,7 @@ Aggie Air ARK
       <configure name="EXTRA_DL_PORT" value="UART1"/>
       <configure name="EXTRA_DL_BAUD" value="B921600"/>
     </module>
+<!-- Disable for HITL testing
     <module name="battery_monitor.xml">
       <define name="BATMON_REV4" value="0"/>
       <define name="BATMON_CURRENT_OFFSET" value="-120"/>
@@ -70,6 +72,7 @@ Aggie Air ARK
       <define name="BATMON_TEMP_OFFSET" value="250"/>
       <define name="BATMON_TEMP_SENSITIVITY" value="10"/>
     </module>
+-->
   </modules>
 
   <!--These values are set for the Castle Creations HV Lite 60A ESCs-->

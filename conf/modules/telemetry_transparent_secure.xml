@@ -11,6 +11,7 @@
   </doc>
   <autoload name="telemetry" type="nps"/>
   <autoload name="telemetry" type="sim"/>
+  <autoload name="haclc"/>
   <header>
     <file name="spprz_dl.h"/>
   </header>

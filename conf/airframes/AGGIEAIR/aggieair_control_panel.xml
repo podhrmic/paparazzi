@@ -13,6 +13,9 @@
     <program name="Data Link" command="sw/ground_segment/tmtc/link">
       <arg flag="-d" constant="/dev/ttyUSB0"/>
     </program>
+    <program name="Rust Link" command="sw/ext/rustlink/target/release/rustlink">
+      <arg flag="-d" constant="/dev/ttyUSB0"/>
+    </program>
     <program name="Link Combiner" command="sw/ground_segment/python/redundant_link/link_combiner.py"/>
     <program name="GCS" command="sw/ground_segment/cockpit/gcs"/>
     <program name="Flight Plan Editor" command="sw/ground_segment/cockpit/gcs">
@@ -98,6 +101,10 @@
    </session>
 
    <session name="Secure Flight USB-serial@57600">
+     <program name="Rust Link">
+       <arg flag="-d" constant="/dev/ttyUSB0"/>
+       <arg flag="-s" constant="115200"/>
+     </program>
      <program name="Server"/>
      <program name="GCS">
       <arg flag="-layout" constant="AGGIEAIR/vertical.xml"/>

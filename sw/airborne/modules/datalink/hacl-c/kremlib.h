@@ -1,11 +1,11 @@
 #ifndef __KREMLIB_H
 #define __KREMLIB_H
 
-//#include <inttypes.h>
-//#include <stdlib.h>
+#include <inttypes.h>
+#include <stdlib.h>
 #include "std.h"
 
-//#include <stdbool.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -221,7 +221,53 @@ FStar_Seq_Base_seq FStar_Seq_Base_slice(FStar_Seq_Base_seq x,
 
 #endif
 
-#endif
+#else
+
+static inline uint32_t
+byteswap32(const uint8_t src[4])
+{
+    uint32_t w = (uint32_t) src[3];
+    w |= (uint32_t) src[2] << 8;
+    w |= (uint32_t) src[1] << 16;
+    w |= (uint32_t) src[0] << 24;
+    return w;
+}
+
+static inline uint64_t
+byteswap64(const uint8_t src[8])
+{
+    uint64_t w = (uint64_t) src[0];
+    w |= (uint64_t) src[1] << 8;
+    w |= (uint64_t) src[2] << 16;
+    w |= (uint64_t) src[3] << 24;
+    w |= (uint64_t) src[4] << 32;
+    w |= (uint64_t) src[5] << 40;
+    w |= (uint64_t) src[6] << 48;
+    w |= (uint64_t) src[7] << 56;
+    return w;
+}
+
+/* embedded target */
+#if BYTE_ORDER == BIG_ENDIAN
+#define le32toh(x) byteswap32(x)
+#define htole32(x) byteswap32(x)
+#define htobe64(x) (x)
+#define htole64(x) byteswap64(x)
+#define be64toh(x) (x)
+#define le64toh(x) byteswap64(x)
+
+#else /* BYTE_ORDER == LITTLE_ENDIAN */
+#define le32toh(x) (x)
+#define htole32(x) (x)
+#define htobe64(x) byteswap64(x)
+#define htole64(x) (x)
+#define be64toh(x) byteswap64(x)
+#define le64toh(x) (x)
+
+
+#endif /* BYTE ORDER */
+
+#endif /* arch selection */
 
 // Loads and stores. These avoid undefined behavior due to unaligned memory
 // accesses, via memcpy.
@@ -249,15 +295,6 @@ inline static void store16(uint8_t *b, uint16_t i) { memcpy(b, &i, 2); }
 inline static void store32(uint8_t *b, uint32_t i) { memcpy(b, &i, 4); }
 
 inline static void store64(uint8_t *b, uint64_t i) { memcpy(b, &i, 8); }
-
-// TEST TEST TEST
-#define le64toh
-#define htole64
-#define le32toh
-#define be64toh
-#define htole32
-#define htole64
-#define htobe64
 
 #define load16_le(b) (le16toh(load16(b)))
 #define store16_le(b, i) (store16(b, htole16(i)))

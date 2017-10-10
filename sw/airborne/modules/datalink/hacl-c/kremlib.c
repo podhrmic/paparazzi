@@ -1,12 +1,29 @@
 #include "kremlib.h"
-//#include <stdlib.h>
+#include <stdlib.h>
 
+#ifdef KREMLIB_EMBEDDED_TARGET /* bare-metal targets */
 int exit_success = 0;
 int exit_failure = 1;
 
-void print_string(const char *s) {}
+void print_string(const char *s __attribute__((unused))) {}
+void print_bytes(uint8_t *b, uint32_t len __attribute__((unused))) {}
+#else /* any other platform */
 
-void print_bytes(uint8_t *b, uint32_t len) {}
+int exit_success = EXIT_SUCCESS;
+int exit_failure = EXIT_FAILURE;
+
+
+void print_string(const char *s) {
+  printf("%s", s);
+}
+
+void print_bytes(uint8_t *b, uint32_t len) {
+  for (uint32_t i = 0; i < len; i++){
+    printf("%02x", b[i]);
+  }
+  printf("\n");
+}
+#endif
 
 void FStar_Buffer_recall(void *x) {}
 

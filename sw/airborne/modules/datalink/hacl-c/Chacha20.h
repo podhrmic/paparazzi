@@ -3,6 +3,10 @@
 #ifndef __Chacha20_H
 #define __Chacha20_H
 
+
+
+#include "testlib.h"
+
 typedef uint32_t Hacl_Impl_Xor_Lemmas_u32;
 
 typedef uint8_t Hacl_Impl_Xor_Lemmas_u8;

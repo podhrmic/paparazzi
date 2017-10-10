@@ -3,6 +3,10 @@
 #ifndef __AEAD_Poly1305_64_H
 #define __AEAD_Poly1305_64_H
 
+
+
+#include "testlib.h"
+
 typedef uint64_t Hacl_Bignum_Constants_limb;
 
 typedef FStar_UInt128_t Hacl_Bignum_Constants_wide;

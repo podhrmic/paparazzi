@@ -3,6 +3,10 @@
 #ifndef __Curve25519_H
 #define __Curve25519_H
 
+
+
+#include "testlib.h"
+
 typedef uint64_t Hacl_Bignum_Constants_limb;
 
 typedef FStar_UInt128_t Hacl_Bignum_Constants_wide;

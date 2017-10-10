@@ -339,16 +339,14 @@ Hacl_Standalone_Poly1305_64_poly1305_partial(
 
 Prims_nat AEAD_Poly1305_64_seval(void *b)
 {
-  //printf("KreMLin abort at %s:%d\n%s\n", __FILE__, __LINE__, "noextract flag");
-  //exit(255);
-  return NULL;
+  printf("KreMLin abort at %s:%d\n%s\n", __FILE__, __LINE__, "noextract flag");
+  exit(255);
 }
 
 Prims_int AEAD_Poly1305_64_selem(void *s)
 {
-  //printf("KreMLin abort at %s:%d\n%s\n", __FILE__, __LINE__, "noextract flag");
-  //exit(255);
-  return NULL;
+  printf("KreMLin abort at %s:%d\n%s\n", __FILE__, __LINE__, "noextract flag");
+  exit(255);
 }
 
 Hacl_Impl_Poly1305_64_State_poly1305_state

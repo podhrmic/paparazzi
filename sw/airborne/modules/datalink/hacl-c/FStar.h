@@ -65,7 +65,7 @@ static FStar_UInt128_uint128 __attribute__((unused)) FStar_UInt128_sub(FStar_UIn
     );
 }
 
-static FStar_UInt128_uint128
+static FStar_UInt128_uint128 __attribute__((unused))
 FStar_UInt128_sub_mod_impl(FStar_UInt128_uint128 a, FStar_UInt128_uint128 b)
 {
   return
@@ -114,7 +114,7 @@ static uint64_t FStar_UInt128_add_u64_shift_left_respec(uint64_t hi, uint64_t lo
   return FStar_UInt128_add_u64_shift_left(hi, lo, s);
 }
 
-static FStar_UInt128_uint128
+static FStar_UInt128_uint128 __attribute__((unused))
 FStar_UInt128_shift_left_small(FStar_UInt128_uint128 a, uint32_t s)
 {
   if (s == (uint32_t )0)
@@ -129,7 +129,7 @@ FStar_UInt128_shift_left_small(FStar_UInt128_uint128 a, uint32_t s)
       );
 }
 
-static FStar_UInt128_uint128
+static FStar_UInt128_uint128 __attribute__((unused))
 FStar_UInt128_shift_left_large(FStar_UInt128_uint128 a, uint32_t s)
 {
   return
@@ -154,7 +154,7 @@ static uint64_t FStar_UInt128_add_u64_shift_right_respec(uint64_t hi, uint64_t l
   return FStar_UInt128_add_u64_shift_right(hi, lo, s);
 }
 
-static FStar_UInt128_uint128
+static FStar_UInt128_uint128 __attribute__((unused))
 FStar_UInt128_shift_right_small(FStar_UInt128_uint128 a, uint32_t s)
 {
   if (s == (uint32_t )0)
@@ -169,7 +169,7 @@ FStar_UInt128_shift_right_small(FStar_UInt128_uint128 a, uint32_t s)
       );
 }
 
-static FStar_UInt128_uint128
+static FStar_UInt128_uint128 __attribute__((unused))
 FStar_UInt128_shift_right_large(FStar_UInt128_uint128 a, uint32_t s)
 {
   return

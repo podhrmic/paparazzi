@@ -7,12 +7,6 @@
       see https://github.com/mitls/hacl-star for details
     </description>
   </doc>
-  <header>
-    <file name="Chacha20Poly1305.h"/>
-    <file name="Curve25519.h"/>
-    <file name="Ed25519.h"/>
-
-  </header>
   <makefile target="!fbw|sim|nps|hitl">
     <file name="Chacha20Poly1305.c"/>
     <file name="kremlib.c"/>
@@ -21,6 +15,7 @@
     <file name="Chacha20.c"/>
     <file name="Curve25519.c"/>
     <file name="Ed25519.c"/>
+    <file name="SHA2_512.c"/>
     <raw>
       # to not use 128 bit arithmetic
       ap.CFLAGS += -DKRML_NOUINT128
